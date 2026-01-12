@@ -12,7 +12,7 @@
 
         .id-card {
             width: 340px;
-            height: 215px;
+            height: 195px;
             background: linear-gradient(135deg, #1e3a5f 0%, #3b82f6 50%, #60a5fa 100%);
             border-radius: 16px;
             position: relative;
@@ -86,7 +86,7 @@
 
         .card-body-custom {
             display: flex;
-            padding: 0 16px;
+            padding: 0 16px 20px 16px;
             gap: 14px;
             position: relative;
             z-index: 1;
@@ -109,7 +109,19 @@
             flex: 1;
             display: flex;
             flex-direction: column;
-            justify-content: center;
+            justify-content: space-between;
+            height: 102px;
+        }
+
+        .info-content {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .scan-text {
+            font-size: 8px;
+            opacity: 0.7;
+            text-align: right;
         }
 
         .student-name {
@@ -141,39 +153,7 @@
             font-weight: 500;
         }
 
-        .card-footer-custom {
-            position: absolute;
-            bottom: 10px;
-            left: 16px;
-            right: 16px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-size: 7px;
-            opacity: 0.7;
-            z-index: 1;
-        }
 
-        .chip {
-            width: 35px;
-            height: 26px;
-            background: linear-gradient(135deg, #fbbf24 0%, #d97706 100%);
-            border-radius: 4px;
-            position: relative;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-        }
-
-        .chip::before {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 25px;
-            height: 18px;
-            border: 1px solid rgba(0, 0, 0, 0.2);
-            border-radius: 2px;
-        }
 
         .action-buttons {
             display: flex;
@@ -236,17 +216,16 @@
                 </div>
                 <div class="card-body-custom">
                     <div class="qr-section">
-                        <img src="{{ $qrApiUrl }}" alt="QR Code">
+                        <img id="qrImage" src="" alt="QR Code">
                     </div>
                     <div class="info-section">
-                        <div class="student-name">{{ $siswa->nama_lengkap }}</div>
-                        <div class="student-nis">{{ $siswa->nisn ?? '-' }}</div>
-                        <div class="student-class"><span>Kelas {{ $siswa->kelas }}</span></div>
+                        <div class="info-content">
+                            <div class="student-name">{{ $siswa->nama_lengkap }}</div>
+                            <div class="student-nis">{{ $siswa->nisn ?? '-' }}</div>
+                            <div class="student-class"><span>Kelas {{ $siswa->kelas }}</span></div>
+                        </div>
+                        <div class="scan-text">Scan QR untuk absensi</div>
                     </div>
-                </div>
-                <div class="card-footer-custom">
-                    <div class="chip"></div>
-                    <div>Scan QR untuk absensi</div>
                 </div>
             </div>
 
@@ -265,27 +244,58 @@
 @endsection
 
 @push('scripts')
+    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
     <script>
-        function downloadCard() {
+        // Generate QR code as data URL and set to img element
+        document.addEventListener('DOMContentLoaded', function() {
+            const qrData = '{{ $siswa->nisn ?? $siswa->id }}';
+            const qrImage = document.getElementById('qrImage');
+            
+            QRCode.toDataURL(qrData, {
+                width: 90,
+                margin: 0,
+                color: {
+                    dark: '#000000',
+                    light: '#ffffff'
+                }
+            }).then(url => {
+                qrImage.src = url;
+            }).catch(err => {
+                console.error('QR Error:', err);
+            });
+        });
+
+        async function downloadCard() {
             const card = document.querySelector('.id-card');
             const btn = event.target.closest('button');
             const originalText = btn.innerHTML;
             btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Menyiapkan...';
             btn.disabled = true;
 
-            html2canvas(card, { scale: 3, useCORS: true, allowTaint: true, backgroundColor: null }).then(canvas => {
+            try {
+                // Wait a bit to ensure QR is fully rendered
+                await new Promise(r => setTimeout(r, 100));
+                
+                const canvas = await html2canvas(card, { 
+                    scale: 3, 
+                    useCORS: true, 
+                    allowTaint: true,
+                    backgroundColor: null,
+                    logging: false
+                });
+                
                 const link = document.createElement('a');
                 link.download = 'Kartu_{{ $siswa->nisn ?? $siswa->id }}_{{ preg_replace("/[^a-zA-Z0-9]/", "_", $siswa->nama_lengkap) }}.png';
                 link.href = canvas.toDataURL('image/png');
                 link.click();
-                btn.innerHTML = originalText;
-                btn.disabled = false;
-            }).catch(err => {
+            } catch(err) {
+                console.error('Download error:', err);
                 alert('Gagal menyimpan kartu. Silakan gunakan tombol Cetak.');
-                btn.innerHTML = originalText;
-                btn.disabled = false;
-            });
+            }
+            
+            btn.innerHTML = originalText;
+            btn.disabled = false;
         }
     </script>
 @endpush

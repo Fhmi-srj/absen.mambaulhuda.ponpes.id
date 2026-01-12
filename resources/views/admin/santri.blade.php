@@ -105,20 +105,34 @@
         }
 
         #editModal .modal-dialog {
-            max-height: 90vh;
+            max-height: calc(100vh - 3.5rem);
             margin: 1.75rem auto;
         }
 
         #editModal .modal-content {
-            max-height: 90vh;
+            max-height: calc(100vh - 3.5rem);
             display: flex;
             flex-direction: column;
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+        }
+
+        #editModal .modal-header {
+            flex-shrink: 0;
         }
 
         #editModal .modal-body {
             overflow-y: auto;
             flex: 1;
             padding: 1.5rem;
+            max-height: calc(100vh - 200px);
+        }
+
+        #editModal .modal-footer {
+            flex-shrink: 0;
+            background: #f8f9fa;
         }
 
         .nav-pills-custom .nav-link {
@@ -668,46 +682,98 @@
             window.open('{{ route("cetak-kartu") }}?ids=' + ids, '_blank');
         }
 
+        // Load QRCode.js and html2canvas for card generation
+        (function loadQrLibrary() {
+            if (typeof QRCode === 'undefined') {
+                const script = document.createElement('script');
+                script.src = 'https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js';
+                document.head.appendChild(script);
+            }
+            if (typeof html2canvas === 'undefined') {
+                const script = document.createElement('script');
+                script.src = 'https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js';
+                document.head.appendChild(script);
+            }
+        })();
+
+        // Store card data for print/download (persists after modal closes)
+        let savedCardHtml = '';
+        let savedCardName = '';
+
         // QR Modal
-        function showQrModal(id, nama, nisn, kelas) {
+        async function showQrModal(id, nama, nisn, kelas) {
             const logoUrl = '{{ asset("logo-pondok.png") }}';
-            const qrUrl = 'https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=' + encodeURIComponent(nisn);
+            
             // Calculate font size based on name length
             let nameFontSize = 14;
             if (nama.length > 25) nameFontSize = 11;
             else if (nama.length > 20) nameFontSize = 12;
             else if (nama.length > 15) nameFontSize = 13;
             
-            // Truncate NISN to first 6 digits
+            // Truncate NISN to first 6 digits for display
             const displayNisn = nisn ? nisn.toString().substring(0, 6) : '------';
+            
+            // Generate QR code as data URL using QRCode.js (avoids CORS issues)
+            let qrDataUrl = '';
+            try {
+                qrDataUrl = await QRCode.toDataURL(nisn.toString(), {
+                    width: 180,
+                    margin: 0,
+                    color: { dark: '#000000', light: '#ffffff' }
+                });
+            } catch (err) {
+                console.error('QR generation error:', err);
+                // Fallback to external API if QRCode.js fails
+                qrDataUrl = 'https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=' + encodeURIComponent(nisn);
+            }
+            
+            // Convert logo to data URL for proper export
+            let logoDataUrl = logoUrl;
+            try {
+                const response = await fetch(logoUrl);
+                const blob = await response.blob();
+                logoDataUrl = await new Promise((resolve) => {
+                    const reader = new FileReader();
+                    reader.onloadend = () => resolve(reader.result);
+                    reader.readAsDataURL(blob);
+                });
+            } catch (err) {
+                console.log('Logo fetch error, using original URL');
+            }
+            
+            // Build card HTML with embedded data URLs
+            const cardHtml = `
+                <div id="qrCardContainer" style="background: linear-gradient(135deg, #1e3a5f 0%, #3b82f6 50%, #60a5fa 100%); border-radius: 16px; padding: 20px 20px 25px 20px; color: white; width: 340px; height: 195px; text-align: left; margin: 0 auto; box-sizing: border-box;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                        <div>
+                            <div style="font-size: 9px; text-transform: uppercase; opacity: 0.9; font-family: sans-serif;">Pondok Pesantren Mambaul Huda</div>
+                            <div style="font-size: 11px; font-weight: 700; color: #fbbf24; font-family: sans-serif;">KARTU SANTRI</div>
+                        </div>
+                        <img src="${logoDataUrl}" style="width: 35px; height: 35px; border-radius: 50%; background: rgba(255,255,255,0.2); padding: 3px; object-fit: contain;">
+                    </div>
+                    <div style="display: flex; gap: 14px; align-items: flex-start;">
+                        <div style="background: white; padding: 6px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.2);">
+                            <img src="${qrDataUrl}" style="width: 90px; height: 90px; display: block;">
+                        </div>
+                        <div style="flex: 1; display: flex; flex-direction: column; justify-content: space-between; height: 102px;">
+                            <div>
+                                <div style="font-size: ${nameFontSize}px; font-weight: 700; word-break: break-word; line-height: 1.2; font-family: sans-serif;">${nama}</div>
+                                <div style="font-size: 16px; font-weight: 700; font-family: 'Courier New', monospace; color: #fbbf24; letter-spacing: 2px; margin-top: 4px;">${displayNisn}</div>
+                                <div style="font-size: 10px; opacity: 0.8; margin-top: 4px;"><span style="background: rgba(255,255,255,0.2); padding: 3px 10px; border-radius: 12px; font-family: sans-serif;">Kelas ${kelas}</span></div>
+                            </div>
+                            <div style="font-size: 8px; opacity: 0.7; font-family: sans-serif; text-align: right;">Scan QR untuk absensi</div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            // Save for later use (print/download after modal closes)
+            savedCardHtml = cardHtml;
+            savedCardName = nama;
             
             Swal.fire({
                 title: '<i class="fas fa-id-card text-success me-2"></i>Kartu QR',
-                html: `
-                    <div id="qrCardContainer" style="background: linear-gradient(135deg, #1e3a5f 0%, #3b82f6 50%, #60a5fa 100%); border-radius: 16px; padding: 20px; color: white; max-width: 340px; text-align: left;">
-                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
-                            <div>
-                                <div style="font-size: 9px; text-transform: uppercase; opacity: 0.9;">Pondok Pesantren Mambaul Huda</div>
-                                <div style="font-size: 11px; font-weight: 700; color: #fbbf24;">KARTU SANTRI</div>
-                            </div>
-                            <img src="${logoUrl}" style="width: 35px; height: 35px; border-radius: 50%; background: rgba(255,255,255,0.2); padding: 3px;">
-                        </div>
-                        <div style="display: flex; gap: 14px; align-items: flex-start;">
-                            <div style="background: white; padding: 6px; border-radius: 8px;">
-                                <img src="${qrUrl}" style="width: 90px; height: 90px;">
-                            </div>
-                            <div style="flex: 1; display: flex; flex-direction: column; justify-content: center;">
-                                <div style="font-size: ${nameFontSize}px; font-weight: 700; word-break: break-word; line-height: 1.2;">${nama}</div>
-                                <div style="font-size: 16px; font-weight: 700; font-family: monospace; color: #fbbf24; letter-spacing: 2px; margin-top: 4px;">${displayNisn}</div>
-                                <div style="font-size: 10px; opacity: 0.8; margin-top: 4px;"><span style="background: rgba(255,255,255,0.2); padding: 3px 10px; border-radius: 12px;">Kelas ${kelas}</span></div>
-                            </div>
-                        </div>
-                        <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 12px; font-size: 7px; opacity: 0.7;">
-                            <div style="width: 35px; height: 26px; background: linear-gradient(135deg, #fbbf24, #d97706); border-radius: 4px;"></div>
-                            <div>Scan QR untuk absensi</div>
-                        </div>
-                    </div>
-                `,
+                html: cardHtml,
                 showDenyButton: true,
                 showCancelButton: true,
                 confirmButtonText: '<i class="fas fa-print me-1"></i> Cetak',
@@ -716,43 +782,168 @@
                 confirmButtonColor: '#3b82f6',
                 denyButtonColor: '#10b981',
                 width: 420
-            }).then(result => {
+            }).then(async result => {
                 if (result.isConfirmed) {
-                    // Print
-                    const printWindow = window.open('', '_blank');
-                    const cardHtml = document.getElementById('qrCardContainer').outerHTML;
-                    printWindow.document.write(`
-                        <html><head><title>Kartu ${nama}</title>
-                        <style>body{margin:0;display:flex;justify-content:center;align-items:center;min-height:100vh;background:#f0f0f0;}</style>
-                        </head><body>${cardHtml}<scr` + `ipt>setTimeout(()=>{window.print();window.close();},500);</scr` + `ipt></body></html>
-                    `);
-                    printWindow.document.close();
+                    // Print - open new window with proper styling
+                    printCard();
                 } else if (result.isDenied) {
-                    // Download as image using html2canvas
-                    const card = document.getElementById('qrCardContainer');
-                    if (typeof html2canvas !== 'undefined') {
-                        html2canvas(card, { scale: 2, backgroundColor: null }).then(canvas => {
-                            const link = document.createElement('a');
-                            link.download = 'kartu_' + nama.replace(/\W+/g, '_') + '.png';
-                            link.href = canvas.toDataURL('image/png');
-                            link.click();
-                        });
-                    } else {
-                        // Fallback: load html2canvas dynamically
-                        const script = document.createElement('script');
-                        script.src = 'https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js';
-                        script.onload = () => {
-                            html2canvas(card, { scale: 2, backgroundColor: null }).then(canvas => {
-                                const link = document.createElement('a');
-                                link.download = 'kartu_' + nama.replace(/\W+/g, '_') + '.png';
-                                link.href = canvas.toDataURL('image/png');
-                                link.click();
-                            });
-                        };
-                        document.head.appendChild(script);
-                    }
+                    // Download as PNG
+                    await downloadCard();
                 }
             });
+        }
+        
+        function printCard() {
+            // Remove any existing print iframe
+            const existingFrame = document.getElementById('printFrame');
+            if (existingFrame) existingFrame.remove();
+            
+            // Create hidden iframe for printing (stays on same page)
+            const iframe = document.createElement('iframe');
+            iframe.id = 'printFrame';
+            iframe.style.position = 'fixed';
+            iframe.style.right = '0';
+            iframe.style.bottom = '0';
+            iframe.style.width = '0';
+            iframe.style.height = '0';
+            iframe.style.border = 'none';
+            document.body.appendChild(iframe);
+            
+            const doc = iframe.contentWindow.document;
+            doc.open();
+            doc.write(`
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <title>Kartu ${savedCardName}</title>
+                    <style>
+                        @page {
+                            size: A4 portrait;
+                            margin: 10mm;
+                        }
+                        * {
+                            -webkit-print-color-adjust: exact !important;
+                            print-color-adjust: exact !important;
+                            color-adjust: exact !important;
+                        }
+                        html, body {
+                            margin: 0;
+                            padding: 0;
+                            width: 100%;
+                            height: 100%;
+                        }
+                        body {
+                            display: flex;
+                            justify-content: center;
+                            align-items: flex-start;
+                            padding-top: 20mm;
+                            background: white;
+                            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+                        }
+                        #qrCardContainer {
+                            transform: scale(1.5);
+                            transform-origin: top center;
+                        }
+                    </style>
+                </head>
+                <body>
+                    ${savedCardHtml}
+                </body>
+                </html>
+            `);
+            doc.close();
+            
+            // Wait for images to load then print
+            iframe.onload = function() {
+                const images = iframe.contentWindow.document.querySelectorAll('img');
+                let loaded = 0;
+                const total = images.length;
+                
+                function tryPrint() {
+                    loaded++;
+                    if (loaded >= total) {
+                        setTimeout(() => {
+                            iframe.contentWindow.print();
+                        }, 200);
+                    }
+                }
+                
+                if (total === 0) {
+                    setTimeout(() => iframe.contentWindow.print(), 200);
+                } else {
+                    images.forEach(img => {
+                        if (img.complete) tryPrint();
+                        else {
+                            img.onload = tryPrint;
+                            img.onerror = tryPrint;
+                        }
+                    });
+                }
+            };
+        }
+        
+        async function downloadCard() {
+            // Create a temporary container for html2canvas
+            const tempContainer = document.createElement('div');
+            tempContainer.innerHTML = savedCardHtml;
+            tempContainer.style.position = 'fixed';
+            tempContainer.style.left = '-9999px';
+            tempContainer.style.top = '0';
+            document.body.appendChild(tempContainer);
+            
+            const card = tempContainer.querySelector('#qrCardContainer');
+            
+            // Show loading
+            Swal.fire({
+                title: 'Mengunduh...',
+                html: '<div class="spinner-border text-success"></div><br><small>Menyiapkan gambar kartu...</small>',
+                showConfirmButton: false,
+                allowOutsideClick: false
+            });
+            
+            try {
+                // Wait for images in temp container to load
+                const images = card.querySelectorAll('img');
+                await Promise.all(Array.from(images).map(img => {
+                    return new Promise((resolve) => {
+                        if (img.complete) resolve();
+                        else {
+                            img.onload = resolve;
+                            img.onerror = resolve;
+                        }
+                    });
+                }));
+                
+                // Small delay
+                await new Promise(r => setTimeout(r, 100));
+                
+                const canvas = await html2canvas(card, { 
+                    scale: 3,
+                    useCORS: true,
+                    allowTaint: true,
+                    backgroundColor: null,
+                    logging: false
+                });
+                
+                const link = document.createElement('a');
+                link.download = 'kartu_' + savedCardName.replace(/\W+/g, '_') + '.png';
+                link.href = canvas.toDataURL('image/png');
+                link.click();
+                
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Berhasil!',
+                    text: 'Kartu berhasil diunduh',
+                    timer: 1500,
+                    showConfirmButton: false
+                });
+            } catch (err) {
+                console.error('Download error:', err);
+                Swal.fire('Gagal', 'Tidak dapat mengunduh kartu: ' + err.message, 'error');
+            } finally {
+                // Clean up temp container
+                document.body.removeChild(tempContainer);
+            }
         }
     </script>
 @endpush
