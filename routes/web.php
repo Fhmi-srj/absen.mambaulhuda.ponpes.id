@@ -20,6 +20,24 @@ use App\Http\Controllers\Api\SantriApiController;
 use App\Http\Controllers\Api\PrintIzinApiController;
 use App\Http\Controllers\Api\PrintQueueApiController;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Artisan;
+
+// ============================================================
+// TEMPORARY ROUTES FOR HOSTING SETUP (Hapus setelah setup selesai!)
+// ============================================================
+Route::get('/linkstorage', function () {
+    Artisan::call('storage:link');
+    return '✅ Storage link created successfully!';
+});
+
+Route::get('/clear-cache', function () {
+    Artisan::call('config:clear');
+    Artisan::call('route:clear');
+    Artisan::call('view:clear');
+    Artisan::call('cache:clear');
+    return '✅ All cache cleared successfully!';
+});
+// ============================================================
 
 // RFID Kiosk - Public page (no login required)
 Route::get('/kios', [KiosController::class, 'index'])->name('kios');
@@ -29,10 +47,7 @@ Route::middleware('guest')->group(function () {
     Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
     Route::get('/masuk', [AuthController::class, 'showLoginForm'])->name('masuk');
     Route::post('/login', [AuthController::class, 'login'])->name('login.post');
-    
-    // WebAuthn login (for users without session)
-    Route::post('/webauthn/login/options', [\App\Http\Controllers\WebAuthnController::class, 'loginOptions'])->name('webauthn.login.options');
-    Route::post('/webauthn/login/verify', [\App\Http\Controllers\WebAuthnController::class, 'loginVerify'])->name('webauthn.login.verify');
+
 });
 
 // Auth routes
@@ -90,13 +105,6 @@ Route::middleware('auth')->group(function () {
 
         // Live Attendance API
         Route::get('/live-attendance', [\App\Http\Controllers\Api\LiveAttendanceApiController::class, 'index'])->name('api.live-attendance');
-
-        // WebAuthn Biometric (authenticated users)
-        Route::post('/webauthn/register/options', [\App\Http\Controllers\WebAuthnController::class, 'registerOptions'])->name('webauthn.register.options');
-        Route::post('/webauthn/register/verify', [\App\Http\Controllers\WebAuthnController::class, 'registerVerify'])->name('webauthn.register.verify');
-        Route::post('/webauthn/dismiss-reminder', [\App\Http\Controllers\WebAuthnController::class, 'dismissReminder'])->name('webauthn.dismiss-reminder');
-        Route::get('/webauthn/check-support', [\App\Http\Controllers\WebAuthnController::class, 'checkSupport'])->name('webauthn.check-support');
-        Route::delete('/webauthn/credentials/{id}', [\App\Http\Controllers\WebAuthnController::class, 'deleteCredential'])->name('webauthn.delete-credential');
 
         // Print Izin API
         Route::get('/print-izin', [PrintIzinApiController::class, 'getSantri'])->name('api.print-izin');

@@ -520,16 +520,8 @@
                     </button>
                 </form>
 
-                <!-- Biometric Login Button (only on mobile) -->
-                <div id="biometricLoginSection" style="display: none; margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid #e2e8f0;">
-                    <p style="text-align: center; font-size: 0.85rem; color: #64748b; margin-bottom: 1rem;">atau login dengan</p>
-                    <button type="button" id="btnBiometricLogin" onclick="loginWithBiometric()" style="width: 100%; padding: 14px; background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; border: none; border-radius: 10px; font-size: 1rem; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; transition: all 0.2s;">
-                        <i class="fas fa-fingerprint" style="font-size: 1.3rem;"></i>
-                        Login dengan Biometrik
-                    </button>
-                </div>
-
-                <div style="text-align: center; margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid #e2e8f0;">
+                <div class="d-none d-md-block"
+                    style="text-align: center; margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid #e2e8f0;">
                     <a href="{{ route('kios') }}"
                         style="display: inline-flex; align-items: center; gap: 8px; color: #64748b; text-decoration: none; font-size: 0.9rem; padding: 10px 20px; border: 1px solid #e2e8f0; border-radius: 8px; transition: all 0.2s;">
                         <i class="fas fa-id-card"></i> Buka Mode Kiosk RFID
@@ -595,129 +587,6 @@
                 toggleIcon.classList.add('fa-eye');
             }
         }
-
-        // WebAuthn Biometric Login
-        async function checkBiometricSupport() {
-            // Check if device supports WebAuthn
-            if (!window.PublicKeyCredential) {
-                console.log('WebAuthn not supported');
-                return false;
-            }
-            
-            // Check if platform authenticator (fingerprint/face) is available
-            try {
-                const available = await PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable();
-                console.log('Platform authenticator available:', available);
-                return available;
-            } catch (e) {
-                console.log('Error checking platform authenticator:', e);
-                return false;
-            }
-        }
-
-        async function loginWithBiometric() {
-            const email = document.getElementById('email').value;
-            if (!email) {
-                alert('Masukkan email terlebih dahulu');
-                document.getElementById('email').focus();
-                return;
-            }
-
-            try {
-                // Get login options from server
-                const optionsRes = await fetch('/webauthn/login/options', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': document.querySelector('input[name="_token"]').value
-                    },
-                    body: JSON.stringify({ username: email })
-                });
-
-                const optionsData = await optionsRes.json();
-                
-                if (optionsData.status === 'error') {
-                    alert(optionsData.message || 'Biometrik belum terdaftar untuk akun ini');
-                    return;
-                }
-
-                const publicKey = optionsData.publicKey;
-                
-                // Convert challenge and credential IDs from base64url
-                publicKey.challenge = base64UrlDecode(publicKey.challenge);
-                publicKey.allowCredentials = publicKey.allowCredentials.map(cred => ({
-                    ...cred,
-                    id: base64UrlDecode(cred.id)
-                }));
-
-                // Request biometric authentication
-                const credential = await navigator.credentials.get({ publicKey });
-
-                // Send credential to server for verification
-                const verifyRes = await fetch('/webauthn/login/verify', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': document.querySelector('input[name="_token"]').value
-                    },
-                    body: JSON.stringify({
-                        id: credential.id,
-                        response: {
-                            clientDataJSON: base64UrlEncode(new Uint8Array(credential.response.clientDataJSON)),
-                            authenticatorData: base64UrlEncode(new Uint8Array(credential.response.authenticatorData)),
-                            signature: base64UrlEncode(new Uint8Array(credential.response.signature))
-                        }
-                    })
-                });
-
-                const verifyData = await verifyRes.json();
-                
-                if (verifyData.status === 'success') {
-                    window.location.href = verifyData.redirect || '/beranda';
-                } else {
-                    alert(verifyData.message || 'Login gagal');
-                }
-            } catch (e) {
-                console.error('Biometric login error:', e);
-                if (e.name === 'NotAllowedError') {
-                    alert('Autentikasi dibatalkan');
-                } else {
-                    alert('Gagal login dengan biometrik: ' + e.message);
-                }
-            }
-        }
-
-        // Base64URL encode/decode helpers
-        function base64UrlEncode(buffer) {
-            let str = '';
-            const bytes = new Uint8Array(buffer);
-            for (let i = 0; i < bytes.length; i++) {
-                str += String.fromCharCode(bytes[i]);
-            }
-            return btoa(str).replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
-        }
-
-        function base64UrlDecode(str) {
-            str = str.replace(/-/g, '+').replace(/_/g, '/');
-            while (str.length % 4) str += '=';
-            const binStr = atob(str);
-            const bytes = new Uint8Array(binStr.length);
-            for (let i = 0; i < binStr.length; i++) {
-                bytes[i] = binStr.charCodeAt(i);
-            }
-            return bytes.buffer;
-        }
-
-        // Check and show biometric button on mobile
-        document.addEventListener('DOMContentLoaded', async function() {
-            const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
-            if (isMobile) {
-                const supported = await checkBiometricSupport();
-                if (supported) {
-                    document.getElementById('biometricLoginSection').style.display = 'block';
-                }
-            }
-        });
     </script>
 </body>
 
