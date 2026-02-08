@@ -208,6 +208,12 @@ class AktivitasApiController extends Controller
                 \Log::info('Foto 2 uploaded', ['path' => $foto2]);
             }
 
+            // Generate kode konfirmasi for izin_keluar and izin_pulang
+            $kodeKonfirmasi = null;
+            if (in_array($request->kategori, ['izin_keluar', 'izin_pulang'])) {
+                $kodeKonfirmasi = strtoupper(substr(md5(uniqid(mt_rand(), true)), 0, 6));
+            }
+
             // Create aktivitas
             $aktivitas = CatatanAktivitas::create([
                 'siswa_id' => $request->siswa_id,
@@ -219,6 +225,7 @@ class AktivitasApiController extends Controller
                 'tanggal' => $request->tanggal,
                 'batas_waktu' => $request->batas_waktu ?: null,
                 'tanggal_selesai' => $request->tanggal_selesai ?: null,
+                'kode_konfirmasi' => $kodeKonfirmasi,
                 'foto_dokumen_1' => $foto1,
                 'foto_dokumen_2' => $foto2,
                 'dibuat_oleh' => $user->id,
@@ -238,10 +245,25 @@ class AktivitasApiController extends Controller
                 "Tambah aktivitas {$request->kategori}"
             );
 
-            return response()->json([
+            // Return with kode_konfirmasi for print slip
+            $response = [
                 'status' => 'success',
                 'message' => 'Data aktivitas berhasil disimpan!'
-            ]);
+            ];
+
+            if ($kodeKonfirmasi) {
+                $response['data'] = [
+                    'id' => $aktivitas->id,
+                    'nama_santri' => $santri->nama_lengkap ?? '-',
+                    'kelas' => $santri->kelas ?? '-',
+                    'kategori' => $request->kategori,
+                    'judul' => $request->judul,
+                    'batas_waktu' => $request->batas_waktu,
+                    'kode_konfirmasi' => $kodeKonfirmasi,
+                ];
+            }
+
+            return response()->json($response);
 
         } catch (\Exception $e) {
             return response()->json([
@@ -323,8 +345,8 @@ class AktivitasApiController extends Controller
                 'status_sambangan' => $request->status_sambangan ?? $aktivitas->status_sambangan,
                 'status_kegiatan' => $request->status_kegiatan ?? $aktivitas->status_kegiatan,
                 'tanggal' => $request->tanggal ?? $aktivitas->tanggal,
-                'batas_waktu' => $request->batas_waktu ?: $aktivitas->batas_waktu,
-                'tanggal_selesai' => $request->tanggal_selesai ?: $aktivitas->tanggal_selesai,
+                'batas_waktu' => $request->has('batas_waktu') ? ($request->batas_waktu ?: null) : $aktivitas->batas_waktu,
+                'tanggal_selesai' => $request->has('tanggal_selesai') ? ($request->tanggal_selesai ?: null) : $aktivitas->tanggal_selesai,
             ]);
 
             ActivityLog::log('UPDATE', 'catatan_aktivitas', $aktivitas->id, $aktivitas->santri->nama_lengkap ?? 'Unknown');

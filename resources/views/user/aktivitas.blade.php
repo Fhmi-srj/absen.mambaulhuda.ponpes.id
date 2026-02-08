@@ -846,6 +846,60 @@
             </div>
         </div>
     </div>
+
+    <!-- MODAL PRINT SLIP IZIN -->
+    <div class="modal fade" id="modalPrintSlip" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow-lg rounded-3">
+                <div class="modal-header text-white border-0" style="background: linear-gradient(135deg, #10b981, #34d399);">
+                    <h6 class="modal-title fw-bold"><i class="fas fa-print me-2"></i>SLIP IZIN KELUAR</h6>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <div class="alert alert-info bg-info bg-opacity-10 border-0 p-3 mb-3 small text-info rounded-3">
+                        <i class="fas fa-info-circle me-1"></i> Cetak slip ini dan berikan kepada santri. Saat kembali, santri dapat scan QR atau masukkan kode di halaman konfirmasi.
+                    </div>
+                    
+                    <!-- Print Area -->
+                    <div id="printSlipContent" class="border rounded-3 p-4 bg-white" style="font-family: Arial, sans-serif;">
+                        <div class="text-center mb-3">
+                            <h5 class="fw-bold mb-1 text-dark" id="slip_nama">-</h5>
+                            <small class="text-muted" id="slip_kelas">-</small>
+                        </div>
+                        
+                        <div class="d-flex justify-content-between mb-3 px-2">
+                            <div>
+                                <small class="text-muted d-block">Keperluan</small>
+                                <span class="fw-semibold" id="slip_judul">-</span>
+                            </div>
+                            <div class="text-end">
+                                <small class="text-muted d-block">Batas Waktu</small>
+                                <span class="fw-semibold text-danger" id="slip_batas">-</span>
+                            </div>
+                        </div>
+                        
+                        <hr>
+                        
+                        <div class="text-center">
+                            <div id="slip_qrcode" class="mb-2 d-flex justify-content-center"></div>
+                            <div class="fw-bold fs-4 text-dark bg-light rounded-2 py-2" style="letter-spacing: 8px; font-family: 'Courier New', monospace;" id="slip_kode">------</div>
+                            <small class="text-muted">Kode Konfirmasi</small>
+                        </div>
+                        
+                        <hr>
+                        
+                        <div class="text-center small text-muted">
+                            <i class="fas fa-qrcode me-1"></i> Scan QR atau input kode di <strong>/konfirmasi-kembali</strong>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer border-0 bg-light">
+                    <button type="button" class="btn btn-light border px-4" data-bs-dismiss="modal">Tutup</button>
+                    <button type="button" class="btn btn-success px-4 fw-bold shadow-sm" onclick="doPrintSlip()"><i class="fas fa-print me-1"></i> CETAK SLIP</button>
+                </div>
+            </div>
+        </div>
+    </div>
 @endsection
 
 @push('scripts')
@@ -1288,9 +1342,16 @@
                 contentType: false,
                 success: function (res) {
                     if (res.status === 'success') {
-                        Swal.fire('Sukses', res.message, 'success');
+                        Swal.close(); // Close loading first
                         bootstrap.Modal.getInstance(document.getElementById('modalInput')).hide();
                         refreshTable();
+                        
+                        // Show print slip for izin_keluar/izin_pulang
+                        if (res.data && res.data.kode_konfirmasi) {
+                            showPrintSlip(res.data);
+                        } else {
+                            Swal.fire('Sukses', res.message, 'success');
+                        }
                     } else {
                         Swal.fire('Error', res.message, 'error');
                     }
@@ -1911,5 +1972,91 @@
                     .fire({ icon: 'success', title: 'Teks berhasil disalin!' });
             });
         });
+
+        // Show Print Slip for Izin Keluar/Pulang
+        let currentSlipData = null;
+        
+        function showPrintSlip(data) {
+            currentSlipData = data;
+            $('#slip_nama').text(data.nama_santri);
+            $('#slip_kelas').text('Kelas ' + data.kelas);
+            $('#slip_judul').text(data.judul || '-');
+            $('#slip_kode').text(data.kode_konfirmasi);
+            
+            // Format batas waktu
+            if (data.batas_waktu) {
+                let d = new Date(data.batas_waktu);
+                let formatted = d.toLocaleDateString('id-ID', { day: '2-digit', month: '2-digit' }) + ' ' + 
+                               d.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
+                $('#slip_batas').text(formatted);
+            } else {
+                $('#slip_batas').text('-');
+            }
+            
+            // Generate QR Code
+            $('#slip_qrcode').empty();
+            new QRCode(document.getElementById('slip_qrcode'), {
+                text: data.kode_konfirmasi,
+                width: 120,
+                height: 120,
+                colorDark: "#000000",
+                colorLight: "#ffffff",
+                correctLevel: QRCode.CorrectLevel.H
+            });
+            
+            // Show modal
+            new bootstrap.Modal(document.getElementById('modalPrintSlip')).show();
+        }
+        
+        async function doPrintSlip() {
+            if (!currentSlipData) {
+                Swal.fire('Error', 'Data slip tidak tersedia', 'error');
+                return;
+            }
+            
+            try {
+                Swal.fire({
+                    title: 'Mengirim ke Print Server...',
+                    allowOutsideClick: false,
+                    didOpen: () => Swal.showLoading()
+                });
+                
+                const res = await fetch('/api/print-queue', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    },
+                    body: JSON.stringify({
+                        job_type: 'slip_konfirmasi',
+                        nama_santri: currentSlipData.nama_santri,
+                        kelas: currentSlipData.kelas,
+                        kategori: currentSlipData.kategori,
+                        judul: currentSlipData.judul,
+                        batas_waktu: currentSlipData.batas_waktu,
+                        kode_konfirmasi: currentSlipData.kode_konfirmasi
+                    })
+                });
+                
+                const data = await res.json();
+                
+                if (data.success) {
+                    bootstrap.Modal.getInstance(document.getElementById('modalPrintSlip')).hide();
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Terkirim!',
+                        text: 'Slip dikirim ke antrian cetak (Job #' + data.job_id + ')',
+                        timer: 2000,
+                        showConfirmButton: false
+                    });
+                } else {
+                    Swal.fire('Error', 'Gagal mengirim ke print server', 'error');
+                }
+            } catch (e) {
+                Swal.fire('Error', 'Gagal mengirim: ' + e.message, 'error');
+            }
+        }
     </script>
+    <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
 @endpush

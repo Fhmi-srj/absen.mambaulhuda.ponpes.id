@@ -19,6 +19,7 @@ use App\Http\Controllers\Api\AktivitasApiController;
 use App\Http\Controllers\Api\SantriApiController;
 use App\Http\Controllers\Api\PrintIzinApiController;
 use App\Http\Controllers\Api\PrintQueueApiController;
+use App\Http\Controllers\KonfirmasiKembaliController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Artisan;
 
@@ -42,7 +43,15 @@ Route::get('/clear-cache', function () {
 // RFID Kiosk - Public page (no login required)
 Route::get('/kios', [KiosController::class, 'index'])->name('kios');
 
-// Guest routes
+// Print Server - Public page (no login required)
+Route::get('/print-server', [PrintServerController::class, 'index'])->name('print-server');
+
+// Konfirmasi Kembali - Public page (no login required)
+Route::get('/konfirmasi-kembali', [KonfirmasiKembaliController::class, 'index'])->name('konfirmasi-kembali');
+Route::get('/api/public/santri-izin-aktif', [KonfirmasiKembaliController::class, 'getSantriAktif']);
+Route::get('/api/public/izin/{id}', [KonfirmasiKembaliController::class, 'getDetail']);
+Route::post('/api/public/konfirmasi-kembali', [KonfirmasiKembaliController::class, 'konfirmasi']);
+
 Route::middleware('guest')->group(function () {
     Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
     Route::get('/masuk', [AuthController::class, 'showLoginForm'])->name('masuk');
@@ -71,7 +80,6 @@ Route::middleware('auth')->group(function () {
         Route::get('/absensi-langsung', [AbsensiLangsungController::class, 'index'])->name('absensi-langsung');
         Route::get('/daftar-rfid', [DaftarRfidController::class, 'index'])->name('daftar-rfid');
         Route::get('/print-izin', [PrintIzinController::class, 'index'])->name('print-izin');
-        Route::get('/print-server', [PrintServerController::class, 'index'])->name('print-server');
         Route::get('/cetak-kartu', [CetakKartuController::class, 'index'])->name('cetak-kartu');
         Route::get('/kartu-qr/{id}', [KartuQrController::class, 'show'])->name('kartu-qr');
     });

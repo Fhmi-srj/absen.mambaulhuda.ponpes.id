@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:3306
--- Generation Time: Jan 13, 2026 at 07:02 AM
+-- Generation Time: Feb 08, 2026 at 12:41 PM
 -- Server version: 10.5.29-MariaDB
 -- PHP Version: 8.4.16
 
@@ -176,7 +176,210 @@ INSERT INTO `activity_logs` (`id`, `user_id`, `user_name`, `device_name`, `ip_ad
 (131, 1, 'Administrator', 'Windows PC', '36.68.55.95', 'UPDATE', 'catatan_aktivitas', 48, 'MUHAMMAD FADIL ARIFIN', '{\"nama\":\"MUHAMMAD FADIL ARIFIN\",\"kategori\":\"paket\",\"judul\":\"Jajan\",\"tanggal_mulai\":\"2026-01-10 05:59:00\",\"tanggal_selesai\":null,\"keterangan\":\"\",\"status\":\"Belum Diterima\"}', '{\"nama\":\"MUHAMMAD FADIL ARIFIN\",\"kategori\":\"paket\",\"judul\":\"Jajan\",\"tanggal_mulai\":\"2026-01-10T05:59\",\"tanggal_selesai\":\"\",\"keterangan\":\"\",\"status\":\"Belum Diterima\"}', 'Ubah aktivitas paket untuk MUHAMMAD FADIL ARIFIN', '2026-01-12 02:40:06'),
 (132, 7, 'Akrom Adabi', 'Android Device', '36.68.55.95', 'LOGIN', 'users', 7, 'Akrom Adabi', NULL, NULL, 'Pengguna berhasil masuk', '2026-01-12 15:11:11'),
 (133, 1, 'Administrator', 'Android Device', '36.68.55.95', 'LOGIN', 'users', 1, 'Administrator', NULL, NULL, 'Pengguna berhasil masuk', '2026-01-12 15:36:19'),
-(134, 14, 'Surya', 'Android Device', '114.10.127.170', 'LOGIN', 'users', 14, 'Surya', NULL, NULL, 'Pengguna berhasil masuk', '2026-01-12 20:28:21');
+(134, 14, 'Surya', 'Android Device', '114.10.127.170', 'LOGIN', 'users', 14, 'Surya', NULL, NULL, 'Pengguna berhasil masuk', '2026-01-12 20:28:21'),
+(135, 1, 'Administrator', 'Windows PC', '36.68.55.95', 'LOGIN', 'users', 1, 'Administrator', NULL, NULL, 'Pengguna berhasil masuk', '2026-01-13 01:33:56'),
+(136, 1, 'Administrator', 'Android Device', '36.68.55.95', 'LOGIN', 'users', 1, 'Administrator', NULL, NULL, 'Pengguna berhasil masuk', '2026-01-13 02:48:21'),
+(137, 7, 'Akrom Adabi', 'Windows PC', '36.68.55.95', 'LOGIN', 'users', 7, 'Akrom Adabi', NULL, NULL, 'Pengguna berhasil masuk', '2026-01-13 05:23:43'),
+(138, 7, 'Akrom Adabi', 'Windows PC', '36.68.53.208', 'LOGIN', 'users', 7, 'Akrom Adabi', NULL, NULL, 'Pengguna berhasil masuk', '2026-01-13 13:20:48'),
+(139, 1, 'Administrator', 'Windows PC', '36.68.53.208', 'LOGIN', 'users', 1, 'Administrator', NULL, NULL, 'Pengguna berhasil masuk', '2026-01-13 22:48:28'),
+(140, 1, 'Administrator', NULL, '36.68.53.208', 'delete', NULL, NULL, NULL, NULL, NULL, 'Hapus absensi ke trash', '2026-01-13 23:16:49'),
+(141, 1, 'Administrator', 'Android Device', '182.2.85.65', 'LOGOUT', 'users', 1, 'Administrator', NULL, NULL, 'Pengguna keluar dari sistem', '2026-01-14 03:54:45'),
+(142, 14, 'Surya', 'Android Device', '182.2.85.65', 'LOGIN', 'users', 14, 'Surya', NULL, NULL, 'Pengguna berhasil masuk', '2026-01-14 03:54:58'),
+(143, 14, 'Surya', 'Android Device', '182.2.85.65', 'LOGOUT', 'users', 14, 'Surya', NULL, NULL, 'Pengguna keluar dari sistem', '2026-01-14 03:55:22'),
+(144, 1, 'Administrator', 'Android Device', '182.2.85.65', 'LOGIN', 'users', 1, 'Administrator', NULL, NULL, 'Pengguna berhasil masuk', '2026-01-14 03:56:03'),
+(145, 7, 'Akrom Adabi', 'Windows PC', '36.68.55.229', 'LOGIN', 'users', 7, 'Akrom Adabi', NULL, NULL, 'Pengguna berhasil masuk', '2026-01-16 04:16:34'),
+(146, 7, 'Akrom Adabi', 'Windows PC', '36.68.55.229', 'CREATE', 'catatan_aktivitas', 62, 'APRILIA USWATUN KHASANAH', NULL, '{\"kategori\":\"izin_keluar\",\"judul\":\"Nyadrran\"}', 'Tambah aktivitas izin_keluar', '2026-01-16 04:19:04'),
+(147, 1, 'Administrator', 'Windows PC', '36.68.55.229', 'LOGIN', 'users', 1, 'Administrator', NULL, NULL, 'Pengguna berhasil masuk', '2026-01-16 06:15:47'),
+(148, 9, 'Kowi', 'Android Device', '140.213.173.138', 'LOGIN', 'users', 9, 'Kowi', NULL, NULL, 'Pengguna berhasil masuk', '2026-01-16 06:24:19'),
+(149, 9, 'Kowi', 'Android Device', '140.213.173.138', 'CREATE', 'catatan_aktivitas', 63, 'MUHAMMAD DAKHROSUL HAMID', NULL, '{\"kategori\":\"izin_keluar\",\"judul\":\"Cukur\"}', 'Tambah aktivitas izin_keluar', '2026-01-16 06:25:25'),
+(150, 9, 'Kowi', 'Android Device', '140.213.173.138', 'CREATE', 'catatan_aktivitas', 64, 'SATRIO AKBAR FUADI', NULL, '{\"kategori\":\"izin_keluar\",\"judul\":\"Cukur\"}', 'Tambah aktivitas izin_keluar', '2026-01-16 06:26:25'),
+(151, 9, 'Kowi', 'Android Device', '140.213.173.138', 'CREATE', 'catatan_aktivitas', 65, 'BAGUS AMIRUL AKBAR', NULL, '{\"kategori\":\"izin_keluar\",\"judul\":\"Fc akidah\"}', 'Tambah aktivitas izin_keluar', '2026-01-16 06:26:51'),
+(152, 9, 'Kowi', 'Android Device', '140.213.173.138', 'CREATE', 'catatan_aktivitas', 66, 'MIFTAKHUL KIROM', NULL, '{\"kategori\":\"izin_keluar\",\"judul\":\"Cukur\"}', 'Tambah aktivitas izin_keluar', '2026-01-16 06:27:24'),
+(153, 9, 'Kowi', 'Android Device', '140.213.173.138', 'CREATE', 'catatan_aktivitas', 67, 'M. ARFAUR RIKZA', NULL, '{\"kategori\":\"izin_keluar\",\"judul\":\"Cukur\"}', 'Tambah aktivitas izin_keluar', '2026-01-16 06:27:47'),
+(154, 1, 'Administrator', NULL, '36.68.55.229', 'update', NULL, NULL, NULL, NULL, NULL, 'Mengubah user: Adil', '2026-01-16 06:35:08'),
+(155, 1, 'Administrator', NULL, '36.68.55.229', 'update', NULL, NULL, NULL, NULL, NULL, 'Mengubah user: Adil', '2026-01-16 06:35:11'),
+(156, 1, 'Administrator', NULL, '36.68.55.229', 'update', NULL, NULL, NULL, NULL, NULL, 'Mengubah user: Adil', '2026-01-16 06:35:52'),
+(157, 1, 'Administrator', NULL, '36.68.55.229', 'update', NULL, NULL, NULL, NULL, NULL, 'Mengubah user: Affan', '2026-01-16 06:36:02'),
+(158, 1, 'Administrator', NULL, '36.68.55.229', 'update', NULL, NULL, NULL, NULL, NULL, 'Mengubah user: Bidin', '2026-01-16 06:36:13'),
+(159, 1, 'Administrator', NULL, '36.68.55.229', 'update', NULL, NULL, NULL, NULL, NULL, 'Mengubah user: Ifaza', '2026-01-16 06:36:21'),
+(160, 1, 'Administrator', NULL, '36.68.55.229', 'update', NULL, NULL, NULL, NULL, NULL, 'Mengubah user: Ilmi', '2026-01-16 06:36:31'),
+(161, 1, 'Administrator', NULL, '36.68.55.229', 'update', NULL, NULL, NULL, NULL, NULL, 'Mengubah user: Irham', '2026-01-16 06:36:39'),
+(162, 1, 'Administrator', NULL, '36.68.55.229', 'update', NULL, NULL, NULL, NULL, NULL, 'Mengubah user: Kowi', '2026-01-16 06:36:46'),
+(163, 1, 'Administrator', NULL, '36.68.55.229', 'update', NULL, NULL, NULL, NULL, NULL, 'Mengubah user: Nayla', '2026-01-16 06:36:52'),
+(164, 1, 'Administrator', NULL, '36.68.55.229', 'update', NULL, NULL, NULL, NULL, NULL, 'Mengubah user: Oki', '2026-01-16 06:37:00'),
+(165, 1, 'Administrator', NULL, '36.68.55.229', 'update', NULL, NULL, NULL, NULL, NULL, 'Mengubah user: Rino', '2026-01-16 06:37:06'),
+(166, 1, 'Administrator', NULL, '36.68.55.229', 'update', NULL, NULL, NULL, NULL, NULL, 'Mengubah user: Surya', '2026-01-16 06:37:21'),
+(167, 1, 'Administrator', NULL, '36.68.55.229', 'update', NULL, NULL, NULL, NULL, NULL, 'Mengubah user: Surya', '2026-01-16 06:37:21'),
+(168, 1, 'Administrator', NULL, '36.68.55.229', 'update', NULL, NULL, NULL, NULL, NULL, 'Mengubah user: Yusuf', '2026-01-16 06:37:27'),
+(169, 9, 'Kowi', 'Linux PC', '140.213.163.160', 'CREATE', 'catatan_aktivitas', 68, 'TRI MAULANA AZZAM', NULL, '{\"kategori\":\"izin_keluar\",\"judul\":\"Cukur\"}', 'Tambah aktivitas izin_keluar', '2026-01-16 06:46:05'),
+(170, 9, 'Kowi', 'Linux PC', '140.213.163.160', 'CREATE', 'catatan_aktivitas', 69, 'MUHAMMAD AS\'AD AL MUGHNI', NULL, '{\"kategori\":\"izin_keluar\",\"judul\":\"Cukur\"}', 'Tambah aktivitas izin_keluar', '2026-01-16 06:46:26'),
+(171, 1, 'Administrator', 'Windows PC', '36.68.55.229', 'CREATE', 'catatan_aktivitas', 70, 'FARHAN SYAH PUTRA', NULL, '{\"kategori\":\"izin_keluar\",\"judul\":\"Potong Rambut\"}', 'Tambah aktivitas izin_keluar', '2026-01-16 07:21:58'),
+(172, 9, 'Kowi', 'Linux PC', '140.213.163.160', 'CREATE', 'catatan_aktivitas', 71, 'FARIS VERDIYANTO', NULL, '{\"kategori\":\"izin_keluar\",\"judul\":\"Cukur\"}', 'Tambah aktivitas izin_keluar', '2026-01-16 07:33:46'),
+(173, 9, 'Kowi', 'Linux PC', '140.213.163.160', 'CREATE', 'catatan_aktivitas', 72, 'M.AZKA RIFIYANSYAH', NULL, '{\"kategori\":\"izin_keluar\",\"judul\":\"Cukur\"}', 'Tambah aktivitas izin_keluar', '2026-01-16 07:34:11'),
+(174, 9, 'Kowi', 'Linux PC', '140.213.163.160', 'CREATE', 'catatan_aktivitas', 73, 'MUHAMMAD RIFIANSYAH', NULL, '{\"kategori\":\"izin_keluar\",\"judul\":\"Cukur\"}', 'Tambah aktivitas izin_keluar', '2026-01-16 07:34:39'),
+(175, 1, 'Administrator', 'Windows PC', '36.68.55.229', 'CREATE', 'catatan_aktivitas', 74, 'M. FAHMI SIROJUL MUNIR', NULL, '{\"kategori\":\"sakit\",\"judul\":\"demam\"}', 'Tambah aktivitas sakit', '2026-01-17 04:42:12'),
+(176, 1, 'Administrator', 'Windows PC', '36.68.55.229', 'DELETE', 'catatan_aktivitas', NULL, NULL, NULL, NULL, 'Hapus 1 data aktivitas ke trash', '2026-01-17 04:43:20'),
+(178, 7, 'Akrom Adabi', 'Android Device', '36.68.55.229', 'LOGIN', 'users', 7, 'Akrom Adabi', NULL, NULL, 'Pengguna berhasil masuk', '2026-01-21 00:46:52'),
+(179, 7, 'Akrom Adabi', 'Android Device', '36.68.55.229', 'LOGIN', 'users', 7, 'Akrom Adabi', NULL, NULL, 'Pengguna berhasil masuk', '2026-01-21 09:11:24'),
+(180, 7, 'Akrom Adabi', 'Android Device', '36.68.55.229', 'CREATE', 'catatan_aktivitas', 75, 'FARAS MEISABILA', NULL, '{\"kategori\":\"izin_keluar\",\"judul\":\"Periksa Gigi\"}', 'Tambah aktivitas izin_keluar', '2026-01-21 09:12:04'),
+(181, 7, 'Akrom Adabi', 'Windows PC', '36.68.55.229', 'LOGIN', 'users', 7, 'Akrom Adabi', NULL, NULL, 'Pengguna berhasil masuk', '2026-01-21 15:17:53'),
+(182, 7, 'Akrom Adabi', 'Windows PC', '182.2.50.103', 'UPDATE', 'catatan_aktivitas', 75, 'FARAS MEISABILA', NULL, NULL, NULL, '2026-01-21 15:44:45'),
+(183, 9, 'Kowi', 'Android Device', '112.215.168.124', 'LOGIN', 'users', 9, 'Kowi', NULL, NULL, 'Pengguna berhasil masuk', '2026-01-21 15:47:25'),
+(184, 15, 'Adil', 'Android Device', '182.2.68.56', 'LOGIN', 'users', 15, 'Adil', NULL, NULL, 'Pengguna berhasil masuk', '2026-01-21 15:48:47'),
+(185, 14, 'Surya', 'Android Device', '182.2.68.56', 'LOGIN', 'users', 14, 'Surya', NULL, NULL, 'Pengguna berhasil masuk', '2026-01-21 15:48:48'),
+(186, 19, 'Affan', 'Android Device', '182.2.77.175', 'LOGIN', 'users', 19, 'Affan', NULL, NULL, 'Pengguna berhasil masuk', '2026-01-21 15:49:54'),
+(187, 11, 'Nayla', 'Android Device', '112.215.168.200', 'LOGIN', 'users', 11, 'Nayla', NULL, NULL, 'Pengguna berhasil masuk', '2026-01-21 15:50:40'),
+(188, 7, 'Akrom Adabi', NULL, '182.2.52.173', 'update', NULL, NULL, NULL, NULL, NULL, 'Mengubah user: Administrator', '2026-01-21 16:09:09'),
+(189, 1, 'Administrator', 'Android Device', '182.2.76.133', 'LOGIN', 'users', 1, 'Administrator', NULL, NULL, 'Pengguna berhasil masuk', '2026-01-21 16:09:37'),
+(190, 15, 'Adil', 'Android Device', '182.2.68.56', 'LOGOUT', 'users', 15, 'Adil', NULL, NULL, 'Pengguna keluar dari sistem', '2026-01-21 16:18:00'),
+(191, 15, 'Adil', 'Android Device', '182.2.68.56', 'LOGIN', 'users', 15, 'Adil', NULL, NULL, 'Pengguna berhasil masuk', '2026-01-21 16:18:18'),
+(192, 1, 'Administrator', NULL, '182.2.76.133', 'create', NULL, NULL, NULL, NULL, NULL, 'Menambahkan user: nova', '2026-01-21 16:30:31'),
+(193, 1, 'Administrator', NULL, '182.2.76.133', 'update', NULL, NULL, NULL, NULL, NULL, 'Mengubah user: Nova', '2026-01-21 16:30:44'),
+(194, 20, 'Nova', 'Android Device', '36.68.55.229', 'LOGIN', 'users', 20, 'Nova', NULL, NULL, 'Pengguna berhasil masuk', '2026-01-21 22:15:22'),
+(195, 7, 'Akrom Adabi', 'Windows PC', '36.68.55.229', 'LOGIN', 'users', 7, 'Akrom Adabi', NULL, NULL, 'Pengguna berhasil masuk', '2026-01-21 23:17:12'),
+(196, 7, 'Akrom Adabi', 'Windows PC', '36.68.55.229', 'CREATE', 'catatan_aktivitas', 76, 'MUHAMMAD RAFI ADITYA', NULL, '{\"kategori\":\"izin_pulang\",\"judul\":\"Sakit\"}', 'Tambah aktivitas izin_pulang', '2026-01-21 23:17:51'),
+(197, 7, 'Akrom Adabi', 'Windows PC', '36.68.55.229', 'LOGIN', 'users', 7, 'Akrom Adabi', NULL, NULL, 'Pengguna berhasil masuk', '2026-01-22 02:02:48'),
+(198, 7, 'Akrom Adabi', 'Windows PC', '36.68.55.229', 'CREATE', 'catatan_aktivitas', 77, 'MUH HASYIM MAKMUR', NULL, '{\"kategori\":\"izin_keluar\",\"judul\":\"periksa telinga\"}', 'Tambah aktivitas izin_keluar', '2026-01-22 02:03:58'),
+(199, 7, 'Akrom Adabi', 'Windows PC', '36.68.55.229', 'LOGIN', 'users', 7, 'Akrom Adabi', NULL, NULL, 'Pengguna berhasil masuk', '2026-01-22 07:14:22'),
+(200, 7, 'Akrom Adabi', 'Windows PC', '36.68.55.229', 'CREATE', 'catatan_aktivitas', 78, 'M. FILZA AZIDAN FAZA', NULL, '{\"kategori\":\"izin_pulang\",\"judul\":\"PERIKSA MATA\"}', 'Tambah aktivitas izin_pulang', '2026-01-22 07:15:01'),
+(201, 7, 'Akrom Adabi', 'Windows PC', '36.68.55.229', 'UPDATE', 'catatan_aktivitas', 78, 'M. FILZA AZIDAN FAZA', NULL, NULL, NULL, '2026-01-22 07:16:55'),
+(202, 7, 'Akrom Adabi', 'Windows PC', '36.68.55.229', 'UPDATE', 'catatan_aktivitas', 78, 'M. FILZA AZIDAN FAZA', NULL, NULL, NULL, '2026-01-22 07:17:24'),
+(203, 7, 'Akrom Adabi', 'Windows PC', '36.68.55.229', 'LOGIN', 'users', 7, 'Akrom Adabi', NULL, NULL, 'Pengguna berhasil masuk', '2026-01-22 22:53:35'),
+(204, 11, 'Nayla', 'Windows PC', '36.68.55.229', 'LOGIN', 'users', 11, 'Nayla', NULL, NULL, 'Pengguna berhasil masuk', '2026-01-23 01:13:14'),
+(205, 11, 'Nayla', 'Windows PC', '36.68.55.229', 'CREATE', 'catatan_aktivitas', 79, 'ALFA KAMELIA PUTRI', NULL, '{\"kategori\":\"izin_pulang\",\"judul\":\"pijet\"}', 'Tambah aktivitas izin_pulang', '2026-01-23 01:26:27'),
+(206, 11, 'Nayla', 'Windows PC', '36.68.55.229', 'CREATE', 'catatan_aktivitas', 80, 'NAYVELIN CELSILIA TJANDRAWAN .', NULL, '{\"kategori\":\"izin_keluar\",\"judul\":\"keluar\"}', 'Tambah aktivitas izin_keluar', '2026-01-23 01:27:59'),
+(207, 11, 'Nayla', 'Windows PC', '36.68.55.229', 'LOGIN', 'users', 11, 'Nayla', NULL, NULL, 'Pengguna berhasil masuk', '2026-01-23 02:54:16');
+INSERT INTO `activity_logs` (`id`, `user_id`, `user_name`, `device_name`, `ip_address`, `action`, `table_name`, `record_id`, `record_name`, `old_data`, `new_data`, `description`, `created_at`) VALUES
+(208, 11, 'Nayla', 'Windows PC', '36.68.55.229', 'CREATE', 'catatan_aktivitas', 81, 'ANGGI FARADILA SUGIONO', NULL, '{\"kategori\":\"izin_pulang\",\"judul\":\"bikin ktp\"}', 'Tambah aktivitas izin_pulang', '2026-01-23 03:30:43'),
+(209, 11, 'Nayla', 'Windows PC', '36.68.55.229', 'CREATE', 'catatan_aktivitas', 82, 'AUDIYYA ROHMATIL WAFA', NULL, '{\"kategori\":\"izin_keluar\",\"judul\":\"jalan jalan jumat\"}', 'Tambah aktivitas izin_keluar', '2026-01-23 03:37:17'),
+(210, 11, 'Nayla', 'Windows PC', '36.68.55.229', 'CREATE', 'catatan_aktivitas', 83, 'NUR AFNI', NULL, '{\"kategori\":\"izin_keluar\",\"judul\":\"ja\"}', 'Tambah aktivitas izin_keluar', '2026-01-23 03:38:14'),
+(211, 11, 'Nayla', 'Windows PC', '36.68.55.229', 'UPDATE', 'catatan_aktivitas', 83, 'NUR AFNI', NULL, NULL, NULL, '2026-01-23 03:38:32'),
+(212, 11, 'Nayla', 'Windows PC', '36.68.55.229', 'CREATE', 'catatan_aktivitas', 84, 'ZULFA MARATUS SOLIHAH', NULL, '{\"kategori\":\"izin_keluar\",\"judul\":\"jalan jalan jumat\"}', 'Tambah aktivitas izin_keluar', '2026-01-23 03:39:30'),
+(213, 11, 'Nayla', 'Windows PC', '36.68.55.229', 'CREATE', 'catatan_aktivitas', 85, 'RIZQI KAMILA PUTRI', NULL, '{\"kategori\":\"izin_keluar\",\"judul\":\"jalan jalan jumat\"}', 'Tambah aktivitas izin_keluar', '2026-01-23 03:40:12'),
+(214, 11, 'Nayla', 'Windows PC', '36.68.55.229', 'CREATE', 'catatan_aktivitas', 86, 'DEWI MARSHA OCTAVIANA', NULL, '{\"kategori\":\"izin_pulang\",\"judul\":\"daftar sekolah\"}', 'Tambah aktivitas izin_pulang', '2026-01-23 03:42:22'),
+(215, 11, 'Nayla', 'Windows PC', '36.68.55.229', 'CREATE', 'catatan_aktivitas', 87, 'MAY LAVA SEVENTEEN', NULL, '{\"kategori\":\"izin_keluar\",\"judul\":\"jalan jalan jumat\"}', 'Tambah aktivitas izin_keluar', '2026-01-23 03:43:28'),
+(216, 11, 'Nayla', 'Windows PC', '36.68.55.229', 'CREATE', 'catatan_aktivitas', 88, 'FATIMATUS ZAHRO', NULL, '{\"kategori\":\"izin_keluar\",\"judul\":\"jalan jalan jumat\"}', 'Tambah aktivitas izin_keluar', '2026-01-23 03:44:20'),
+(217, 11, 'Nayla', 'Windows PC', '36.68.55.229', 'CREATE', 'catatan_aktivitas', 89, 'LUK LU\'UL MA\'SUMAH', NULL, '{\"kategori\":\"izin_keluar\",\"judul\":\"jalan jalan jumat\"}', 'Tambah aktivitas izin_keluar', '2026-01-23 03:56:52'),
+(218, 11, 'Nayla', 'Windows PC', '36.68.55.229', 'CREATE', 'catatan_aktivitas', 90, 'AFIKA RIZKI WULANDARI', NULL, '{\"kategori\":\"izin_keluar\",\"judul\":\"jalan jalan jumat\"}', 'Tambah aktivitas izin_keluar', '2026-01-23 04:01:35'),
+(219, 11, 'Nayla', 'Windows PC', '36.68.55.229', 'CREATE', 'catatan_aktivitas', 91, 'KEISHA NADIA ANINDHITA', NULL, '{\"kategori\":\"izin_keluar\",\"judul\":\"jalan jalan jumat\"}', 'Tambah aktivitas izin_keluar', '2026-01-23 04:02:45'),
+(220, 11, 'Nayla', 'Windows PC', '36.68.55.229', 'CREATE', 'catatan_aktivitas', 92, 'AMIRA RIZQI RAMADHANI', NULL, '{\"kategori\":\"izin_keluar\",\"judul\":\"jalan jalan jumat\"}', 'Tambah aktivitas izin_keluar', '2026-01-23 04:03:37'),
+(221, 11, 'Nayla', 'Windows PC', '36.68.55.229', 'UPDATE', 'catatan_aktivitas', 83, 'NUR AFNI', NULL, NULL, NULL, '2026-01-23 04:17:28'),
+(222, 11, 'Nayla', 'Windows PC', '36.68.55.229', 'UPDATE', 'catatan_aktivitas', 83, 'NUR AFNI', NULL, NULL, NULL, '2026-01-23 04:18:04'),
+(223, 11, 'Nayla', 'Windows PC', '36.68.55.229', 'UPDATE', 'catatan_aktivitas', 85, 'RIZQI KAMILA PUTRI', NULL, NULL, NULL, '2026-01-23 04:18:41'),
+(224, 11, 'Nayla', 'Windows PC', '36.68.55.229', 'UPDATE', 'catatan_aktivitas', 91, 'KEISHA NADIA ANINDHITA', NULL, NULL, NULL, '2026-01-23 04:19:07'),
+(225, 11, 'Nayla', 'Windows PC', '36.68.55.229', 'UPDATE', 'catatan_aktivitas', 92, 'AMIRA RIZQI RAMADHANI', NULL, NULL, NULL, '2026-01-23 04:19:35'),
+(226, 11, 'Nayla', 'Windows PC', '36.68.55.229', 'UPDATE', 'catatan_aktivitas', 82, 'AUDIYYA ROHMATIL WAFA', NULL, NULL, NULL, '2026-01-23 04:19:52'),
+(227, 11, 'Nayla', 'Windows PC', '36.68.55.229', 'UPDATE', 'catatan_aktivitas', 84, 'ZULFA MARATUS SOLIHAH', NULL, NULL, NULL, '2026-01-23 04:20:11'),
+(228, 19, 'Affan', 'Android Device', '36.68.53.131', 'LOGIN', 'users', 19, 'Affan', NULL, NULL, 'Pengguna berhasil masuk', '2026-01-24 00:05:46'),
+(229, 19, 'Affan', 'Android Device', '36.68.53.131', 'CREATE', 'catatan_aktivitas', 93, 'MUHAMMAD RIFQI  HAFIDL', NULL, '{\"kategori\":\"sakit\",\"judul\":\"Panas\"}', 'Tambah aktivitas sakit', '2026-01-24 00:08:11'),
+(230, 19, 'Affan', 'Android Device', '36.68.53.131', 'CREATE', 'catatan_aktivitas', 94, 'MUHAMMAD ALIFFATURRIZKI', NULL, '{\"kategori\":\"sakit\",\"judul\":\"Panas\"}', 'Tambah aktivitas sakit', '2026-01-24 00:08:44'),
+(231, 7, 'Akrom Adabi', 'Android Device', '182.2.40.218', 'LOGIN', 'users', 7, 'Akrom Adabi', NULL, NULL, 'Pengguna berhasil masuk', '2026-01-24 05:28:58'),
+(232, 7, 'Akrom Adabi', 'Windows PC', '36.68.53.131', 'LOGIN', 'users', 7, 'Akrom Adabi', NULL, NULL, 'Pengguna berhasil masuk', '2026-01-24 08:33:17'),
+(233, 7, 'Akrom Adabi', 'Windows PC', '36.68.53.131', 'CREATE', 'catatan_aktivitas', 95, 'GALANG WAHYU SAPUTRA', NULL, '{\"kategori\":\"pelanggaran\",\"judul\":\"pulang tanpa izin\"}', 'Tambah aktivitas pelanggaran', '2026-01-24 09:02:12'),
+(234, 11, 'Nayla', 'Windows PC', '36.68.53.131', 'LOGIN', 'users', 11, 'Nayla', NULL, NULL, 'Pengguna berhasil masuk', '2026-01-24 12:22:19'),
+(235, 11, 'Nayla', 'Windows PC', '36.68.53.131', 'CREATE', 'catatan_aktivitas', 96, 'DIAN LATHIFATUL IZZAH', NULL, '{\"kategori\":\"sakit\",\"judul\":\"mata ikan, bengkak kaki\"}', 'Tambah aktivitas sakit', '2026-01-24 12:27:13'),
+(236, 11, 'Nayla', 'Windows PC', '36.68.53.131', 'CREATE', 'catatan_aktivitas', 97, 'ALFI RIZQIHANA', NULL, '{\"kategori\":\"sakit\",\"judul\":\"magh\"}', 'Tambah aktivitas sakit', '2026-01-24 12:28:14'),
+(237, 11, 'Nayla', 'Windows PC', '36.68.53.131', 'CREATE', 'catatan_aktivitas', 98, 'ALFI RIZQIHANA', NULL, '{\"kategori\":\"izin_pulang\",\"judul\":\"sakit\"}', 'Tambah aktivitas izin_pulang', '2026-01-24 12:30:33'),
+(238, 11, 'Nayla', 'Windows PC', '36.68.53.131', 'UPDATE', 'catatan_aktivitas', 79, 'ALFA KAMELIA PUTRI', NULL, NULL, NULL, '2026-01-24 12:31:04'),
+(239, 11, 'Nayla', 'Windows PC', '36.68.53.131', 'UPDATE', 'catatan_aktivitas', 86, 'DEWI MARSHA OCTAVIANA', NULL, NULL, NULL, '2026-01-24 12:31:28'),
+(240, 11, 'Nayla', 'Windows PC', '36.68.53.131', 'UPDATE', 'catatan_aktivitas', 81, 'ANGGI FARADILA SUGIONO', NULL, NULL, NULL, '2026-01-24 12:31:49'),
+(241, 11, 'Nayla', 'Windows PC', '36.68.53.131', 'UPDATE', 'catatan_aktivitas', 60, 'CLARA VANESHA MAHARANI', NULL, NULL, NULL, '2026-01-24 12:32:24'),
+(242, 11, 'Nayla', 'Windows PC', '36.68.53.131', 'UPDATE', 'catatan_aktivitas', 61, 'CLARA VANESHA MAHARANI', NULL, NULL, NULL, '2026-01-24 12:33:47'),
+(243, 11, 'Nayla', 'Windows PC', '36.68.53.131', 'DELETE', 'catatan_aktivitas', NULL, NULL, NULL, NULL, 'Hapus 1 data aktivitas ke trash', '2026-01-24 12:34:21'),
+(244, 11, 'Nayla', 'Windows PC', '36.68.53.131', 'DELETE', 'catatan_aktivitas', NULL, NULL, NULL, NULL, 'Hapus 1 data aktivitas ke trash', '2026-01-24 12:34:53'),
+(245, 11, 'Nayla', 'Windows PC', '36.68.53.131', 'CREATE', 'catatan_aktivitas', 99, 'DIAN LATHIFATUL IZZAH', NULL, '{\"kategori\":\"izin_pulang\",\"judul\":\"sakit\"}', 'Tambah aktivitas izin_pulang', '2026-01-24 12:35:52'),
+(246, 11, 'Nayla', 'Windows PC', '36.68.53.131', 'CREATE', 'catatan_aktivitas', 100, 'AYU SULISTIA', NULL, '{\"kategori\":\"sakit\",\"judul\":\"mata ikan, bengkak kaki\"}', 'Tambah aktivitas sakit', '2026-01-24 12:36:31'),
+(247, 11, 'Nayla', 'Windows PC', '36.68.53.131', 'CREATE', 'catatan_aktivitas', 101, 'SAFIRA AMANDA PUTRI', NULL, '{\"kategori\":\"izin_pulang\",\"judul\":\"ziarah keluarga GEDE\"}', 'Tambah aktivitas izin_pulang', '2026-01-24 12:37:34'),
+(248, 11, 'Nayla', 'Windows PC', '36.68.53.131', 'UPDATE', 'catatan_aktivitas', 101, 'SAFIRA AMANDA PUTRI', NULL, NULL, NULL, '2026-01-24 12:37:47'),
+(249, 19, 'Affan', 'Android Device', '36.68.53.131', 'LOGIN', 'users', 19, 'Affan', NULL, NULL, 'Pengguna berhasil masuk', '2026-01-25 06:55:54'),
+(250, 19, 'Affan', 'Android Device', '36.68.53.131', 'CREATE', 'catatan_aktivitas', 102, 'MUHAMMAD ALAIKA FAZA', NULL, '{\"kategori\":\"izin_keluar\",\"judul\":\"Beli sapu kamar\"}', 'Tambah aktivitas izin_keluar', '2026-01-25 06:58:02'),
+(251, 19, 'Affan', 'Android Device', '36.68.53.131', 'CREATE', 'catatan_aktivitas', 103, 'FARIS VERDIYANTO', NULL, '{\"kategori\":\"izin_keluar\",\"judul\":\"Beli sapu kamar\"}', 'Tambah aktivitas izin_keluar', '2026-01-25 06:58:33'),
+(252, 7, 'Akrom Adabi', 'Windows PC', '36.68.53.131', 'LOGIN', 'users', 7, 'Akrom Adabi', NULL, NULL, 'Pengguna berhasil masuk', '2026-01-25 22:56:38'),
+(253, 9, 'Kowi', 'Android Device', '140.213.173.182', 'CREATE', 'catatan_aktivitas', 104, 'MUHAMAD FAIZZUN', NULL, '{\"kategori\":\"pelanggaran\",\"judul\":\"Minggat\"}', 'Tambah aktivitas pelanggaran', '2026-01-26 11:41:11'),
+(254, 7, 'Akrom Adabi', 'Windows PC', '36.68.53.131', 'LOGIN', 'users', 7, 'Akrom Adabi', NULL, NULL, 'Pengguna berhasil masuk', '2026-01-26 12:09:12'),
+(255, 1, 'Administrator', 'Android Device', '182.2.69.0', 'LOGIN', 'users', 1, 'Administrator', NULL, NULL, 'Pengguna berhasil masuk', '2026-01-27 04:03:51'),
+(256, 7, 'Akrom Adabi', 'Windows PC', '36.68.53.131', 'LOGIN', 'users', 7, 'Akrom Adabi', NULL, NULL, 'Pengguna berhasil masuk', '2026-01-27 06:00:58'),
+(257, 7, 'Akrom Adabi', 'Windows PC', '36.68.53.131', 'CREATE', 'catatan_aktivitas', 105, 'M. ZAKI UBAIDILLAH', NULL, '{\"kategori\":\"izin_pulang\",\"judul\":\"sakit demam\"}', 'Tambah aktivitas izin_pulang', '2026-01-27 06:02:53'),
+(258, 7, 'Akrom Adabi', 'Windows PC', '36.68.53.131', 'LOGIN', 'users', 7, 'Akrom Adabi', NULL, NULL, 'Pengguna berhasil masuk', '2026-01-27 09:22:35'),
+(259, 7, 'Akrom Adabi', 'Windows PC', '36.68.53.131', 'UPDATE', 'catatan_aktivitas', 95, 'GALANG WAHYU SAPUTRA', NULL, NULL, NULL, '2026-01-27 09:22:47'),
+(260, 7, 'Akrom Adabi', 'Windows PC', '36.68.53.131', 'UPDATE', 'catatan_aktivitas', 95, 'GALANG WAHYU SAPUTRA', NULL, NULL, NULL, '2026-01-27 09:22:57'),
+(261, 7, 'Akrom Adabi', 'Windows PC', '36.68.53.131', 'CREATE', 'catatan_aktivitas', 106, 'MUHAMMAD IRFAN ZIDNI', NULL, '{\"kategori\":\"izin_pulang\",\"judul\":\"sakit\"}', 'Tambah aktivitas izin_pulang', '2026-01-27 09:36:49'),
+(262, 7, 'Akrom Adabi', 'Windows PC', '36.68.53.131', 'UPDATE', 'catatan_aktivitas', 78, 'M. FILZA AZIDAN FAZA', NULL, NULL, NULL, '2026-01-27 09:37:09'),
+(263, 7, 'Akrom Adabi', 'Windows PC', '36.68.53.131', 'UPDATE', 'catatan_aktivitas', 76, 'MUHAMMAD RAFI ADITYA', NULL, NULL, NULL, '2026-01-27 09:37:29'),
+(264, 7, 'Akrom Adabi', 'Windows PC', '36.68.53.131', 'UPDATE', 'catatan_aktivitas', 76, 'MUHAMMAD RAFI ADITYA', NULL, NULL, NULL, '2026-01-27 09:37:43'),
+(265, 9, 'Kowi', 'Android Device', '140.213.171.184', 'CREATE', 'catatan_aktivitas', 107, 'ACHMAD GILANG ZHAFIF MAULA', NULL, '{\"kategori\":\"izin_pulang\",\"judul\":\"Acara keluarga\"}', 'Tambah aktivitas izin_pulang', '2026-01-27 17:00:25'),
+(266, 9, 'Kowi', 'Android Device', '140.213.171.184', 'UPDATE', 'catatan_aktivitas', 107, 'ACHMAD GILANG ZHAFIF MAULA', NULL, NULL, NULL, '2026-01-27 17:00:44'),
+(267, 9, 'Kowi', 'Android Device', '140.213.171.184', 'DELETE', 'catatan_aktivitas', NULL, NULL, NULL, NULL, 'Hapus 1 data aktivitas ke trash', '2026-01-27 17:01:27'),
+(268, 7, 'Akrom Adabi', 'Windows PC', '118.96.70.104', 'LOGIN', 'users', 7, 'Akrom Adabi', NULL, NULL, 'Pengguna berhasil masuk', '2026-01-28 00:21:50'),
+(269, 7, 'Akrom Adabi', 'Windows PC', '118.96.70.104', 'LOGIN', 'users', 7, 'Akrom Adabi', NULL, NULL, 'Pengguna berhasil masuk', '2026-01-28 10:41:33'),
+(270, 7, 'Akrom Adabi', 'Windows PC', '118.96.70.104', 'CREATE', 'catatan_aktivitas', 108, 'HANA SHAFITRI INDRIANI', NULL, '{\"kategori\":\"izin_pulang\",\"judul\":\"Periksa Sakit\"}', 'Tambah aktivitas izin_pulang', '2026-01-28 10:42:24'),
+(271, 7, 'Akrom Adabi', 'Windows PC', '118.96.70.104', 'LOGIN', 'users', 7, 'Akrom Adabi', NULL, NULL, 'Pengguna berhasil masuk', '2026-01-28 14:17:59'),
+(272, 1, 'Administrator', 'Windows PC', '118.96.70.104', 'LOGIN', 'users', 1, 'Administrator', NULL, NULL, 'Pengguna berhasil masuk', '2026-01-28 18:52:58'),
+(273, 1, 'Administrator', 'Windows PC', '118.96.70.104', 'CREATE', 'catatan_aktivitas', 109, 'FIRMAN MAULANA RISKY', NULL, '{\"kategori\":\"pelanggaran\",\"judul\":\"Keluar malam\"}', 'Tambah aktivitas pelanggaran', '2026-01-28 18:53:38'),
+(274, 19, 'Affan', 'Android Device', '182.2.40.117', 'LOGIN', 'users', 19, 'Affan', NULL, NULL, 'Pengguna berhasil masuk', '2026-01-29 11:22:42'),
+(275, 7, 'Akrom Adabi', 'Windows PC', '118.96.70.104', 'LOGIN', 'users', 7, 'Akrom Adabi', NULL, NULL, 'Pengguna berhasil masuk', '2026-01-29 15:29:54'),
+(276, 7, 'Akrom Adabi', 'Windows PC', '118.96.70.104', 'CREATE', 'catatan_aktivitas', 110, 'M.AZKA RIFIYANSYAH', NULL, '{\"kategori\":\"izin_pulang\",\"judul\":\"Periksa\"}', 'Tambah aktivitas izin_pulang', '2026-01-29 15:30:40'),
+(277, 11, 'Nayla', 'Windows PC', '118.96.70.104', 'LOGIN', 'users', 11, 'Nayla', NULL, NULL, 'Pengguna berhasil masuk', '2026-01-30 03:17:09'),
+(278, 7, 'Akrom Adabi', 'Windows PC', '118.96.70.104', 'LOGIN', 'users', 7, 'Akrom Adabi', NULL, NULL, 'Pengguna berhasil masuk', '2026-01-30 03:33:16'),
+(279, 7, 'Akrom Adabi', 'Windows PC', '118.96.70.104', 'CREATE', 'catatan_aktivitas', 111, 'MUHAMAD HUSAIN MUSYAFI', NULL, '{\"kategori\":\"izin_pulang\",\"judul\":\"Periksa\"}', 'Tambah aktivitas izin_pulang', '2026-01-30 03:33:53'),
+(280, 7, 'Akrom Adabi', 'Windows PC', '118.96.70.104', 'CREATE', 'catatan_aktivitas', 112, 'MUHAMMAD RAFI ADITYA', NULL, '{\"kategori\":\"izin_keluar\",\"judul\":\"Pijat\"}', 'Tambah aktivitas izin_keluar', '2026-01-30 03:40:23'),
+(281, 7, 'Akrom Adabi', 'Windows PC', '118.96.70.104', 'CREATE', 'catatan_aktivitas', 113, 'MUHAMMAD ZAKI ZHAFIR', NULL, '{\"kategori\":\"izin_pulang\",\"judul\":\"acara keluarga\"}', 'Tambah aktivitas izin_pulang', '2026-01-30 04:28:34'),
+(282, 7, 'Akrom Adabi', 'Windows PC', '118.96.70.104', 'CREATE', 'catatan_aktivitas', 114, 'KHAMID AWALUDIN', NULL, '{\"kategori\":\"izin_pulang\",\"judul\":\"Sakit\"}', 'Tambah aktivitas izin_pulang', '2026-01-30 04:46:47'),
+(283, 7, 'Akrom Adabi', 'Windows PC', '118.96.70.104', 'CREATE', 'catatan_aktivitas', 115, 'MUHAMMAD FADIL ARIFIN', NULL, '{\"kategori\":\"izin_pulang\",\"judul\":\"Sakit\"}', 'Tambah aktivitas izin_pulang', '2026-01-30 04:47:25'),
+(284, 7, 'Akrom Adabi', 'Windows PC', '118.96.70.104', 'CREATE', 'catatan_aktivitas', 116, 'MUHAMAD ALIF MAULANA', NULL, '{\"kategori\":\"izin_pulang\",\"judul\":\"Sakit\"}', 'Tambah aktivitas izin_pulang', '2026-01-30 04:48:02'),
+(285, 7, 'Akrom Adabi', 'Windows PC', '118.96.70.104', 'CREATE', 'catatan_aktivitas', 117, 'ZULFA MARATUS SOLIHAH', NULL, '{\"kategori\":\"izin_keluar\",\"judul\":\"beli perlatan\"}', 'Tambah aktivitas izin_keluar', '2026-01-30 06:14:59'),
+(286, 7, 'Akrom Adabi', 'Windows PC', '118.96.70.104', 'CREATE', 'catatan_aktivitas', 118, 'NAVITA ALFANIAH', NULL, '{\"kategori\":\"izin_keluar\",\"judul\":\"beli perlatan\"}', 'Tambah aktivitas izin_keluar', '2026-01-30 06:15:11'),
+(287, 7, 'Akrom Adabi', 'Windows PC', '118.96.70.104', 'LOGIN', 'users', 7, 'Akrom Adabi', NULL, NULL, 'Pengguna berhasil masuk', '2026-01-30 10:15:46'),
+(288, 7, 'Akrom Adabi', 'Windows PC', '118.96.70.104', 'CREATE', 'catatan_aktivitas', 119, 'MUHAMMAD ALIFFATURRIZKI', NULL, '{\"kategori\":\"izin_pulang\",\"judul\":\"pijat kesleo\"}', 'Tambah aktivitas izin_pulang', '2026-01-30 10:16:49'),
+(289, 7, 'Akrom Adabi', 'Windows PC', '118.96.70.104', 'CREATE', 'catatan_aktivitas', 120, 'ANANTA ARYASATYA', NULL, '{\"kategori\":\"izin_pulang\",\"judul\":\"demam\"}', 'Tambah aktivitas izin_pulang', '2026-01-30 10:17:23'),
+(290, 7, 'Akrom Adabi', 'Windows PC', '118.96.70.104', 'UPDATE', 'catatan_aktivitas', 118, 'NAVITA ALFANIAH', NULL, NULL, NULL, '2026-01-30 10:17:59'),
+(291, 7, 'Akrom Adabi', 'Windows PC', '118.96.70.104', 'UPDATE', 'catatan_aktivitas', 117, 'ZULFA MARATUS SOLIHAH', NULL, NULL, NULL, '2026-01-30 10:18:25'),
+(292, 7, 'Akrom Adabi', 'Windows PC', '118.96.70.104', 'LOGIN', 'users', 7, 'Akrom Adabi', NULL, NULL, 'Pengguna berhasil masuk', '2026-01-30 14:31:19'),
+(293, 9, 'Kowi', 'Android Device', '112.215.145.236', 'LOGIN', 'users', 9, 'Kowi', NULL, NULL, 'Pengguna berhasil masuk', '2026-01-30 15:09:14'),
+(294, 9, 'Kowi', 'Linux PC', '112.215.165.195', 'UPDATE', 'catatan_aktivitas', 113, 'MUHAMMAD ZAKI ZHAFIR', NULL, NULL, NULL, '2026-01-30 15:24:44'),
+(295, 9, 'Kowi', 'Linux PC', '118.96.70.104', 'UPDATE', 'catatan_aktivitas', 113, 'MUHAMMAD ZAKI ZHAFIR', NULL, NULL, NULL, '2026-01-30 15:25:06'),
+(296, 9, 'Kowi', 'Linux PC', '118.96.70.104', 'UPDATE', 'catatan_aktivitas', 115, 'MUHAMMAD FADIL ARIFIN', NULL, NULL, NULL, '2026-01-30 15:25:26'),
+(297, 9, 'Kowi', 'Linux PC', '118.96.70.104', 'UPDATE', 'catatan_aktivitas', 115, 'MUHAMMAD FADIL ARIFIN', NULL, NULL, NULL, '2026-01-30 15:25:43'),
+(298, 9, 'Kowi', 'Linux PC', '118.96.70.104', 'UPDATE', 'catatan_aktivitas', 115, 'MUHAMMAD FADIL ARIFIN', NULL, NULL, NULL, '2026-01-30 15:25:53'),
+(299, 1, 'Administrator', 'Windows PC', '118.96.70.104', 'LOGIN', 'users', 1, 'Administrator', NULL, NULL, 'Pengguna berhasil masuk', '2026-01-30 15:26:08'),
+(300, 1, 'Administrator', 'Windows PC', '118.96.70.104', 'UPDATE', 'catatan_aktivitas', 115, 'MUHAMMAD FADIL ARIFIN', NULL, NULL, NULL, '2026-01-30 15:27:24'),
+(301, 7, 'Akrom Adabi', 'Android Device', '118.96.70.104', 'LOGIN', 'users', 7, 'Akrom Adabi', NULL, NULL, 'Pengguna berhasil masuk', '2026-01-31 07:27:30'),
+(302, 7, 'Akrom Adabi', 'Android Device', '118.96.70.104', 'LOGIN', 'users', 7, 'Akrom Adabi', NULL, NULL, 'Pengguna berhasil masuk', '2026-01-31 07:27:30'),
+(303, 7, 'Akrom Adabi', 'Android Device', '118.96.70.104', 'CREATE', 'catatan_aktivitas', 121, 'MUHAMMAD KEVIN SANTOSO', NULL, '{\"kategori\":\"izin_keluar\",\"judul\":\"Fotocopy tugas\"}', 'Tambah aktivitas izin_keluar', '2026-01-31 07:27:54'),
+(304, 1, 'Administrator', 'Android Device', '182.2.39.119', 'LOGIN', 'users', 1, 'Administrator', NULL, NULL, 'Pengguna berhasil masuk', '2026-01-31 08:47:37'),
+(305, 1, 'Administrator', 'Android Device', '182.2.39.119', 'UPDATE', 'catatan_aktivitas', 121, 'MUHAMMAD KEVIN SANTOSO', NULL, NULL, NULL, '2026-01-31 08:47:54'),
+(306, 9, 'Kowi', 'Android Device', '36.78.52.103', 'LOGIN', 'users', 9, 'Kowi', NULL, NULL, 'Pengguna berhasil masuk', '2026-02-01 01:16:41'),
+(307, 9, 'Kowi', 'Android Device', '36.78.52.103', 'CREATE', 'catatan_aktivitas', 122, 'GALANG WAHYU SAPUTRA', NULL, '{\"kategori\":\"pelanggaran\",\"judul\":\"Pulang tanpa izin\"}', 'Tambah aktivitas pelanggaran', '2026-02-01 01:25:09'),
+(308, 9, 'Kowi', 'Android Device', '36.78.52.103', 'CREATE', 'catatan_aktivitas', 123, 'SYAHRUL HANAFI', NULL, '{\"kategori\":\"pelanggaran\",\"judul\":\"Pulang tanpa izin\"}', 'Tambah aktivitas pelanggaran', '2026-02-01 01:25:29'),
+(309, 9, 'Kowi', 'Android Device', '36.78.52.103', 'CREATE', 'catatan_aktivitas', 124, 'MUHAMMAD ALIFFATURRIZKI', NULL, '{\"kategori\":\"pelanggaran\",\"judul\":\"Pulang tanpa izin\"}', 'Tambah aktivitas pelanggaran', '2026-02-01 01:25:46'),
+(310, 9, 'Kowi', 'Android Device', '36.68.55.224', 'CREATE', 'catatan_aktivitas', 125, 'MUHAMMAD IKMAL MAULANA', NULL, '{\"kategori\":\"pelanggaran\",\"judul\":\"Keluar malam & rokokan di main\"}', 'Tambah aktivitas pelanggaran', '2026-02-03 04:53:32'),
+(311, 9, 'Kowi', 'Android Device', '36.68.55.224', 'CREATE', 'catatan_aktivitas', 126, 'MUHAMMAD GUSTHOHA', NULL, '{\"kategori\":\"pelanggaran\",\"judul\":\"Keluar malam & rokokan di main\"}', 'Tambah aktivitas pelanggaran', '2026-02-03 04:54:19'),
+(312, 9, 'Kowi', 'Android Device', '36.68.55.224', 'CREATE', 'catatan_aktivitas', 127, 'MUHAMMAD RIFQI FADLI', NULL, '{\"kategori\":\"pelanggaran\",\"judul\":\"Keluar malam & rokokan di main\"}', 'Tambah aktivitas pelanggaran', '2026-02-03 04:54:50'),
+(313, 9, 'Kowi', 'Android Device', '36.68.55.224', 'CREATE', 'catatan_aktivitas', 128, 'SABIL BAROKAH', NULL, '{\"kategori\":\"pelanggaran\",\"judul\":\"Keluar malam & rokokan di main\"}', 'Tambah aktivitas pelanggaran', '2026-02-03 04:55:35'),
+(314, 9, 'Kowi', 'Android Device', '36.68.55.224', 'CREATE', 'catatan_aktivitas', 129, 'MUHAMMAD TAUFIQ MAULANA', NULL, '{\"kategori\":\"pelanggaran\",\"judul\":\"Keluar malam & rokokan di main\"}', 'Tambah aktivitas pelanggaran', '2026-02-03 04:56:01'),
+(315, 9, 'Kowi', 'Android Device', '36.68.55.224', 'CREATE', 'catatan_aktivitas', 130, 'M. EVAN SADINA FARIZQI', NULL, '{\"kategori\":\"pelanggaran\",\"judul\":\"Keluar malam, bawa hp & rokokan di main\"}', 'Tambah aktivitas pelanggaran', '2026-02-03 04:56:48'),
+(316, 9, 'Kowi', 'Android Device', '36.68.55.224', 'UPDATE', 'catatan_aktivitas', 130, 'M. EVAN SADINA FARIZQI', NULL, NULL, NULL, '2026-02-03 04:57:33'),
+(317, 9, 'Kowi', 'Android Device', '36.68.55.224', 'CREATE', 'catatan_aktivitas', 131, 'RAFA ABDULLAH FAQIH', NULL, '{\"kategori\":\"pelanggaran\",\"judul\":\"Keluar malam ,bawah & rokokan di main\"}', 'Tambah aktivitas pelanggaran', '2026-02-03 04:58:15'),
+(318, 9, 'Kowi', 'Android Device', '36.68.55.224', 'CREATE', 'catatan_aktivitas', 132, 'M.RAYAN DANADYAKSA', NULL, '{\"kategori\":\"pelanggaran\",\"judul\":\"Keluar malam di main\"}', 'Tambah aktivitas pelanggaran', '2026-02-03 04:59:06'),
+(319, 9, 'Kowi', 'Android Device', '36.68.55.224', 'CREATE', 'catatan_aktivitas', 133, 'M.REZKY PUTRA PRATAMA', NULL, '{\"kategori\":\"pelanggaran\",\"judul\":\"Keluar malam & rokokan di main\"}', 'Tambah aktivitas pelanggaran', '2026-02-03 04:59:36'),
+(320, 10, 'Oki', 'Android Device', '36.68.55.128', 'LOGIN', 'users', 10, 'Oki', NULL, NULL, 'Pengguna berhasil masuk', '2026-02-03 16:11:19'),
+(321, 10, 'Oki', 'Android Device', '36.68.55.128', 'CREATE', 'catatan_aktivitas', 134, 'MUHAMMAD SYAUQI BIK', NULL, '{\"kategori\":\"izin_pulang\",\"judul\":\"Sakit\"}', 'Tambah aktivitas izin_pulang', '2026-02-03 16:13:23'),
+(322, 9, 'Kowi', 'Android Device', '140.213.165.55', 'LOGOUT', 'users', 9, 'Kowi', NULL, NULL, 'Pengguna keluar dari sistem', '2026-02-03 21:22:45'),
+(323, 9, 'Kowi', 'Android Device', '140.213.165.55', 'LOGIN', 'users', 9, 'Kowi', NULL, NULL, 'Pengguna berhasil masuk', '2026-02-03 21:24:30'),
+(324, 10, 'Oki', 'Android Device', '36.68.55.128', 'CREATE', 'catatan_aktivitas', 135, 'M NABIL RIZIQ', NULL, '{\"kategori\":\"izin_pulang\",\"judul\":\"Sakit priksa\"}', 'Tambah aktivitas izin_pulang', '2026-02-03 23:34:39'),
+(325, 7, 'Akrom Adabi', 'Android Device', '36.68.55.128', 'LOGIN', 'users', 7, 'Akrom Adabi', NULL, NULL, 'Pengguna berhasil masuk', '2026-02-04 06:58:27'),
+(326, 7, 'Akrom Adabi', 'Android Device', '36.68.55.128', 'CREATE', 'catatan_aktivitas', 136, 'ZULFA MARATUS SOLIHAH', NULL, '{\"kategori\":\"izin_keluar\",\"judul\":\"Fotocopy\"}', 'Tambah aktivitas izin_keluar', '2026-02-04 06:59:12'),
+(327, 7, 'Akrom Adabi', 'Android Device', '36.68.55.128', 'CREATE', 'catatan_aktivitas', 137, 'NAJWA AISYA PUTRI', NULL, '{\"kategori\":\"izin_keluar\",\"judul\":\"Fotocopy\"}', 'Tambah aktivitas izin_keluar', '2026-02-04 06:59:40'),
+(328, 9, 'Kowi', 'Android Device', '36.68.55.128', 'CREATE', 'catatan_aktivitas', 138, 'ACHMAD GILANG ZHAFIF MAULA', NULL, '{\"kategori\":\"izin_pulang\",\"judul\":\"Acara keluarga\"}', 'Tambah aktivitas izin_pulang', '2026-02-05 08:02:37'),
+(329, 9, 'Kowi', 'Android Device', '36.68.55.128', 'CREATE', 'catatan_aktivitas', 139, 'MUHAMMAD ARDI FIRMANSYAH', NULL, '{\"kategori\":\"izin_pulang\",\"judul\":\"Izin periksa mata\"}', 'Tambah aktivitas izin_pulang', '2026-02-05 09:33:49'),
+(330, 10, 'Oki', 'Android Device', '36.68.55.128', 'CREATE', 'catatan_aktivitas', 140, 'MUHAMMAD TAUFIQ MAULANA', NULL, '{\"kategori\":\"izin_keluar\",\"judul\":\"Priksa ke dokter gigi\"}', 'Tambah aktivitas izin_keluar', '2026-02-06 03:08:15'),
+(331, 10, 'Oki', 'Android Device', '36.68.55.128', 'LOGIN', 'users', 10, 'Oki', NULL, NULL, 'Pengguna berhasil masuk', '2026-02-06 03:11:01'),
+(332, 10, 'Oki', 'Android Device', '36.68.55.128', 'CREATE', 'catatan_aktivitas', 141, 'M. ARFAUR RIKZA', NULL, '{\"kategori\":\"sakit\",\"judul\":\"sakit panas\"}', 'Tambah aktivitas sakit', '2026-02-06 03:58:49'),
+(333, 10, 'Oki', 'Android Device', '36.68.55.128', 'CREATE', 'catatan_aktivitas', 142, 'GALANG WAHYU SAPUTRA', NULL, '{\"kategori\":\"izin_keluar\",\"judul\":\"Beli keperluan\"}', 'Tambah aktivitas izin_keluar', '2026-02-06 04:00:42'),
+(334, 7, 'Akrom Adabi', 'Windows PC', '36.68.55.128', 'LOGIN', 'users', 7, 'Akrom Adabi', NULL, NULL, 'Pengguna berhasil masuk', '2026-02-06 15:20:13'),
+(335, 7, 'Akrom Adabi', 'Windows PC', '36.68.55.128', 'UPDATE', 'catatan_aktivitas', 134, 'MUHAMMAD SYAUQI BIK', NULL, NULL, NULL, '2026-02-06 15:20:50'),
+(336, 1, 'Administrator', 'Android Device', '36.68.55.128', 'LOGIN', 'users', 1, 'Administrator', NULL, NULL, 'Pengguna berhasil masuk', '2026-02-07 09:09:22'),
+(337, 9, 'Kowi', 'Android Device', '36.68.55.128', 'CREATE', 'catatan_aktivitas', 143, 'FARRAS REYNAR RAFIF', NULL, '{\"kategori\":\"izin_pulang\",\"judul\":\"Kontrol gigi\"}', 'Tambah aktivitas izin_pulang', '2026-02-07 09:54:59');
 
 -- --------------------------------------------------------
 
@@ -201,6 +404,37 @@ CREATE TABLE `attendances` (
   `deleted_at` timestamp NULL DEFAULT NULL,
   `deleted_by` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC;
+
+--
+-- Dumping data for table `attendances`
+--
+
+INSERT INTO `attendances` (`id`, `user_id`, `jadwal_id`, `type`, `attendance_date`, `attendance_time`, `status`, `minutes_late`, `notes`, `latitude`, `longitude`, `created_at`, `updated_at`, `deleted_at`, `deleted_by`) VALUES
+(67, 184, 1, 'clock_in', '2026-01-14', '06:16:00', 'hadir', 0, NULL, NULL, NULL, '2026-01-13 23:16:38', '2026-01-13 23:16:49', '2026-01-13 23:16:49', 1);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `cache`
+--
+
+CREATE TABLE `cache` (
+  `key` varchar(255) NOT NULL,
+  `value` mediumtext NOT NULL,
+  `expiration` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `cache_locks`
+--
+
+CREATE TABLE `cache_locks` (
+  `key` varchar(255) NOT NULL,
+  `owner` varchar(255) NOT NULL,
+  `expiration` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
 
@@ -250,8 +484,90 @@ INSERT INTO `catatan_aktivitas` (`id`, `siswa_id`, `kategori`, `judul`, `keteran
 (57, 237, 'izin_pulang', 'Periksa wudun', 'dirumah', '', 'Belum Diperiksa', '2026-01-11 12:15:00', '2026-01-12 17:30:00', NULL, NULL, NULL, 19, '2026-01-11 12:16:29', '2026-01-11 12:16:29', NULL, NULL),
 (58, 79, 'pelanggaran', 'PSan', 'PS an di jrebeng pulang jam 2', '', 'Belum Diperiksa', '2026-01-07 23:09:00', NULL, NULL, NULL, NULL, 7, '2026-01-11 23:09:55', '2026-01-11 23:09:55', NULL, NULL),
 (59, 79, 'pelanggaran', 'PSan', 'PS an lagi di jrebeng dengan fatan pulang jam 12', '', 'Belum Diperiksa', '2026-01-10 23:09:00', NULL, NULL, NULL, NULL, 7, '2026-01-11 23:10:17', '2026-01-11 23:10:17', NULL, NULL),
-(60, 226, 'izin_pulang', 'Sakit nanah gatel\"', 'Pulang dirumah', '', 'Belum Diperiksa', '2026-01-12 00:57:00', '2026-01-14 17:00:00', NULL, NULL, NULL, 19, '2026-01-12 00:59:06', '2026-01-12 00:59:06', NULL, NULL),
-(61, 226, 'sakit', 'Nanah gatel\"', 'pulang di rumah', '', 'Sudah Diperiksa', '2026-01-12 00:59:00', NULL, NULL, NULL, NULL, 19, '2026-01-12 01:00:17', '2026-01-12 01:00:17', NULL, NULL);
+(60, 226, 'izin_pulang', 'Sakit nanah gatel\"', 'Pulang dirumah', '', 'Belum Diperiksa', '2026-01-12 00:57:00', '2026-01-14 17:00:00', '2026-01-20 19:32:00', NULL, NULL, 19, '2026-01-12 00:59:06', '2026-01-24 12:32:24', NULL, NULL),
+(61, 226, 'sakit', 'Nanah gatel\"', 'pulang di rumah', '', 'Sudah Diperiksa', '2026-01-12 00:59:00', NULL, '2026-01-21 19:33:00', NULL, NULL, 19, '2026-01-12 01:00:17', '2026-01-24 12:33:45', NULL, NULL),
+(62, 82, 'izin_keluar', 'Nyadrran', 'Langsung kembali', NULL, 'Belum Diperiksa', '2026-01-16 11:16:00', '2026-01-16 17:16:00', NULL, NULL, NULL, 7, '2026-01-16 04:19:04', '2026-01-16 04:19:04', NULL, NULL),
+(63, 190, 'izin_keluar', 'Cukur', NULL, NULL, 'Belum Diperiksa', '2026-01-16 13:24:00', '2026-01-16 14:25:00', NULL, NULL, NULL, 9, '2026-01-16 06:25:24', '2026-01-16 06:25:24', NULL, NULL),
+(64, 217, 'izin_keluar', 'Cukur', NULL, NULL, 'Belum Diperiksa', '2026-01-16 13:26:00', '2026-01-16 13:26:00', NULL, NULL, NULL, 9, '2026-01-16 06:26:25', '2026-01-16 06:26:25', NULL, NULL),
+(65, 56, 'izin_keluar', 'Fc akidah', NULL, NULL, 'Belum Diperiksa', '2026-01-16 13:26:00', '2026-01-16 13:26:00', NULL, NULL, NULL, 9, '2026-01-16 06:26:51', '2026-01-16 06:26:51', NULL, NULL),
+(66, 51, 'izin_keluar', 'Cukur', NULL, NULL, 'Belum Diperiksa', '2026-01-16 13:27:00', '2026-01-16 13:27:00', NULL, NULL, NULL, 9, '2026-01-16 06:27:23', '2026-01-16 06:27:23', NULL, NULL),
+(67, 54, 'izin_keluar', 'Cukur', NULL, NULL, 'Belum Diperiksa', '2026-01-16 13:27:00', '2026-01-16 13:27:00', NULL, NULL, NULL, 9, '2026-01-16 06:27:47', '2026-01-16 06:27:47', NULL, NULL),
+(68, 140, 'izin_keluar', 'Cukur', NULL, NULL, 'Belum Diperiksa', '2026-01-16 13:45:00', '2026-01-16 13:45:00', NULL, NULL, NULL, 9, '2026-01-16 06:46:05', '2026-01-16 06:46:05', NULL, NULL),
+(69, 136, 'izin_keluar', 'Cukur', NULL, NULL, 'Belum Diperiksa', '2026-01-16 13:46:00', '2026-01-16 13:46:00', NULL, NULL, NULL, 9, '2026-01-16 06:46:26', '2026-01-16 06:46:26', NULL, NULL),
+(70, 170, 'izin_keluar', 'Potong Rambut', NULL, NULL, 'Belum Diperiksa', '2026-01-16 14:21:00', '2026-01-16 15:00:00', NULL, NULL, NULL, 1, '2026-01-16 07:21:57', '2026-01-16 07:21:57', NULL, NULL),
+(71, 137, 'izin_keluar', 'Cukur', NULL, NULL, 'Belum Diperiksa', '2026-01-16 14:33:00', '2026-01-16 14:33:00', NULL, NULL, NULL, 9, '2026-01-16 07:33:46', '2026-01-16 07:33:46', NULL, NULL),
+(72, 119, 'izin_keluar', 'Cukur', NULL, NULL, 'Belum Diperiksa', '2026-01-16 14:33:00', '2026-01-16 14:34:00', NULL, NULL, NULL, 9, '2026-01-16 07:34:11', '2026-01-16 07:34:11', NULL, NULL),
+(73, 153, 'izin_keluar', 'Cukur', NULL, NULL, 'Belum Diperiksa', '2026-01-16 14:34:00', '2026-01-16 14:34:00', NULL, NULL, NULL, 9, '2026-01-16 07:34:39', '2026-01-16 07:34:39', NULL, NULL),
+(74, 1, 'sakit', 'demam', NULL, NULL, 'Belum Diperiksa', '2026-01-17 11:42:00', NULL, NULL, NULL, NULL, 1, '2026-01-17 04:42:12', '2026-01-17 04:43:20', '2026-01-17 04:43:20', 1),
+(75, 42, 'izin_keluar', 'Periksa Gigi', NULL, NULL, 'Belum Diperiksa', '2026-01-21 16:11:00', '2026-01-21 19:11:00', '2026-01-21 22:44:00', NULL, NULL, 7, '2026-01-21 09:12:04', '2026-01-21 15:44:45', NULL, NULL),
+(76, 37, 'izin_pulang', 'Sakit', NULL, NULL, 'Belum Diperiksa', '2026-01-22 06:17:00', '2026-01-23 06:17:00', '2026-01-26 16:37:00', NULL, NULL, 7, '2026-01-21 23:17:51', '2026-01-27 09:37:43', NULL, NULL),
+(77, 180, 'izin_keluar', 'periksa telinga', NULL, NULL, 'Belum Diperiksa', '2026-01-22 09:03:00', '2026-01-22 09:03:00', NULL, NULL, NULL, 7, '2026-01-22 02:03:55', '2026-01-22 02:03:55', NULL, NULL),
+(78, 224, 'izin_pulang', 'PERIKSA MATA', 'DI KLINIK HERMAWAN', NULL, 'Belum Diperiksa', '2026-01-22 14:14:00', '2026-01-22 14:14:00', '2026-01-23 14:14:00', NULL, NULL, 7, '2026-01-22 07:15:00', '2026-01-22 07:17:24', NULL, NULL),
+(79, 145, 'izin_pulang', 'pijet', 'pijat booking jadi membutuhkan waktu beberapahari', NULL, 'Belum Diperiksa', '2026-01-22 08:24:00', '2026-01-24 08:25:00', '2026-01-24 17:30:00', NULL, NULL, 11, '2026-01-23 01:26:27', '2026-01-24 12:31:03', NULL, NULL),
+(80, 111, 'izin_keluar', 'keluar', 'menjenguk kakak operasi mata kaki', NULL, 'Belum Diperiksa', '2026-01-22 08:26:00', '2026-01-22 08:27:00', NULL, NULL, NULL, 11, '2026-01-23 01:27:59', '2026-01-23 01:27:59', NULL, NULL),
+(81, 172, 'izin_pulang', 'bikin ktp', NULL, NULL, 'Belum Diperiksa', '2026-01-23 09:32:00', '2026-01-23 15:00:00', '2026-01-23 16:31:00', NULL, NULL, 11, '2026-01-23 03:30:41', '2026-01-24 12:31:49', NULL, NULL),
+(82, 47, 'izin_keluar', 'jalan jalan jumat', NULL, NULL, 'Belum Diperiksa', '2026-01-23 09:31:00', '2026-01-23 11:00:00', '2026-01-23 11:19:00', NULL, NULL, 11, '2026-01-23 03:37:17', '2026-01-23 04:19:52', NULL, NULL),
+(83, 72, 'izin_keluar', 'jalan jalan jumat', NULL, NULL, 'Belum Diperiksa', '2026-01-23 09:30:00', '2026-01-23 11:00:00', '2026-01-23 11:17:00', NULL, NULL, 11, '2026-01-23 03:38:14', '2026-01-23 04:17:28', NULL, NULL),
+(84, 95, 'izin_keluar', 'jalan jalan jumat', NULL, NULL, 'Belum Diperiksa', '2026-01-23 09:31:00', '2026-01-23 11:01:00', '2026-01-23 11:20:00', NULL, NULL, 11, '2026-01-23 03:39:30', '2026-01-23 04:20:10', NULL, NULL),
+(85, 83, 'izin_keluar', 'jalan jalan jumat', NULL, NULL, 'Belum Diperiksa', '2026-01-23 09:30:00', '2026-01-23 11:00:00', '2026-01-23 11:18:00', NULL, NULL, 11, '2026-01-23 03:40:12', '2026-01-23 04:18:41', NULL, NULL),
+(86, 100, 'izin_pulang', 'daftar sekolah', NULL, NULL, 'Belum Diperiksa', '2026-01-23 09:35:00', '2026-01-23 15:00:00', '2026-01-23 18:17:00', NULL, NULL, 11, '2026-01-23 03:42:22', '2026-01-24 12:31:28', NULL, NULL),
+(87, 10, 'izin_keluar', 'jalan jalan jumat', NULL, NULL, 'Belum Diperiksa', '2026-01-23 09:36:00', '2026-01-23 11:00:00', NULL, NULL, NULL, 11, '2026-01-23 03:43:28', '2026-01-23 03:43:28', NULL, NULL),
+(88, 11, 'izin_keluar', 'jalan jalan jumat', NULL, NULL, 'Belum Diperiksa', '2026-01-23 09:36:00', '2026-01-23 11:00:00', NULL, NULL, NULL, 11, '2026-01-23 03:44:20', '2026-01-23 03:44:20', NULL, NULL),
+(89, 205, 'izin_keluar', 'jalan jalan jumat', NULL, NULL, 'Belum Diperiksa', '2026-01-23 09:36:00', '2026-01-23 11:00:00', NULL, NULL, NULL, 11, '2026-01-23 03:56:51', '2026-01-23 03:56:51', NULL, NULL),
+(90, 210, 'izin_keluar', 'jalan jalan jumat', NULL, NULL, 'Belum Diperiksa', '2026-01-23 10:00:00', '2026-01-23 11:20:00', NULL, NULL, NULL, 11, '2026-01-23 04:01:35', '2026-01-23 04:01:35', NULL, NULL),
+(91, 115, 'izin_keluar', 'jalan jalan jumat', NULL, NULL, 'Belum Diperiksa', '2026-01-23 10:00:00', '2026-01-23 11:20:00', '2026-01-23 11:18:00', NULL, NULL, 11, '2026-01-23 04:02:44', '2026-01-23 04:19:07', NULL, NULL),
+(92, 157, 'izin_keluar', 'jalan jalan jumat', NULL, NULL, 'Belum Diperiksa', '2026-01-23 10:00:00', '2026-01-23 10:00:00', '2026-01-23 11:19:00', NULL, NULL, 11, '2026-01-23 04:03:37', '2026-01-23 04:19:35', NULL, NULL),
+(93, 237, 'sakit', 'Panas', 'dikamar', NULL, 'Belum Diperiksa', '2026-01-24 07:06:00', NULL, NULL, NULL, NULL, 19, '2026-01-24 00:08:11', '2026-01-24 00:08:11', NULL, NULL),
+(94, 126, 'sakit', 'Panas', 'Dikamar', NULL, 'Belum Diperiksa', '2026-01-24 07:08:00', NULL, NULL, NULL, NULL, 19, '2026-01-24 00:08:43', '2026-01-24 00:08:43', NULL, NULL),
+(95, 151, 'pelanggaran', 'pulang tanpa izin', NULL, NULL, 'Belum Diperiksa', '2026-01-24 16:02:00', NULL, NULL, NULL, NULL, 7, '2026-01-24 09:02:12', '2026-01-24 09:02:12', NULL, NULL),
+(96, 91, 'sakit', 'mata ikan, bengkak kaki', NULL, NULL, 'Belum Diperiksa', '2026-01-24 06:26:00', NULL, NULL, NULL, NULL, 11, '2026-01-24 12:27:12', '2026-01-24 12:34:53', '2026-01-24 12:34:53', 11),
+(97, 62, 'sakit', 'magh', NULL, NULL, 'Belum Diperiksa', '2026-01-24 18:27:00', NULL, NULL, NULL, NULL, 11, '2026-01-24 12:28:14', '2026-01-24 12:28:14', NULL, NULL),
+(98, 62, 'izin_pulang', 'sakit', 'tipes kambuh', NULL, 'Belum Diperiksa', '2026-01-24 14:28:00', '2026-01-25 19:30:00', NULL, NULL, NULL, 11, '2026-01-24 12:30:33', '2026-01-24 12:34:21', '2026-01-24 12:34:21', 11),
+(99, 91, 'izin_pulang', 'sakit', 'tipes kambuh', NULL, 'Belum Diperiksa', '2026-01-24 13:35:00', '2026-01-25 19:35:00', NULL, NULL, NULL, 11, '2026-01-24 12:35:52', '2026-01-24 12:35:52', NULL, NULL),
+(100, 61, 'sakit', 'mata ikan, bengkak kaki', NULL, NULL, 'Belum Diperiksa', '2026-01-24 07:36:00', NULL, NULL, NULL, NULL, 11, '2026-01-24 12:36:31', '2026-01-24 12:36:31', NULL, NULL),
+(101, 174, 'izin_pulang', 'ziarah keluarga', NULL, NULL, 'Belum Diperiksa', '2026-01-23 18:36:00', '2026-01-26 19:36:00', NULL, NULL, NULL, 11, '2026-01-24 12:37:34', '2026-01-24 12:37:47', NULL, NULL),
+(102, 138, 'izin_keluar', 'Beli sapu kamar', 'Jrebeng', NULL, 'Belum Diperiksa', '2026-01-25 13:56:00', '2026-01-25 13:56:00', '2026-01-25 14:50:00', NULL, NULL, 19, '2026-01-25 06:58:02', '2026-01-25 06:58:02', NULL, NULL),
+(103, 137, 'izin_keluar', 'Beli sapu kamar', 'Jrebeng', NULL, 'Belum Diperiksa', '2026-01-25 13:58:00', '2026-01-25 13:58:00', '2026-01-25 14:50:00', NULL, NULL, 19, '2026-01-25 06:58:33', '2026-01-25 06:58:33', NULL, NULL),
+(104, 79, 'pelanggaran', 'Minggat', 'Tangane kesleo', NULL, 'Belum Diperiksa', '2026-01-24 18:40:00', NULL, NULL, NULL, NULL, 9, '2026-01-26 11:41:11', '2026-01-26 11:41:11', NULL, NULL),
+(105, 175, 'izin_pulang', 'sakit demam', 'izin periksa', NULL, 'Belum Diperiksa', '2026-01-27 13:02:00', '2026-01-28 13:02:00', NULL, NULL, NULL, 7, '2026-01-27 06:02:53', '2026-01-27 06:02:53', NULL, NULL),
+(106, 130, 'izin_pulang', 'sakit', NULL, NULL, 'Belum Diperiksa', '2026-01-27 16:36:00', '2026-01-28 16:36:00', NULL, NULL, NULL, 7, '2026-01-27 09:36:48', '2026-01-27 09:36:48', NULL, NULL),
+(107, 184, 'izin_pulang', 'Acara keluarga', NULL, NULL, 'Belum Diperiksa', '2026-01-27 23:59:00', '2026-01-28 23:59:00', '2026-01-28 00:00:00', NULL, NULL, 9, '2026-01-27 17:00:24', '2026-01-27 17:01:27', '2026-01-27 17:01:27', 9),
+(108, 133, 'izin_pulang', 'Periksa Sakit', NULL, NULL, 'Belum Diperiksa', '2026-01-28 17:42:00', '2026-01-29 17:42:00', NULL, NULL, NULL, 7, '2026-01-28 10:42:24', '2026-01-28 10:42:24', NULL, NULL),
+(109, 71, 'pelanggaran', 'Keluar malam', 'Beli nasi goreng', NULL, 'Belum Diperiksa', '2026-01-29 01:53:00', NULL, NULL, NULL, NULL, 1, '2026-01-28 18:53:38', '2026-01-28 18:53:38', NULL, NULL),
+(110, 119, 'izin_pulang', 'Periksa', NULL, NULL, 'Belum Diperiksa', '2026-01-29 22:30:00', '2026-01-30 22:30:00', NULL, NULL, NULL, 7, '2026-01-29 15:30:40', '2026-01-29 15:30:40', NULL, NULL),
+(111, 102, 'izin_pulang', 'Periksa', NULL, NULL, 'Belum Diperiksa', '2026-01-30 10:33:00', '2026-01-31 10:33:00', NULL, NULL, NULL, 7, '2026-01-30 03:33:53', '2026-01-30 03:33:53', NULL, NULL),
+(112, 37, 'izin_keluar', 'Pijat', NULL, NULL, 'Belum Diperiksa', '2026-01-30 10:40:00', '2026-01-30 02:40:00', NULL, NULL, NULL, 7, '2026-01-30 03:40:23', '2026-01-30 03:40:23', NULL, NULL),
+(113, 187, 'izin_pulang', 'acara keluarga', NULL, NULL, 'Belum Diperiksa', '2026-01-30 11:27:00', '2026-01-30 11:28:00', '2026-01-30 11:28:00', NULL, NULL, 7, '2026-01-30 04:28:33', '2026-01-30 04:28:33', NULL, NULL),
+(114, 222, 'izin_pulang', 'Sakit', NULL, NULL, 'Belum Diperiksa', '2026-01-29 11:46:00', '2026-01-30 11:46:00', NULL, NULL, NULL, 7, '2026-01-30 04:46:47', '2026-01-30 04:46:47', NULL, NULL),
+(115, 84, 'izin_pulang', 'Sakit', NULL, NULL, 'Belum Diperiksa', '2026-01-30 11:47:00', '2026-01-30 11:47:00', '2026-01-31 22:25:00', NULL, NULL, 7, '2026-01-30 04:47:23', '2026-01-30 15:25:26', NULL, NULL),
+(116, 193, 'izin_pulang', 'Sakit', NULL, NULL, 'Belum Diperiksa', '2026-01-29 11:47:00', '2026-01-30 11:47:00', NULL, NULL, NULL, 7, '2026-01-30 04:48:01', '2026-01-30 04:48:01', NULL, NULL),
+(117, 95, 'izin_keluar', 'beli perlatan', NULL, NULL, 'Belum Diperiksa', '2026-01-30 13:14:00', '2026-01-30 15:14:00', '2026-01-30 17:18:00', NULL, NULL, 7, '2026-01-30 06:14:58', '2026-01-30 10:18:25', NULL, NULL),
+(118, 93, 'izin_keluar', 'beli perlatan', NULL, NULL, 'Belum Diperiksa', '2026-01-30 13:15:00', '2026-01-30 15:15:00', '2026-01-30 17:17:00', NULL, NULL, 7, '2026-01-30 06:15:11', '2026-01-30 10:17:59', NULL, NULL),
+(119, 126, 'izin_pulang', 'pijat kesleo', NULL, NULL, 'Belum Diperiksa', '2026-01-30 17:16:00', '2026-02-01 17:16:00', NULL, NULL, NULL, 7, '2026-01-30 10:16:49', '2026-01-30 10:16:49', NULL, NULL),
+(120, 207, 'izin_pulang', 'demam', NULL, NULL, 'Belum Diperiksa', '2026-01-30 17:17:00', '2026-02-01 17:17:00', NULL, NULL, NULL, 7, '2026-01-30 10:17:23', '2026-01-30 10:17:23', NULL, NULL),
+(121, 225, 'izin_keluar', 'Fotocopy tugas', NULL, NULL, 'Belum Diperiksa', '2026-01-31 14:27:00', '2026-01-31 15:27:00', '2026-01-31 15:47:00', NULL, NULL, 7, '2026-01-31 07:27:54', '2026-01-31 08:47:54', NULL, NULL),
+(122, 151, 'pelanggaran', 'Pulang tanpa izin', NULL, NULL, 'Belum Diperiksa', '2026-02-01 08:24:00', NULL, NULL, NULL, NULL, 9, '2026-02-01 01:25:09', '2026-02-01 01:25:09', NULL, NULL),
+(123, 139, 'pelanggaran', 'Pulang tanpa izin', NULL, NULL, 'Belum Diperiksa', '2026-02-01 08:25:00', NULL, NULL, NULL, NULL, 9, '2026-02-01 01:25:29', '2026-02-01 01:25:29', NULL, NULL),
+(124, 126, 'pelanggaran', 'Pulang tanpa izin', NULL, NULL, 'Belum Diperiksa', '2026-02-01 08:25:00', NULL, NULL, NULL, NULL, 9, '2026-02-01 01:25:46', '2026-02-01 01:25:46', NULL, NULL),
+(125, 132, 'pelanggaran', 'Keluar malam & rokokan di main', 'Denda semen 1 sak', NULL, 'Belum Diperiksa', '2026-02-03 11:52:00', NULL, NULL, NULL, NULL, 9, '2026-02-03 04:53:32', '2026-02-03 04:53:32', NULL, NULL),
+(126, 77, 'pelanggaran', 'Keluar malam & rokokan di main', 'Denda semen 1 sak', NULL, 'Belum Diperiksa', '2026-02-03 11:54:00', NULL, NULL, NULL, NULL, 9, '2026-02-03 04:54:19', '2026-02-03 04:54:19', NULL, NULL),
+(127, 104, 'pelanggaran', 'Keluar malam & rokokan di main', 'Denda semen 1 sak', NULL, 'Belum Diperiksa', '2026-02-03 11:54:00', NULL, NULL, NULL, NULL, 9, '2026-02-03 04:54:50', '2026-02-03 04:54:50', NULL, NULL),
+(128, 92, 'pelanggaran', 'Keluar malam & rokokan di main', 'Denda semen 1 sak', NULL, 'Belum Diperiksa', '2026-02-03 11:55:00', NULL, NULL, NULL, NULL, 9, '2026-02-03 04:55:35', '2026-02-03 04:55:35', NULL, NULL),
+(129, 55, 'pelanggaran', 'Keluar malam & rokokan di main', 'Denda semen 1 sak', NULL, 'Belum Diperiksa', '2026-02-03 11:55:00', NULL, NULL, NULL, NULL, 9, '2026-02-03 04:56:01', '2026-02-03 04:56:01', NULL, NULL),
+(130, 58, 'pelanggaran', 'Keluar malam, & rokokan di main', 'Denda semen 1 sak dan tadarus sampai subuh', NULL, 'Belum Diperiksa', '2026-02-03 11:56:00', NULL, NULL, NULL, NULL, 9, '2026-02-03 04:56:48', '2026-02-03 04:57:33', NULL, NULL),
+(131, 89, 'pelanggaran', 'Keluar malam ,bawah & rokokan di main', 'Denda semen 1 sak\r\nHp ditahan', NULL, 'Belum Diperiksa', '2026-02-03 11:57:00', NULL, NULL, NULL, NULL, 9, '2026-02-03 04:58:15', '2026-02-03 04:58:15', NULL, NULL),
+(132, 41, 'pelanggaran', 'Keluar malam di main', 'Beli surat izin 20k', NULL, 'Belum Diperiksa', '2026-02-03 11:58:00', NULL, NULL, NULL, NULL, 9, '2026-02-03 04:59:06', '2026-02-03 04:59:06', NULL, NULL),
+(133, 52, 'pelanggaran', 'Keluar malam & rokokan di main', 'Denda semen 1 sak', NULL, 'Belum Diperiksa', '2026-02-03 11:59:00', NULL, NULL, NULL, NULL, 9, '2026-02-03 04:59:36', '2026-02-03 04:59:36', NULL, NULL),
+(134, 202, 'izin_pulang', 'Sakit', NULL, NULL, 'Belum Diperiksa', '2026-02-03 23:11:00', '2026-02-06 14:00:00', '2026-02-06 22:20:00', NULL, NULL, 10, '2026-02-03 16:13:23', '2026-02-06 15:20:50', NULL, NULL),
+(135, 233, 'izin_pulang', 'Sakit priksa', NULL, NULL, 'Belum Diperiksa', '2026-02-04 06:33:00', '2026-02-06 16:00:00', NULL, NULL, NULL, 10, '2026-02-03 23:34:38', '2026-02-03 23:34:38', NULL, NULL),
+(136, 95, 'izin_keluar', 'Fotocopy', NULL, NULL, 'Belum Diperiksa', '2026-02-04 13:58:00', '2026-02-04 14:58:00', NULL, NULL, NULL, 7, '2026-02-04 06:59:12', '2026-02-04 06:59:12', NULL, NULL),
+(137, 97, 'izin_keluar', 'Fotocopy', NULL, NULL, 'Belum Diperiksa', '2026-02-04 13:59:00', '2026-02-04 14:59:00', NULL, NULL, NULL, 7, '2026-02-04 06:59:40', '2026-02-04 06:59:40', NULL, NULL),
+(138, 184, 'izin_pulang', 'Acara keluarga', NULL, NULL, 'Belum Diperiksa', '2026-02-05 15:02:00', '2026-02-05 15:02:00', NULL, NULL, NULL, 9, '2026-02-05 08:02:37', '2026-02-05 08:02:37', NULL, NULL),
+(139, 35, 'izin_pulang', 'Izin periksa mata', NULL, NULL, 'Belum Diperiksa', '2026-02-05 16:33:00', '2026-02-05 16:33:00', NULL, NULL, NULL, 9, '2026-02-05 09:33:49', '2026-02-05 09:33:49', NULL, NULL),
+(140, 55, 'izin_keluar', 'Priksa ke dokter gigi', NULL, NULL, 'Belum Diperiksa', '2026-02-06 10:07:00', '2026-02-06 10:08:00', '2026-02-06 16:07:00', NULL, NULL, 10, '2026-02-06 03:08:14', '2026-02-06 03:08:14', NULL, NULL),
+(141, 54, 'sakit', 'sakit panas', NULL, NULL, 'Belum Diperiksa', '2026-02-06 10:57:00', NULL, '2026-02-08 06:00:00', NULL, NULL, 10, '2026-02-06 03:58:47', '2026-02-06 03:58:47', NULL, NULL),
+(142, 151, 'izin_keluar', 'Beli keperluan', NULL, NULL, 'Belum Diperiksa', '2026-02-06 11:00:00', '2026-02-06 15:00:00', NULL, NULL, NULL, 10, '2026-02-06 04:00:41', '2026-02-06 04:00:41', NULL, NULL),
+(143, 162, 'izin_pulang', 'Kontrol gigi', NULL, NULL, 'Belum Diperiksa', '2026-02-07 16:54:00', '2026-02-07 16:54:00', '2026-02-08 16:54:00', NULL, NULL, 9, '2026-02-07 09:54:59', '2026-02-07 09:54:59', NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -564,6 +880,22 @@ INSERT INTO `data_induk` (`id`, `no_urut`, `nama_lengkap`, `kelas`, `quran`, `ka
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `failed_jobs`
+--
+
+CREATE TABLE `failed_jobs` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `uuid` varchar(255) NOT NULL,
+  `connection` text NOT NULL,
+  `queue` text NOT NULL,
+  `payload` longtext NOT NULL,
+  `exception` longtext NOT NULL,
+  `failed_at` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `jadwal_absens`
 --
 
@@ -589,6 +921,41 @@ INSERT INTO `jadwal_absens` (`id`, `name`, `type`, `start_time`, `scheduled_time
 (1, 'Absen Masuk', 'absen', '05:30:00', '06:00:00', '07:00:00', 15, '2026-01-04 20:59:39', '2026-01-05 12:38:40', NULL, NULL),
 (2, 'Absen Pulang', 'absen', '15:00:00', '16:00:00', '23:59:00', 0, '2026-01-04 20:59:39', '2026-01-05 12:38:40', NULL, NULL),
 (4, 'Absen Dzuhur', 'absen', '11:30:00', '12:00:00', '23:59:00', 0, '2026-01-05 13:34:24', '2026-01-05 13:34:24', NULL, NULL);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `jobs`
+--
+
+CREATE TABLE `jobs` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `queue` varchar(255) NOT NULL,
+  `payload` longtext NOT NULL,
+  `attempts` tinyint(3) UNSIGNED NOT NULL,
+  `reserved_at` int(10) UNSIGNED DEFAULT NULL,
+  `available_at` int(10) UNSIGNED NOT NULL,
+  `created_at` int(10) UNSIGNED NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `job_batches`
+--
+
+CREATE TABLE `job_batches` (
+  `id` varchar(255) NOT NULL,
+  `name` varchar(255) NOT NULL,
+  `total_jobs` int(11) NOT NULL,
+  `pending_jobs` int(11) NOT NULL,
+  `failed_jobs` int(11) NOT NULL,
+  `failed_job_ids` longtext NOT NULL,
+  `options` mediumtext DEFAULT NULL,
+  `cancelled_at` int(11) DEFAULT NULL,
+  `created_at` int(11) NOT NULL,
+  `finished_at` int(11) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
 
@@ -677,8 +1044,25 @@ CREATE TABLE `remember_tokens` (
 --
 
 INSERT INTO `remember_tokens` (`id`, `user_id`, `token_hash`, `expires_at`, `created_at`) VALUES
-(9, 9, 'f995b608391c68e9cd8e4b3da0ec5cc714d3b1c4eb7b3ca64910771335038ebc', '2026-02-10 00:40:35', '2026-01-10 17:40:35'),
-(17, 1, '4ec4fde5ecb733655e0d6ad6df70b2c71ccba6ae7d5421062c92fb396823edbf', '2026-02-12 06:12:43', '2026-01-12 23:12:43');
+(25, 9, '9d5ec512dcc0b9c797bfa5a2866e7be863ebf45f3ae77f191809492352de3307', '2026-03-06 04:24:30', '2026-02-03 21:24:30'),
+(26, 10, '0f9dc568a173fc88e2299cfd3dfe3dc0da74fd3bd7db433803cdc414ef9731b0', '2026-03-08 10:11:02', '2026-02-06 03:11:05'),
+(27, 7, 'a89d397c6be85a7cdd16ffd9293ff55efca637aff3158ec0ff3292613f255c44', '2026-03-08 22:20:13', '2026-02-06 15:20:13'),
+(28, 1, 'c90487b6170171db16acd58bbd19b01738781dec200c8848c5f6f9fa237c0b02', '2026-03-09 16:09:22', '2026-02-07 09:09:22');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `sessions`
+--
+
+CREATE TABLE `sessions` (
+  `id` varchar(255) NOT NULL,
+  `user_id` bigint(20) UNSIGNED DEFAULT NULL,
+  `ip_address` varchar(45) DEFAULT NULL,
+  `user_agent` text DEFAULT NULL,
+  `payload` longtext NOT NULL,
+  `last_activity` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
 
@@ -759,20 +1143,21 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`id`, `name`, `email`, `password`, `address`, `role`, `foto`, `phone`, `remember_token`, `created_at`, `updated_at`, `deleted_at`, `deleted_by`) VALUES
-(1, 'Administrator', 'admin@mambaul-huda.com', '$2y$10$7ibrTC3EcZ5TZ2/mwGkzbOBmVxDlRxUvr8ECfOx/At6KptPpVsUbu', 'Kantor Pondok Pesantren', 'admin', 'user_1_1767752456.png', '085183878466', NULL, '2026-01-04 20:59:39', '2026-01-08 14:11:21', NULL, NULL),
-(7, 'Akrom Adabi', 'debi@ppmh.com', '$2y$10$OGJH7jq6BlL520FIQy9lkOrbWXa7NDdsnPkByD9O15WVP5kqa9qH2', '', 'admin', 'profile.jpg', '085641647478', NULL, '2026-01-07 09:14:33', '2026-01-07 09:14:33', NULL, NULL),
-(8, 'Yusuf', 'yusuf@ppmh.com', '$2y$10$9gb7Uv55rZI4CvyDUzKk0ei0LUHqaR7pr.sDxhZt3Rc6K4f2gxJyG', '', 'pengurus', 'profile.jpg', '', NULL, '2026-01-07 09:17:18', '2026-01-07 09:17:18', NULL, NULL),
-(9, 'Kowi', 'kowi@ppmh.com', '$2y$10$/HJgDa26G7A30ycFBT8nf.gXiCxFFa2tQr6MCMKROSdCiLLtCxD26', '', 'pengurus', 'profile.jpg', '', NULL, '2026-01-07 09:17:59', '2026-01-07 09:17:59', NULL, NULL),
-(10, 'Oki', 'oki@ppmh.com', '$2y$10$/j.4aYIoDU7SjNeGhYCUDOuGPP3GZlXFtKOO6ICaqLQHs1.i8/Ipm', '', 'pengurus', 'profile.jpg', '', NULL, '2026-01-07 09:18:23', '2026-01-07 09:18:23', NULL, NULL),
-(11, 'Nayla', 'nayla@ppmh.com', '$2y$10$4Z6xLpY2sD0QT091hmb7jODrXYSOZGy6.j6GdWdjM3KmuRStbEUr6', '', 'pengurus', 'profile.jpg', '', NULL, '2026-01-07 09:18:47', '2026-01-07 09:18:47', NULL, NULL),
-(12, 'Ilmi', 'ilmi@ppmh.com', '$2y$10$H9xEAsZvrHgey64T30FYwuyefteWpyFoyPPtfXRwFHFsteFxz.59u', '', 'pengurus', 'profile.jpg', '', NULL, '2026-01-07 09:19:55', '2026-01-07 09:19:55', NULL, NULL),
-(13, 'Ifaza', 'ifaza@ppmh.com', '$2y$10$hmu1FblswOAohfN0x2BB3OKRuie4Nm3Uj/SIV1IgqnZfD3Fg8mBZm', '', 'pengurus', 'profile.jpg', '', NULL, '2026-01-07 09:20:11', '2026-01-07 09:20:11', NULL, NULL),
-(14, 'Surya', 'surya@ppmh.com', '$2y$10$rqP.DKcX/dCPmmwaVHFlHuUmsNp5NX.OkgbAhOm4wVsEUeTwyQdDy', '', 'pengurus', 'profile.jpg', '', NULL, '2026-01-07 09:20:27', '2026-01-12 20:28:03', NULL, NULL),
-(15, 'Adil', 'adil@ppmh.com', '$2y$10$oJZXCMuGMclJTI0KN5JCkujbtMQf2R/la17NSrNAyaiRx4ZHAHvXq', '', 'pengurus', 'profile.jpg', '', NULL, '2026-01-07 09:20:39', '2026-01-07 09:20:39', NULL, NULL),
-(16, 'Rino', 'rino@ppmh.com', '$2y$10$.tLbKc89R9W8IW2YA2mlxuWzLSb.I1VKjsgMSwpPvEkPIvXbbdbRC', '', 'pengurus', 'profile.jpg', '', NULL, '2026-01-08 14:09:01', '2026-01-08 14:09:01', NULL, NULL),
-(17, 'Irham', 'irham@ppmh.com', '$2y$10$A4nxyQ.8YiWIqswdz3LEs.c58IZJLMAaHw2ZydTnzDg3CCUkFXIzm', 'ppmh1990', 'pengurus', 'profile.jpg', '', NULL, '2026-01-08 14:09:27', '2026-01-08 14:09:27', NULL, NULL),
-(18, 'Bidin', 'bidin@ppmh.com', '$2y$10$tjiEUHHzDK7PwWtsqwzs3u7DQHfeaa2kd00JAO3WoZeme16gLiNMm', '', 'pengurus', 'profile.jpg', '', NULL, '2026-01-08 14:09:41', '2026-01-08 14:09:41', NULL, NULL),
-(19, 'Affan', 'affan@ppmh.com', '$2y$10$L8J0yx5WbiKDr47kNYcUXud1j2OTDk4NpBureKduhbHbG4Be1AWkK', '', 'pengurus', 'profile.jpg', '', NULL, '2026-01-08 14:11:01', '2026-01-08 14:11:01', NULL, NULL);
+(1, 'Administrator', 'admin@mambaul-huda.com', '$2y$12$zyWoVLAQZC22jKs7QV7oYOp0lGLVej7DXb5ktfBeE9L66m28kDIXu', 'Kantor Pondok Pesantren', 'admin', 'user_1_1767752456.png', '085183878466', 'k2KYFK3GK7q3ZBnUDNuNzLynLT8SBbaua8vFA5C2il9jRMyyGdu9KdAnkQYc', '2026-01-04 20:59:39', '2026-01-21 16:09:09', NULL, NULL),
+(7, 'Akrom Adabi', 'debi@ppmh.com', '$2y$10$OGJH7jq6BlL520FIQy9lkOrbWXa7NDdsnPkByD9O15WVP5kqa9qH2', '', 'admin', 'profile.jpg', '085641647478', 'CILiEZopTC8S0GhPdk489iwUxdWfxbtE5nS4mr8BbQUSlIRuAQzJyYnQjBSc', '2026-01-07 09:14:33', '2026-02-06 15:20:13', NULL, NULL),
+(8, 'Yusuf', 'yusuf@ppmh.com', '$2y$12$uFEDiBmOeuNViNXma6zJZOuf8mTGwinTvwRYnSzycDF1EPLmfDRNG', NULL, 'pengurus', 'profile.jpg', NULL, NULL, '2026-01-07 09:17:18', '2026-01-16 06:37:27', NULL, NULL),
+(9, 'Kowi', 'kowi@ppmh.com', '$2y$12$HBy7XUtrSPF0IICqZObhO.u2VjoBgApEy/vZ7X3p4SdPnGTqAhsBa', NULL, 'pengurus', 'profile.jpg', NULL, 'vDOKq9tuDXS6YX0ELTp7eDXsZQAoe942xgOvw2LiseP5ILxVOofCUciQUcPJ', '2026-01-07 09:17:59', '2026-02-03 21:22:45', NULL, NULL),
+(10, 'Oki', 'oki@ppmh.com', '$2y$12$CaPW6qrwJWBKFihDXhLIxuESkTWiSn75LlrXJWfjoLzZlGaOnseBu', NULL, 'pengurus', 'profile.jpg', NULL, 'Jaz1M8NYsfNbV1Q8Ky2OPzVc7DXAavlvQDCsuOgyEr1Iuw0xemQSZWQTNyWn', '2026-01-07 09:18:23', '2026-02-03 16:11:19', NULL, NULL),
+(11, 'Nayla', 'nayla@ppmh.com', '$2y$12$7XbHZmZqsXpB5Drc6LCm5.eMDT8uf8/YLDJbctWdE3ZvfEBmp6ObS', NULL, 'pengurus', 'profile.jpg', NULL, NULL, '2026-01-07 09:18:47', '2026-01-16 06:36:52', NULL, NULL),
+(12, 'Ilmi', 'ilmi@ppmh.com', '$2y$12$jQ4LdFrCOgYnBQRykgVlvOkgn/RjlOnPnG9RL5Vw1O87FjiLt0hg.', NULL, 'pengurus', 'profile.jpg', NULL, NULL, '2026-01-07 09:19:55', '2026-01-16 06:36:31', NULL, NULL),
+(13, 'Ifaza', 'ifaza@ppmh.com', '$2y$12$WK9482qc4Q6P8hIjHfIZoegc3HoktaxSFcGnCTMKhkJQz2RECaCtK', NULL, 'pengurus', 'profile.jpg', NULL, NULL, '2026-01-07 09:20:11', '2026-01-16 06:36:21', NULL, NULL),
+(14, 'Surya', 'surya@ppmh.com', '$2y$12$eqlcBO2zj6S7unfM2xKP3.1evAI3SIEsb7/PYkgDAisEP.7.yI2KS', NULL, 'pengurus', 'profile.jpg', NULL, NULL, '2026-01-07 09:20:27', '2026-01-16 06:37:21', NULL, NULL),
+(15, 'Adil', 'adil@ppmh.com', '$2y$12$/Ag07Mvn1hy9WjlfcXCy0e6sX5iz4FIYnuTA3g7mz.UFLvXbWvljG', NULL, 'pengurus', 'profile.jpg', NULL, NULL, '2026-01-07 09:20:39', '2026-01-16 06:35:52', NULL, NULL),
+(16, 'Rino', 'rino@ppmh.com', '$2y$12$3Kgl6kYBd4IbjsMmd1IcXuqqb6BAjLYXgMuognKFE743V2i7z8x5q', NULL, 'pengurus', 'profile.jpg', NULL, NULL, '2026-01-08 14:09:01', '2026-01-16 06:37:06', NULL, NULL),
+(17, 'Irham', 'irham@ppmh.com', '$2y$12$ZDqb2h.sl7e3LecUxvE.AeECAJaqti.iFj1olxJ1ERTCezBHBRPIK', 'ppmh1990', 'pengurus', 'profile.jpg', NULL, NULL, '2026-01-08 14:09:27', '2026-01-16 06:36:39', NULL, NULL),
+(18, 'Bidin', 'bidin@ppmh.com', '$2y$12$RbZiI/fbxNwE6QUVwhrzA.dJ4UC6kCQwSM/3V43mugZmfxflDLvVe', NULL, 'pengurus', 'profile.jpg', NULL, NULL, '2026-01-08 14:09:41', '2026-01-16 06:36:13', NULL, NULL),
+(19, 'Affan', 'affan@ppmh.com', '$2y$12$O5ewIoOqtFZ8TeZMiU7TkelgHffCm62a8.RwS9TO/MTwLh243PZLK', NULL, 'pengurus', 'profile.jpg', NULL, NULL, '2026-01-08 14:11:01', '2026-01-16 06:36:02', NULL, NULL),
+(20, 'Nova', 'nova@ppmh.com', '$2y$12$f6SvpCDORbporCwxhbjDRe9u3WufFioarZ/uJrCFywhPbgC/1Aw4G', NULL, 'pengurus', 'profile.jpg', NULL, NULL, '2026-01-21 16:30:31', '2026-01-21 16:30:44', NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -795,12 +1180,16 @@ CREATE TABLE `user_devices` (
 --
 
 INSERT INTO `user_devices` (`id`, `user_id`, `device_fingerprint`, `device_name`, `last_used_at`, `created_at`, `updated_at`) VALUES
-(1, 1, '715aa191-715a-415a-a15a-715aa1910000', 'Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36', '2026-01-12 15:36:19', '2026-01-05 07:18:29', '2026-01-12 15:36:19'),
-(3, 7, '6ca06fcd-6ca0-4ca0-aca0-6ca06fcd0000', 'Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Mobile Safari/537.36', '2026-01-12 15:11:11', '2026-01-07 09:16:44', '2026-01-12 15:11:11'),
-(4, 19, '1946567c-1946-4946-a946-1946567c0000', 'Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Mobile Safari/537.36', '2026-01-12 00:57:06', '2026-01-09 05:59:33', '2026-01-12 00:57:06'),
+(1, 1, '4f16e310-4f16-4f16-af16-4f16e3100000', 'Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36', '2026-02-07 09:09:22', '2026-01-05 07:18:29', '2026-02-07 09:09:22'),
+(3, 7, '0b6012ee-0b60-4b60-ab60-0b6012ee0000', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36', '2026-02-06 15:20:13', '2026-01-07 09:16:44', '2026-02-06 15:20:13'),
+(4, 19, '6f846f5d-6f84-4f84-af84-6f846f5d0000', 'Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Mobile Safari/537.36', '2026-01-29 11:22:42', '2026-01-09 05:59:33', '2026-01-29 11:22:42'),
 (5, 8, '373ad48a-373a-473a-a73a-373ad48a0000', 'Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.6312.118 Mobile Safari/537.36 XiaoMi/MiuiBrowser/14.22.1-gn', '2026-01-09 06:00:51', '2026-01-09 06:00:51', '2026-01-09 06:00:51'),
-(6, 9, '7d695390-7d69-4d69-ad69-7d6953900000', 'Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Mobile Safari/537.36', '2026-01-10 05:58:37', '2026-01-10 05:58:37', '2026-01-10 05:58:37'),
-(7, 14, '5ab01639-5ab0-4ab0-aab0-5ab016390000', 'Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Mobile Safari/537.36', '2026-01-12 20:28:21', '2026-01-12 20:28:21', '2026-01-12 20:28:21');
+(6, 9, '4f413135-4f41-4f41-af41-4f4131350000', 'Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Mobile Safari/537.36', '2026-02-03 21:24:30', '2026-01-10 05:58:37', '2026-02-03 21:24:30'),
+(7, 14, '105a893a-105a-405a-a05a-105a893a0000', 'Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Mobile Safari/537.36', '2026-01-21 15:48:48', '2026-01-12 20:28:21', '2026-01-21 15:48:48'),
+(8, 15, '345ee170-345e-445e-a45e-345ee1700000', 'Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Mobile Safari/537.36', '2026-01-21 16:18:18', '2026-01-21 15:48:47', '2026-01-21 16:18:18'),
+(9, 11, '58cfef6c-58cf-48cf-a8cf-58cfef6c0000', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36', '2026-01-30 03:17:07', '2026-01-21 15:50:40', '2026-01-30 03:17:07'),
+(10, 20, '2a1c2f36-2a1c-4a1c-aa1c-2a1c2f360000', 'Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Mobile Safari/537.36', '2026-01-21 22:15:22', '2026-01-21 22:15:22', '2026-01-21 22:15:22'),
+(11, 10, '21293332-2129-4129-a129-212933320000', 'Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36', '2026-02-06 03:11:01', '2026-02-03 16:11:19', '2026-02-06 03:11:01');
 
 --
 -- Indexes for dumped tables
@@ -825,6 +1214,18 @@ ALTER TABLE `attendances`
   ADD KEY `attendances_fk_santri` (`user_id`) USING BTREE;
 
 --
+-- Indexes for table `cache`
+--
+ALTER TABLE `cache`
+  ADD PRIMARY KEY (`key`);
+
+--
+-- Indexes for table `cache_locks`
+--
+ALTER TABLE `cache_locks`
+  ADD PRIMARY KEY (`key`);
+
+--
 -- Indexes for table `catatan_aktivitas`
 --
 ALTER TABLE `catatan_aktivitas`
@@ -845,10 +1246,30 @@ ALTER TABLE `data_induk`
   ADD KEY `idx_rfid` (`nomor_rfid`) USING BTREE;
 
 --
+-- Indexes for table `failed_jobs`
+--
+ALTER TABLE `failed_jobs`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `failed_jobs_uuid_unique` (`uuid`);
+
+--
 -- Indexes for table `jadwal_absens`
 --
 ALTER TABLE `jadwal_absens`
   ADD PRIMARY KEY (`id`) USING BTREE;
+
+--
+-- Indexes for table `jobs`
+--
+ALTER TABLE `jobs`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `jobs_queue_index` (`queue`);
+
+--
+-- Indexes for table `job_batches`
+--
+ALTER TABLE `job_batches`
+  ADD PRIMARY KEY (`id`);
 
 --
 -- Indexes for table `print_izin_history`
@@ -876,6 +1297,14 @@ ALTER TABLE `remember_tokens`
   ADD KEY `user_id` (`user_id`),
   ADD KEY `idx_token_hash` (`token_hash`),
   ADD KEY `idx_expires_at` (`expires_at`);
+
+--
+-- Indexes for table `sessions`
+--
+ALTER TABLE `sessions`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `sessions_user_id_index` (`user_id`),
+  ADD KEY `sessions_last_activity_index` (`last_activity`);
 
 --
 -- Indexes for table `settings`
@@ -913,19 +1342,19 @@ ALTER TABLE `user_devices`
 -- AUTO_INCREMENT for table `activity_logs`
 --
 ALTER TABLE `activity_logs`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=135;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=338;
 
 --
 -- AUTO_INCREMENT for table `attendances`
 --
 ALTER TABLE `attendances`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=67;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=68;
 
 --
 -- AUTO_INCREMENT for table `catatan_aktivitas`
 --
 ALTER TABLE `catatan_aktivitas`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=62;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=144;
 
 --
 -- AUTO_INCREMENT for table `data_induk`
@@ -934,10 +1363,22 @@ ALTER TABLE `data_induk`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=242;
 
 --
+-- AUTO_INCREMENT for table `failed_jobs`
+--
+ALTER TABLE `failed_jobs`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
 -- AUTO_INCREMENT for table `jadwal_absens`
 --
 ALTER TABLE `jadwal_absens`
   MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+
+--
+-- AUTO_INCREMENT for table `jobs`
+--
+ALTER TABLE `jobs`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `print_izin_history`
@@ -955,7 +1396,7 @@ ALTER TABLE `print_queue`
 -- AUTO_INCREMENT for table `remember_tokens`
 --
 ALTER TABLE `remember_tokens`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=29;
 
 --
 -- AUTO_INCREMENT for table `settings`
@@ -973,13 +1414,13 @@ ALTER TABLE `system_settings`
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
 
 --
 -- AUTO_INCREMENT for table `user_devices`
 --
 ALTER TABLE `user_devices`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 
 --
 -- Constraints for dumped tables

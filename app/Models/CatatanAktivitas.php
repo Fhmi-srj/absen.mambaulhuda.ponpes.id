@@ -22,6 +22,7 @@ class CatatanAktivitas extends Model
         'tanggal',
         'batas_waktu',
         'tanggal_selesai',
+        'kode_konfirmasi',
         'foto_dokumen_1',
         'foto_dokumen_2',
         'dibuat_oleh',

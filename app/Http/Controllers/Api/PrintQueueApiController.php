@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 
 class PrintQueueApiController extends Controller
 {
@@ -14,7 +15,7 @@ class PrintQueueApiController extends Controller
 
         // Generate nomor surat if needed
         $nomorSurat = null;
-        if ($data['job_type'] === 'surat_izin') {
+        if (isset($data['job_type']) && $data['job_type'] === 'surat_izin') {
             $count = DB::table('surat_izin')->whereDate('created_at', today())->count() + 1;
             $month = now()->format('n');
             $romanMonths = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X', 'XI', 'XII'];
@@ -28,7 +29,6 @@ class PrintQueueApiController extends Controller
                 'tujuan_guru' => $data['tujuan_guru'] ?? '',
                 'kelas' => $data['kelas'] ?? '',
                 'created_at' => now(),
-                'updated_at' => now(),
             ]);
         }
 
@@ -36,11 +36,11 @@ class PrintQueueApiController extends Controller
         $jobData['nomor_surat'] = $nomorSurat;
 
         $id = DB::table('print_queue')->insertGetId([
-            'job_type' => $data['job_type'],
+            'job_type' => $data['job_type'] ?? 'unknown',
             'job_data' => json_encode($jobData),
             'status' => 'pending',
+            'created_by' => Auth::id(),
             'created_at' => now(),
-            'updated_at' => now(),
         ]);
 
         return response()->json(['success' => true, 'job_id' => $id, 'nomor_surat' => $nomorSurat]);
@@ -51,8 +51,8 @@ class PrintQueueApiController extends Controller
         $stats = [
             'pending' => DB::table('print_queue')->where('status', 'pending')->count(),
             'processing' => DB::table('print_queue')->where('status', 'processing')->count(),
-            'completed_today' => DB::table('print_queue')->where('status', 'completed')->whereDate('updated_at', today())->count(),
-            'failed_today' => DB::table('print_queue')->where('status', 'failed')->whereDate('updated_at', today())->count(),
+            'completed_today' => DB::table('print_queue')->where('status', 'completed')->whereDate('processed_at', today())->count(),
+            'failed_today' => DB::table('print_queue')->where('status', 'failed')->whereDate('processed_at', today())->count(),
         ];
         return response()->json(['success' => true, 'stats' => $stats]);
     }
@@ -73,13 +73,13 @@ class PrintQueueApiController extends Controller
 
     public function processing($id)
     {
-        DB::table('print_queue')->where('id', $id)->update(['status' => 'processing', 'updated_at' => now()]);
+        DB::table('print_queue')->where('id', $id)->update(['status' => 'processing']);
         return response()->json(['success' => true]);
     }
 
     public function complete($id)
     {
-        DB::table('print_queue')->where('id', $id)->update(['status' => 'completed', 'updated_at' => now()]);
+        DB::table('print_queue')->where('id', $id)->update(['status' => 'completed', 'processed_at' => now()]);
         return response()->json(['success' => true]);
     }
 
@@ -87,8 +87,8 @@ class PrintQueueApiController extends Controller
     {
         DB::table('print_queue')->where('id', $id)->update([
             'status' => 'failed',
-            'error' => $request->get('error'),
-            'updated_at' => now()
+            'error_message' => $request->get('error'),
+            'processed_at' => now()
         ]);
         return response()->json(['success' => true]);
     }
