@@ -283,10 +283,10 @@ PS;
         $qr = "";
         // Model select (model 2)
         $qr .= $GS . "(k\x04\x00\x31\x41\x32\x00";
-        // Size (module size 4)  
-        $qr .= $GS . "(k\x03\x00\x31\x43\x04";
-        // Error correction (L)
-        $qr .= $GS . "(k\x03\x00\x31\x45\x30";
+        // Size (module size 6 - optimal for 58mm paper)  
+        $qr .= $GS . "(k\x03\x00\x31\x43\x06";
+        // Error correction (M - medium, 15% recovery)
+        $qr .= $GS . "(k\x03\x00\x31\x45\x31";
         // Store data
         $qr .= $GS . "(k" . chr($pL) . chr($pH) . "\x31\x50\x30" . $data;
         // Print QR
