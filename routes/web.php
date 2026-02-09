@@ -51,6 +51,8 @@ Route::get('/konfirmasi-kembali', [KonfirmasiKembaliController::class, 'index'])
 Route::get('/api/public/santri-izin-aktif', [KonfirmasiKembaliController::class, 'getSantriAktif']);
 Route::get('/api/public/izin/{id}', [KonfirmasiKembaliController::class, 'getDetail']);
 Route::post('/api/public/konfirmasi-kembali', [KonfirmasiKembaliController::class, 'konfirmasi']);
+Route::post('/api/public/konfirmasi/search', [KonfirmasiKembaliController::class, 'searchByKode']);
+Route::post('/api/public/konfirmasi/direct', [KonfirmasiKembaliController::class, 'konfirmasiDirect']);
 
 Route::middleware('guest')->group(function () {
     Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');

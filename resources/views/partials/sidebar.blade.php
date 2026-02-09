@@ -522,3 +522,369 @@
         });
     })();
 </script>
+
+<!-- Mobile Bottom Navbar (only visible on small screens) -->
+<style>
+    .bottom-navbar {
+        display: none;
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background: var(--navbar-bg);
+        z-index: 1050;
+        height: 60px;
+        box-shadow: 0 -1px 10px rgba(0, 0, 0, 0.08);
+    }
+
+    .bottom-navbar-inner {
+        display: flex;
+        justify-content: space-around;
+        align-items: center;
+        height: 100%;
+        max-width: 100%;
+        margin: 0 auto;
+        position: relative;
+        padding-bottom: env(safe-area-inset-bottom);
+    }
+
+    .bottom-nav-item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-decoration: none;
+        color: #6b7280;
+        font-size: 0.65rem;
+        padding: 0.25rem 0;
+        transition: all 0.2s;
+        min-width: 50px;
+        background: none;
+        border: none;
+    }
+
+    .bottom-nav-item:hover,
+    .bottom-nav-item.active {
+        color: var(--primary-color);
+    }
+
+    .bottom-nav-item i {
+        font-size: 1.2rem;
+        margin-bottom: 0.15rem;
+    }
+
+    .bottom-nav-item span {
+        font-weight: 500;
+    }
+
+    /* FAB Container with notch background */
+    .bottom-nav-fab-wrapper {
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        min-width: 70px;
+    }
+
+    /* Notch background circle */
+    .bottom-nav-fab-wrapper::before {
+        content: '';
+        position: absolute;
+        top: -20px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 70px;
+        height: 70px;
+        background: var(--navbar-bg);
+        border-radius: 50%;
+        box-shadow: 0 -3px 6px rgba(0, 0, 0, 0.04);
+    }
+
+    /* FAB button */
+    .bottom-nav-fab {
+        position: relative;
+        z-index: 2;
+        top: -22px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .bottom-nav-fab a {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 52px;
+        height: 52px;
+        background: linear-gradient(135deg, var(--primary-color), #60a5fa);
+        color: white !important;
+        border-radius: 50%;
+        text-decoration: none;
+        box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4);
+        transition: all 0.2s;
+    }
+
+    .bottom-nav-fab a:hover {
+        transform: scale(1.05);
+        box-shadow: 0 6px 20px rgba(59, 130, 246, 0.5);
+    }
+
+    .bottom-nav-fab a i {
+        font-size: 1.4rem;
+    }
+
+    .bottom-nav-fab-label {
+        font-size: 0.65rem;
+        font-weight: 500;
+        margin-top: 0.2rem;
+        color: #6b7280;
+        text-align: center;
+    }
+
+    /* Bottom Sheet for "Lainnya" */
+    .bottom-sheet-overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 1060;
+        opacity: 0;
+        transition: opacity 0.3s;
+    }
+
+    .bottom-sheet-overlay.show {
+        opacity: 1;
+    }
+
+    .bottom-sheet {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background: var(--card-bg);
+        border-radius: 20px 20px 0 0;
+        z-index: 1070;
+        transform: translateY(100%);
+        transition: transform 0.3s ease-out;
+        max-height: 70vh;
+        overflow-y: auto;
+    }
+
+    .bottom-sheet.show {
+        transform: translateY(0);
+    }
+
+    .bottom-sheet-handle {
+        width: 40px;
+        height: 4px;
+        background: var(--border-color);
+        border-radius: 2px;
+        margin: 12px auto;
+    }
+
+    .bottom-sheet-header {
+        padding: 0 1rem 0.75rem;
+        border-bottom: 1px solid var(--border-color);
+        font-weight: 600;
+        color: var(--text-primary);
+    }
+
+    .bottom-sheet-menu {
+        list-style: none;
+        padding: 0.5rem 0;
+        margin: 0;
+    }
+
+    .bottom-sheet-menu li {
+        margin: 0;
+    }
+
+    .bottom-sheet-menu a {
+        display: flex;
+        align-items: center;
+        padding: 0.875rem 1.25rem;
+        color: var(--text-secondary);
+        text-decoration: none;
+        transition: all 0.2s;
+    }
+
+    .bottom-sheet-menu a:hover,
+    .bottom-sheet-menu a.active {
+        background: var(--hover-bg);
+        color: var(--primary-color);
+    }
+
+    .bottom-sheet-menu a i {
+        width: 24px;
+        margin-right: 12px;
+        font-size: 1rem;
+    }
+
+    .bottom-sheet-divider {
+        border-top: 1px solid var(--border-color);
+        margin: 0.5rem 0;
+    }
+
+    .bottom-sheet-section-header {
+        font-size: 0.7rem;
+        font-weight: 600;
+        color: var(--text-muted);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        padding: 0.75rem 1.25rem 0.5rem;
+    }
+
+    /* Show bottom navbar on small screens */
+    @media (max-width: 575px) {
+        .bottom-navbar {
+            display: block;
+        }
+
+        /* Hide hamburger on small mobile */
+        .btn-hamburger {
+            display: none !important;
+        }
+
+        /* Add padding to main content for bottom navbar */
+        .main-content {
+            padding-bottom: 90px !important;
+        }
+    }
+</style>
+
+@php
+$currentRoute = Route::currentRouteName();
+@endphp
+
+<div class="bottom-navbar">
+    <div class="bottom-navbar-inner">
+        <!-- Beranda -->
+        <a href="{{ route('beranda') }}" class="bottom-nav-item {{ $currentRoute === 'beranda' ? 'active' : '' }}">
+            <i class="fas fa-home"></i>
+            <span>Beranda</span>
+        </a>
+
+        <!-- Scan QR -->
+        <a href="{{ route('pemindai') }}" class="bottom-nav-item {{ $currentRoute === 'pemindai' ? 'active' : '' }}">
+            <i class="fas fa-qrcode"></i>
+            <span>Scan QR</span>
+        </a>
+
+        <!-- FAB - Aktivitas -->
+        <div class="bottom-nav-fab-wrapper">
+            <div class="bottom-nav-fab">
+                <a href="{{ route('aktivitas') }}" class="{{ $currentRoute === 'aktivitas' ? 'active' : '' }}">
+                    <i class="fas fa-clipboard-list"></i>
+                </a>
+                <div class="bottom-nav-fab-label">Aktivitas</div>
+            </div>
+        </div>
+
+        <!-- Riwayat -->
+        <a href="{{ route('riwayat') }}" class="bottom-nav-item {{ $currentRoute === 'riwayat' ? 'active' : '' }}">
+            <i class="fas fa-history"></i>
+            <span>Riwayat</span>
+        </a>
+
+        <!-- Lainnya -->
+        <button type="button" class="bottom-nav-item" onclick="toggleBottomSheet()">
+            <i class="fas fa-ellipsis-h"></i>
+            <span>Lainnya</span>
+        </button>
+    </div>
+</div>
+
+<!-- Bottom Sheet Overlay -->
+<div class="bottom-sheet-overlay" id="bottomSheetOverlay" onclick="closeBottomSheet()"></div>
+
+<!-- Bottom Sheet -->
+<div class="bottom-sheet" id="bottomSheet">
+    <div class="bottom-sheet-handle"></div>
+    <div class="bottom-sheet-header">Menu Lainnya</div>
+    <ul class="bottom-sheet-menu">
+        <li>
+            <a href="{{ route('daftar-rfid') }}" class="{{ $currentRoute === 'daftar-rfid' ? 'active' : '' }}">
+                <i class="fas fa-id-card"></i> Daftarkan Kartu
+            </a>
+        </li>
+        <li>
+            <a href="{{ route('absensi-langsung') }}" class="{{ $currentRoute === 'absensi-langsung' ? 'active' : '' }}">
+                <i class="fas fa-broadcast-tower"></i> Absensi Langsung
+            </a>
+        </li>
+
+        @if(auth()->user() && auth()->user()->role === 'admin')
+            <div class="bottom-sheet-divider"></div>
+            <div class="bottom-sheet-section-header">Menu Admin</div>
+            <li>
+                <a href="{{ route('admin.pengguna') }}" class="{{ $currentRoute === 'admin.pengguna' ? 'active' : '' }}">
+                    <i class="fas fa-users"></i> Manajemen Pengguna
+                </a>
+            </li>
+            <li>
+                <a href="{{ route('admin.santri') }}" class="{{ $currentRoute === 'admin.santri' ? 'active' : '' }}">
+                    <i class="fas fa-user-graduate"></i> Data Santri
+                </a>
+            </li>
+            <li>
+                <a href="{{ route('admin.jadwal') }}" class="{{ $currentRoute === 'admin.jadwal' ? 'active' : '' }}">
+                    <i class="fas fa-clock"></i> Jadwal Absen
+                </a>
+            </li>
+            <li>
+                <a href="{{ route('admin.kehadiran') }}" class="{{ $currentRoute === 'admin.kehadiran' ? 'active' : '' }}">
+                    <i class="fas fa-calendar-check"></i> Data Kehadiran
+                </a>
+            </li>
+            <li>
+                <a href="{{ route('admin.laporan') }}" class="{{ $currentRoute === 'admin.laporan' ? 'active' : '' }}">
+                    <i class="fas fa-chart-bar"></i> Laporan
+                </a>
+            </li>
+            <li>
+                <a href="{{ route('admin.pengaturan') }}" class="{{ $currentRoute === 'admin.pengaturan' ? 'active' : '' }}">
+                    <i class="fas fa-cog"></i> Pengaturan
+                </a>
+            </li>
+        @endif
+    </ul>
+</div>
+
+<script>
+    function toggleBottomSheet() {
+        const overlay = document.getElementById('bottomSheetOverlay');
+        const sheet = document.getElementById('bottomSheet');
+        
+        overlay.style.display = 'block';
+        sheet.style.display = 'block';
+        
+        // Trigger reflow for animation
+        setTimeout(() => {
+            overlay.classList.add('show');
+            sheet.classList.add('show');
+        }, 10);
+    }
+
+    function closeBottomSheet() {
+        const overlay = document.getElementById('bottomSheetOverlay');
+        const sheet = document.getElementById('bottomSheet');
+        
+        overlay.classList.remove('show');
+        sheet.classList.remove('show');
+        
+        setTimeout(() => {
+            overlay.style.display = 'none';
+            sheet.style.display = 'none';
+        }, 300);
+    }
+
+    // Close on escape key
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            closeBottomSheet();
+        }
+    });
+</script>

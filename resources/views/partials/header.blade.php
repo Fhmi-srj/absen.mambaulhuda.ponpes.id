@@ -2,25 +2,72 @@
 <nav class="navbar navbar-custom fixed-top">
     <div class="container-fluid px-3 px-md-4">
         <div class="d-flex align-items-center">
-            <button class="btn-hamburger me-2" type="button" data-bs-toggle="offcanvas" data-bs-target="#sidebarMobile">
+            <!-- Hamburger only for tablet, hidden on small mobile -->
+            <button class="btn-hamburger me-2 d-none d-sm-block d-lg-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#sidebarMobile">
                 <i class="fas fa-bars"></i>
             </button>
             <a class="navbar-brand" href="{{ route('beranda') }}">
                 <img src="{{ asset('logo-pondok.png') }}" alt="Logo"
                     style="height: 28px; width: auto; margin-right: 8px;">
-                {{ config('app.name') }}
+                <span class="d-none d-sm-inline">{{ config('app.name') }}</span>
+                <span class="d-sm-none">{{ config('app.name') }}</span>
             </a>
         </div>
         <div class="d-flex align-items-center gap-2 gap-md-3">
-            <span class="text-muted small d-none d-sm-inline">
-                {{ auth()->user()->name ?? 'Guest' }} ({{ auth()->user()->role ?? '' }})
-            </span>
-            <button type="button" class="btn btn-outline-danger btn-sm" data-bs-toggle="modal" data-bs-target="#logoutModal">
-                <i class="fas fa-sign-out-alt"></i>
-            </button>
+            <!-- Profile Dropdown -->
+            <div class="dropdown">
+                <button class="btn btn-link text-decoration-none p-0 dropdown-toggle" type="button" id="profileDropdown" data-bs-toggle="dropdown" aria-expanded="false" style="color: var(--text-primary);">
+                    <span class="d-none d-sm-inline text-muted small me-1">
+                        {{ auth()->user()->name ?? 'Guest' }}
+                    </span>
+                    <span class="d-sm-none">
+                        <i class="fas fa-user-circle" style="font-size: 1.25rem; color: var(--primary-color);"></i>
+                    </span>
+                </button>
+                <ul class="dropdown-menu dropdown-menu-end shadow-sm" aria-labelledby="profileDropdown" style="min-width: 180px;">
+                    <li class="px-3 py-2 border-bottom">
+                        <div class="fw-bold" style="color: var(--text-primary);">{{ auth()->user()->name ?? 'Guest' }}</div>
+                        <small class="text-muted">{{ ucfirst(auth()->user()->role ?? '') }}</small>
+                    </li>
+                    <li>
+                        <a class="dropdown-item py-2" href="{{ route('profil') }}">
+                            <i class="fas fa-user me-2 text-muted"></i> Profil
+                        </a>
+                    </li>
+                    <li><hr class="dropdown-divider my-1"></li>
+                    <li>
+                        <a class="dropdown-item py-2 text-danger" href="#" data-bs-toggle="modal" data-bs-target="#logoutModal">
+                            <i class="fas fa-sign-out-alt me-2"></i> Logout
+                        </a>
+                    </li>
+                </ul>
+            </div>
         </div>
     </div>
 </nav>
+
+<style>
+    /* Profile dropdown styling */
+    .dropdown-toggle::after {
+        display: none;
+    }
+    
+    .dropdown-menu {
+        border: 1px solid var(--border-color);
+        border-radius: 12px;
+        padding: 0.5rem 0;
+    }
+    
+    .dropdown-item {
+        border-radius: 8px;
+        margin: 0 0.5rem;
+        width: calc(100% - 1rem);
+    }
+    
+    .dropdown-item:hover {
+        background-color: var(--hover-bg);
+    }
+</style>
 
 <!-- Logout Confirmation Modal -->
 <div class="modal fade" id="logoutModal" tabindex="-1">
