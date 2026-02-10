@@ -8,6 +8,6 @@ class PrintServerController extends Controller
 {
     public function index()
     {
-        return view('print-server');
+        return view('spa');
     }
 }

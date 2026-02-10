@@ -32,6 +32,13 @@ class CetakKartuController extends Controller
 
         $schoolName = $settings['school_name'] ?? 'Pondok Pesantren Mambaul Huda';
 
-        return view('cetak-kartu', compact('siswaList', 'schoolName'));
+        if (request()->expectsJson()) {
+            return response()->json([
+                'siswaList' => $siswaList,
+                'schoolName' => $schoolName
+            ]);
+        }
+
+        return view('spa');
     }
 }

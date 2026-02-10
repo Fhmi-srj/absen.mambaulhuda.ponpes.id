@@ -8,12 +8,16 @@ use Illuminate\Http\Request;
 
 class JadwalController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
         $jadwalList = JadwalAbsen::whereNull('deleted_at')
             ->orderBy('start_time', 'asc')
             ->get();
 
-        return view('admin.jadwal', compact('jadwalList'));
+        if ($request->expectsJson() || $request->ajax()) {
+            return response()->json(['jadwalList' => $jadwalList]);
+        }
+
+        return view('spa');
     }
 }

@@ -23,22 +23,7 @@ use App\Http\Controllers\KonfirmasiKembaliController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Artisan;
 
-// ============================================================
-// TEMPORARY ROUTES FOR HOSTING SETUP (Hapus setelah setup selesai!)
-// ============================================================
-Route::get('/linkstorage', function () {
-    Artisan::call('storage:link');
-    return '✅ Storage link created successfully!';
-});
-
-Route::get('/clear-cache', function () {
-    Artisan::call('config:clear');
-    Artisan::call('route:clear');
-    Artisan::call('view:clear');
-    Artisan::call('cache:clear');
-    return '✅ All cache cleared successfully!';
-});
-// ============================================================
+// Routes
 
 // RFID Kiosk - Public page (no login required)
 Route::get('/kios', [KiosController::class, 'index'])->name('kios');
@@ -54,11 +39,13 @@ Route::post('/api/public/konfirmasi-kembali', [KonfirmasiKembaliController::clas
 Route::post('/api/public/konfirmasi/search', [KonfirmasiKembaliController::class, 'searchByKode']);
 Route::post('/api/public/konfirmasi/direct', [KonfirmasiKembaliController::class, 'konfirmasiDirect']);
 
+// Guest routes - SPA will handle login UI
 Route::middleware('guest')->group(function () {
-    Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
-    Route::get('/masuk', [AuthController::class, 'showLoginForm'])->name('masuk');
+    // SPA handles login page
+    Route::get('/login', fn() => view('spa'))->name('login');
+    Route::get('/masuk', fn() => view('spa'))->name('masuk');
+    // Keep POST login for API
     Route::post('/login', [AuthController::class, 'login'])->name('login.post');
-
 });
 
 // Auth routes
@@ -66,28 +53,32 @@ Route::middleware('auth')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
     Route::get('/keluar', [AuthController::class, 'logout'])->name('keluar');
 
-    // Redirect root to beranda
-    Route::get('/', fn() => redirect()->route('beranda'));
-
-    // User pages (semua role)
-    Route::prefix('')->group(function () {
-        Route::get('/beranda', [BerandaController::class, 'index'])->name('beranda');
-        Route::get('/aktivitas', [AktivitasController::class, 'index'])->name('aktivitas');
-        Route::get('/profil', [ProfilController::class, 'index'])->name('profil');
+    // SPA routes - serve SPA template for client-side routing
+    Route::get('/', fn() => view('spa'));
+    Route::get('/beranda', fn() => view('spa'))->name('beranda');
+    Route::get('/aktivitas', fn() => view('spa'))->name('aktivitas');
+    Route::get('/profil', fn() => view('spa'))->name('profil');
+        Route::get('/api/profil', [ProfilController::class, 'index'])->name('profil.api');
         Route::post('/profil/update-data', [ProfilController::class, 'updateData'])->name('profil.update-data');
         Route::post('/profil/update-password', [ProfilController::class, 'updatePassword'])->name('profil.update-password');
         Route::post('/profil/update-foto', [ProfilController::class, 'updateFoto'])->name('profil.update-foto');
-        Route::get('/pemindai', [PemindaiController::class, 'index'])->name('pemindai');
-        Route::get('/riwayat', [RiwayatController::class, 'index'])->name('riwayat');
-        Route::get('/absensi-langsung', [AbsensiLangsungController::class, 'index'])->name('absensi-langsung');
-        Route::get('/daftar-rfid', [DaftarRfidController::class, 'index'])->name('daftar-rfid');
-        Route::get('/print-izin', [PrintIzinController::class, 'index'])->name('print-izin');
-        Route::get('/cetak-kartu', [CetakKartuController::class, 'index'])->name('cetak-kartu');
-        Route::get('/kartu-qr/{id}', [KartuQrController::class, 'show'])->name('kartu-qr');
-    });
+    Route::get('/pemindai', fn() => view('spa'))->name('pemindai');
+    Route::get('/riwayat', fn() => view('spa'))->name('riwayat');
+    Route::get('/absensi-langsung', fn() => view('spa'))->name('absensi-langsung');
+    Route::get('/daftar-rfid', fn() => view('spa'))->name('daftar-rfid');
+    Route::get('/print-izin', fn() => view('spa'))->name('print-izin');
+    Route::get('/cetak-kartu', [CetakKartuController::class, 'index'])->name('cetak-kartu');
+    Route::get('/kartu-qr/{id}', [KartuQrController::class, 'show'])->name('kartu-qr');
 
     // API routes
     Route::prefix('api')->group(function () {
+
+        // Dashboard
+        Route::get('/dashboard/stats', [\App\Http\Controllers\Api\DashboardController::class, 'stats'])->name('api.dashboard.stats');
+
+        // Riwayat
+        Route::get('/riwayat', [\App\Http\Controllers\Api\RiwayatController::class, 'index'])->name('api.riwayat');
+
         // Santri search
         Route::get('/santri/search', [SantriApiController::class, 'search'])->name('api.santri.search');
         Route::get('/santri/{id}', [SantriApiController::class, 'show'])->name('api.santri.show');
@@ -188,4 +179,10 @@ Route::middleware('auth')->group(function () {
         Route::post('/santri-import', [\App\Http\Controllers\Admin\SantriImportController::class, 'import'])->name('admin.santri-import.import');
     });
 });
+
+// SPA Catch-all route - must be last!
+// This serves the React SPA for all client-side routes
+Route::get('/{any}', function () {
+    return view('spa');
+})->where('any', '^(?!api|kios|print-server|konfirmasi-kembali|linkstorage|clear-cache|uploads|storage|img|css|js|fonts|favicon).*$');
 

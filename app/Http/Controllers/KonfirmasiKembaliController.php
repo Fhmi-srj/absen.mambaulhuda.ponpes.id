@@ -12,7 +12,7 @@ class KonfirmasiKembaliController extends Controller
      */
     public function index()
     {
-        return view('konfirmasi-kembali');
+        return view('spa');
     }
 
     /**

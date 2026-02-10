@@ -53,18 +53,18 @@ class LogAktivitasController extends Controller
             ->distinct()
             ->pluck('u.role');
 
-        return view('admin.log-aktivitas', compact(
-            'logs',
-            'roles',
-            'total',
-            'totalPages',
-            'page',
-            'offset',
-            'filterRole',
-            'filterAction',
-            'filterDateFrom',
-            'filterDateTo'
-        ));
+        if (request()->expectsJson() || request()->ajax()) {
+            return response()->json([
+                'logs' => $logs,
+                'roles' => $roles,
+                'total' => $total,
+                'totalPages' => $totalPages,
+                'page' => $page,
+                'offset' => $offset,
+            ]);
+        }
+
+        return view('spa');
     }
 
     public function bulkDelete(Request $request)
@@ -72,7 +72,13 @@ class LogAktivitasController extends Controller
         $ids = $request->input('ids', []);
         if (!empty($ids)) {
             ActivityLog::whereIn('id', $ids)->delete();
+            if (request()->expectsJson() || request()->ajax()) {
+                return response()->json(['status' => 'success', 'message' => count($ids) . ' log berhasil dihapus!']);
+            }
             return back()->with('success', count($ids) . ' log berhasil dihapus!');
+        }
+        if (request()->expectsJson() || request()->ajax()) {
+            return response()->json(['status' => 'error', 'message' => 'Tidak ada data yang dipilih'], 400);
         }
         return back()->with('error', 'Tidak ada data yang dipilih');
     }
@@ -80,12 +86,18 @@ class LogAktivitasController extends Controller
     public function deleteSingle(Request $request, $id)
     {
         ActivityLog::where('id', $id)->delete();
+        if (request()->expectsJson() || request()->ajax()) {
+            return response()->json(['status' => 'success', 'message' => 'Log berhasil dihapus!']);
+        }
         return back()->with('success', 'Log berhasil dihapus!');
     }
 
     public function clearAll()
     {
         DB::table('activity_logs')->truncate();
+        if (request()->expectsJson() || request()->ajax()) {
+            return response()->json(['status' => 'success', 'message' => 'Semua log berhasil dihapus!']);
+        }
         return back()->with('success', 'Semua log berhasil dihapus!');
     }
 }

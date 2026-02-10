@@ -26,18 +26,23 @@ class PengaturanController extends Controller
         $settingsRaw = DB::table('settings')->pluck('value', 'key')->toArray();
         $settings = array_merge($this->defaults, $settingsRaw);
 
-        return view('admin.pengaturan', compact('settings'));
+        if (request()->expectsJson() || request()->ajax()) {
+            return response()->json([
+                'settings' => $settings
+            ]);
+        }
+
+        return view('spa');
     }
 
     public function update(Request $request)
     {
-        $data = $request->except(['_token']);
+        foreach ($request->except('_token') as $key => $value) {
+            Setting::updateOrCreate(['key' => $key], ['value' => $value]);
+        }
 
-        foreach ($data as $key => $value) {
-            DB::table('settings')->updateOrInsert(
-                ['key' => $key],
-                ['value' => $value]
-            );
+        if (request()->expectsJson() || request()->ajax()) {
+            return response()->json(['status' => 'success', 'message' => 'Pengaturan berhasil disimpan!']);
         }
 
         return back()->with('success', 'Pengaturan berhasil disimpan!');

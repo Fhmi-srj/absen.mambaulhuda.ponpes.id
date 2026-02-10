@@ -38,14 +38,18 @@ class KehadiranController extends Controller
         $totalTerlambat = $attendances->where('status', 'terlambat')->count();
         $totalAbsen = $attendances->where('status', 'absen')->count();
 
-        return view('admin.kehadiran', compact(
-            'jadwalList',
-            'attendances',
-            'filterDate',
-            'filterJadwal',
-            'totalHadir',
-            'totalTerlambat',
-            'totalAbsen'
-        ));
+        if ($request->expectsJson() || $request->ajax()) {
+            return response()->json([
+                'jadwalList' => $jadwalList,
+                'attendances' => $attendances,
+                'filterDate' => $filterDate,
+                'filterJadwal' => $filterJadwal,
+                'totalHadir' => $totalHadir,
+                'totalTerlambat' => $totalTerlambat,
+                'totalAbsen' => $totalAbsen,
+            ]);
+        }
+
+        return view('spa');
     }
 }

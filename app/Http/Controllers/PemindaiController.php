@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\JadwalAbsen;
 use Illuminate\Http\Request;
+use Inertia\Inertia;
 
 class PemindaiController extends Controller
 {
@@ -14,6 +15,8 @@ class PemindaiController extends Controller
             ->orderBy('start_time', 'asc')
             ->get();
 
-        return view('user.pemindai', compact('jadwalList'));
+        return Inertia::render('Pemindai', [
+            'jadwalList' => $jadwalList,
+        ]);
     }
 }

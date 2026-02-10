@@ -6,6 +6,7 @@ use App\Models\Attendance;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
+use Inertia\Inertia;
 
 class RiwayatController extends Controller
 {
@@ -74,13 +75,13 @@ class RiwayatController extends Controller
             'Saturday' => 'Sabtu'
         ];
 
-        return view('user.riwayat', compact(
-            'groupedAttendances',
-            'stats',
-            'months',
-            'dayNames',
-            'month',
-            'year'
-        ));
+        return Inertia::render('Riwayat', [
+            'groupedAttendances' => $groupedAttendances,
+            'stats' => $stats,
+            'months' => $months,
+            'dayNames' => $dayNames,
+            'month' => $month,
+            'year' => $year,
+        ]);
     }
 }

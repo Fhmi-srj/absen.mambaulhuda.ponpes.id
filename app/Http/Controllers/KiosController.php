@@ -43,6 +43,16 @@ class KiosController extends Controller
 
         $kioskPassword = config('app.kiosk_password', '1234');
 
-        return view('kios', compact('jadwalList', 'recentAttendances', 'todayTotal', 'totalSiswa', 'kioskPassword'));
+        if (request()->expectsJson() || request()->ajax()) {
+            return response()->json([
+                'jadwalList' => $jadwalList,
+                'recentAttendances' => $recentAttendances,
+                'todayTotal' => $todayTotal,
+                'totalSiswa' => $totalSiswa,
+                'kioskPassword' => $kioskPassword
+            ]);
+        }
+
+        return view('spa');
     }
 }

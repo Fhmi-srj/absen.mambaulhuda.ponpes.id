@@ -55,15 +55,20 @@ class SantriController extends Controller
             ->orderBy('kelas')
             ->pluck('kelas');
 
-        return view('admin.santri', compact(
-            'santriList',
-            'total',
-            'kelasList',
-            'sortCol',
-            'sortDir',
-            'search',
-            'filterStatus',
-            'filterKelas'
-        ));
+        // Return JSON for AJAX requests
+        if ($request->expectsJson() || $request->ajax()) {
+            return response()->json([
+                'santriList' => $santriList,
+                'total' => $total,
+                'kelasList' => $kelasList,
+                'sortCol' => $sortCol,
+                'sortDir' => $sortDir,
+                'search' => $search,
+                'filterStatus' => $filterStatus,
+                'filterKelas' => $filterKelas,
+            ]);
+        }
+
+        return view('spa');
     }
 }

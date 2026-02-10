@@ -35,7 +35,15 @@ class AbsensiManualController extends Controller
             ->limit(20)
             ->get();
 
-        return view('admin.absensi-manual', compact('siswaList', 'jadwalList', 'recentAttendances'));
+        if (request()->expectsJson() || request()->ajax()) {
+            return response()->json([
+                'siswaList' => $siswaList,
+                'jadwalList' => $jadwalList,
+                'recentAttendances' => $recentAttendances,
+            ]);
+        }
+
+        return view('spa');
     }
 
     public function store(Request $request)

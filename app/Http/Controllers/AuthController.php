@@ -24,15 +24,16 @@ class AuthController extends Controller
 
     public function login(Request $request)
     {
+        $isAjax = $request->expectsJson() || $request->ajax();
+
         $request->validate([
             'email' => 'required|email',
             'password' => 'required',
-            'device_token' => 'required',
+            'device_token' => 'nullable',
         ], [
             'email.required' => 'Email wajib diisi.',
             'email.email' => 'Format email tidak valid.',
             'password.required' => 'Password wajib diisi.',
-            'device_token.required' => 'Device token tidak valid. Silakan refresh halaman.',
         ]);
 
         $user = User::where('email', $request->email)
@@ -40,26 +41,33 @@ class AuthController extends Controller
             ->first();
 
         if (!$user || !Hash::check($request->password, $user->password)) {
+            if ($isAjax) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Email atau password salah.'
+                ], 401);
+            }
             return back()
                 ->withInput($request->only('email'))
                 ->withErrors(['email' => 'Email atau password salah.']);
         }
 
         // Check device fingerprint - update on each login (matching PHP project behavior)
+        $deviceToken = $request->device_token ?: 'spa-' . md5($request->userAgent());
         $userDevice = UserDevice::where('user_id', $user->id)->first();
 
         if (!$userDevice) {
             // First device registration
             UserDevice::create([
                 'user_id' => $user->id,
-                'device_fingerprint' => $request->device_token,
+                'device_fingerprint' => $deviceToken,
                 'device_name' => $request->userAgent(),
                 'last_used_at' => now(),
             ]);
         } else {
             // Update device fingerprint and last used time
             $userDevice->update([
-                'device_fingerprint' => $request->device_token,
+                'device_fingerprint' => $deviceToken,
                 'device_name' => $request->userAgent(),
                 'last_used_at' => now(),
             ]);
@@ -86,11 +94,20 @@ class AuthController extends Controller
 
         $request->session()->regenerate();
 
+        if ($isAjax) {
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Login berhasil',
+                'user' => $user,
+            ]);
+        }
+
         return redirect()->intended(route('beranda'))->with('success', 'Selamat datang, ' . $user->name . '!');
     }
 
     public function logout(Request $request)
     {
+        $isAjax = $request->expectsJson() || $request->ajax();
         $user = Auth::user();
 
         if ($user) {
@@ -117,6 +134,10 @@ class AuthController extends Controller
         Auth::logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();
+
+        if ($isAjax) {
+            return response()->json(['status' => 'success']);
+        }
 
         return redirect()->route('login')->with('success', 'Anda telah berhasil logout.');
     }

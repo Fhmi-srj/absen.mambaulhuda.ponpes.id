@@ -26,6 +26,10 @@ class DaftarRfidController extends Controller
 
         $siswaList = $query->paginate($perPage)->appends(['search' => $search]);
 
-        return view('user.daftar-rfid', compact('siswaList', 'search'));
+        if ($request->expectsJson() || $request->ajax()) {
+            return response()->json(['siswaList' => $siswaList, 'search' => $search]);
+        }
+
+        return view('spa');
     }
 }

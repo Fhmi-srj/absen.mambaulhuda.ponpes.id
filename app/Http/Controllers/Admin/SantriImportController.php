@@ -51,7 +51,13 @@ class SantriImportController extends Controller
 
     public function index()
     {
-        return view('admin.santri-import', ['columnDefinitions' => $this->columnDefinitions, 'errors' => []]);
+        if (request()->expectsJson() || request()->ajax()) {
+            return response()->json([
+                'columnDefinitions' => $this->columnDefinitions
+            ]);
+        }
+
+        return view('spa');
     }
 
     public function import(Request $request)
@@ -123,15 +129,42 @@ class SantriImportController extends Controller
             DB::commit();
 
             if ($successCount > 0) {
-                return back()->with('success', "$successCount data santri berhasil diimport!");
-            } elseif (empty($errors)) {
+                if (request()->expectsJson() || request()->ajax()) {
+                    return response()->json(['status' => 'success', 'message' => "$successCount data santri berhasil diimport!"]); // Modified message to include count
+                }
+                return redirect()->route('admin.santri')->with('success', "$successCount data santri berhasil diimport!"); // Modified message to include count
+            } elseif (empty($errors)) { // This block was part of the original try block, moved here to handle cases where no data was processed but no exception occurred
                 $errors[] = "Tidak ada data yang valid untuk diimport";
             }
+        } catch (ValidationException $e) { // Added new catch block
+            DB::rollBack(); // Added rollback for consistency
+            $failures = $e->failures();
+            $errorMsgs = [];
+            foreach ($failures as $failure) {
+                $errorMsgs[] = 'Baris ' . $failure->row() . ': ' . implode(', ', $failure->errors());
+            }
+
+            if (request()->expectsJson() || request()->ajax()) {
+                return response()->json(['status' => 'error', 'message' => 'Validasi gagal', 'errors' => $errorMsgs], 422);
+            }
+
+            $columnDefinitions = $this->getColumnDefinitions();
+            return view('admin.santri-import', [
+                'columnDefinitions' => $columnDefinitions,
+                'errors' => $errorMsgs
+            ]);
         } catch (\Exception $e) {
             DB::rollBack();
             $errors[] = 'Error: ' . $e->getMessage();
+
+            if (request()->expectsJson() || request()->ajax()) {
+                return response()->json(['status' => 'error', 'message' => $e->getMessage()], 500); // Changed structure to match new format
+            }
+            return back()->with('error', $e->getMessage()); // Changed return to match new format
         }
 
+        // This return is for cases where there were errors collected but no exception was thrown,
+        // or if $successCount was 0 and $errors was not empty.
         return view('admin.santri-import', ['columnDefinitions' => $this->columnDefinitions, 'errors' => $errors]);
     }
 }

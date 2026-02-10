@@ -67,21 +67,21 @@ class LaporanController extends Controller
         ")->first();
 
         // Export Excel
-        if ($request->get('export') === 'excel') {
-            return $this->exportExcel($attendances, $dateFrom, $dateTo);
+        if (request()->expectsJson() || request()->ajax()) {
+            return response()->json([
+                'siswaList' => $siswaList,
+                'jadwalList' => $jadwalList,
+                'attendances' => $attendances,
+                'stats' => $stats,
+                'dateFrom' => $dateFrom,
+                'dateTo' => $dateTo,
+                'filterSiswa' => $filterSiswa,
+                'filterJadwal' => $filterJadwal,
+                'filterStatus' => $filterStatus
+            ]);
         }
 
-        return view('admin.laporan', compact(
-            'siswaList',
-            'jadwalList',
-            'attendances',
-            'stats',
-            'dateFrom',
-            'dateTo',
-            'filterSiswa',
-            'filterJadwal',
-            'filterStatus'
-        ));
+        return view('spa');
     }
 
     private function exportExcel($attendances, $dateFrom, $dateTo)

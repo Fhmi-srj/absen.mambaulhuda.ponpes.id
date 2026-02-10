@@ -50,7 +50,17 @@ class TrashController extends Controller
         $autoPurgeEnabled = $this->getSetting('auto_purge_enabled', '0') === '1';
         $autoPurgeDays = $this->getSetting('auto_purge_days', '30');
 
-        return view('admin.trash', compact('activeTab', 'trashData', 'deleters', 'autoPurgeEnabled', 'autoPurgeDays'));
+        if (request()->expectsJson() || request()->ajax()) {
+            return response()->json([
+                'trashData' => $trashData,
+                'deleters' => $deleters,
+                'autoPurgeEnabled' => $autoPurgeEnabled,
+                'autoPurgeDays' => $autoPurgeDays,
+                'activeTab' => $activeTab
+            ]);
+        }
+
+        return view('spa');
     }
 
     public function restore(Request $request)
@@ -71,6 +81,10 @@ class TrashController extends Controller
             'module' => $table,
             'description' => 'Restored from trash',
         ]);
+
+        if (request()->expectsJson() || request()->ajax()) {
+            return response()->json(['status' => 'success', 'message' => 'Data berhasil di-restore!']);
+        }
 
         return back()->with('success', 'Data berhasil di-restore!');
     }
@@ -94,6 +108,10 @@ class TrashController extends Controller
             'description' => 'Permanently deleted',
         ]);
 
+        if (request()->expectsJson() || request()->ajax()) {
+            return response()->json(['status' => 'success', 'message' => 'Data berhasil dihapus permanen!']);
+        }
+
         return back()->with('success', 'Data berhasil dihapus permanen!');
     }
 
@@ -115,6 +133,10 @@ class TrashController extends Controller
             'module' => $table,
             'description' => "Restored $restored records",
         ]);
+
+        if (request()->expectsJson() || request()->ajax()) {
+            return response()->json(['status' => 'success', 'message' => "$restored data berhasil di-restore!"]);
+        }
 
         return back()->with('success', "$restored data berhasil di-restore!");
     }
@@ -138,6 +160,10 @@ class TrashController extends Controller
             'description' => "Permanently deleted $deleted records",
         ]);
 
+        if (request()->expectsJson() || request()->ajax()) {
+            return response()->json(['status' => 'success', 'message' => "$deleted data berhasil dihapus permanen!"]);
+        }
+
         return back()->with('success', "$deleted data berhasil dihapus permanen!");
     }
 
@@ -159,6 +185,10 @@ class TrashController extends Controller
             'description' => "Dikosongkan trash: $counts data dihapus permanen",
         ]);
 
+        if (request()->expectsJson() || request()->ajax()) {
+            return response()->json(['status' => 'success', 'message' => "Trash dikosongkan! $counts data dihapus permanen."]);
+        }
+
         return back()->with('success', "Trash dikosongkan! $counts data dihapus permanen.");
     }
 
@@ -166,6 +196,9 @@ class TrashController extends Controller
     {
         $this->setSetting('auto_purge_enabled', $request->has('auto_purge_enabled') ? '1' : '0');
         $this->setSetting('auto_purge_days', intval($request->auto_purge_days));
+        if (request()->expectsJson() || request()->ajax()) {
+            return response()->json(['status' => 'success', 'message' => 'Pengaturan berhasil disimpan!']);
+        }
         return back()->with('success', 'Pengaturan berhasil disimpan!');
     }
 

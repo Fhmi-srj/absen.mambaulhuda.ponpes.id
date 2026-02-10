@@ -1,0 +1,278 @@
+import React, { useState, useEffect } from 'react';
+import { PageSkeleton } from '../../Components/Skeleton';
+import Swal from 'sweetalert2';
+
+export default function Jadwal() {
+    const [loading, setLoading] = useState(true);
+    const [jadwalList, setJadwalList] = useState([]);
+    const [modalOpen, setModalOpen] = useState(false);
+    const [isEditing, setIsEditing] = useState(false);
+    const [saving, setSaving] = useState(false);
+    const [message, setMessage] = useState({ type: '', text: '' });
+    const [formData, setFormData] = useState({
+        id: '',
+        name: '',
+        type: 'absen',
+        start_time: '',
+        scheduled_time: '',
+        end_time: '',
+        late_tolerance_minutes: 15,
+    });
+
+    useEffect(() => {
+        document.title = 'Jadwal Absen - Aktivitas Santri';
+        fetchJadwal();
+    }, []);
+
+    const fetchJadwal = async () => {
+        try {
+            const response = await fetch('/admin/jadwal', {
+                credentials: 'include',
+                headers: {
+                    'Accept': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest',
+                },
+            });
+            if (response.ok) {
+                const data = await response.json();
+                setJadwalList(data.jadwalList || []);
+            }
+        } catch (error) {
+            console.error('Error fetching jadwal:', error);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const resetForm = () => {
+        setFormData({
+            id: '', name: '', type: 'absen',
+            start_time: '', scheduled_time: '', end_time: '',
+            late_tolerance_minutes: 15,
+        });
+        setIsEditing(false);
+    };
+
+    const openAddModal = () => {
+        resetForm();
+        setModalOpen(true);
+    };
+
+    const openEditModal = (j) => {
+        setFormData({
+            id: j.id,
+            name: j.name || '',
+            type: j.type || 'absen',
+            start_time: j.start_time || '',
+            scheduled_time: j.scheduled_time || '',
+            end_time: j.end_time || '',
+            late_tolerance_minutes: j.late_tolerance_minutes || 15,
+        });
+        setIsEditing(true);
+        setModalOpen(true);
+    };
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        setSaving(true);
+        setMessage({ type: '', text: '' });
+
+        try {
+            const form = new FormData();
+            Object.keys(formData).forEach(key => {
+                if (formData[key] !== '') form.append(key, formData[key]);
+            });
+
+            const url = isEditing
+                ? `/api/admin/jadwal/${formData.id}`
+                : '/api/admin/jadwal';
+
+            const response = await fetch(url, {
+                method: 'POST',
+                body: form,
+                credentials: 'include',
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content,
+                },
+            });
+
+            const data = await response.json();
+            if (data.success) {
+                setMessage({ type: 'success', text: data.message });
+                setModalOpen(false);
+                fetchJadwal();
+            } else {
+                setMessage({ type: 'error', text: data.message });
+            }
+        } catch (error) {
+            setMessage({ type: 'error', text: 'Terjadi kesalahan' });
+        } finally {
+            setSaving(false);
+        }
+    };
+
+    const handleDelete = async (id, name) => {
+        const result = await Swal.fire({
+            title: 'Hapus Jadwal?',
+            text: `Yakin ingin menghapus jadwal "${name}"?`,
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#ef4444',
+            cancelButtonColor: '#6b7280',
+            confirmButtonText: 'Ya, Hapus!',
+            cancelButtonText: 'Batal'
+        });
+
+        if (!result.isConfirmed) return;
+
+        try {
+            const response = await fetch(`/api/admin/jadwal/${id}`, {
+                method: 'DELETE',
+                credentials: 'include',
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content,
+                    'Content-Type': 'application/json',
+                },
+            });
+
+            const data = await response.json();
+            if (data.success) {
+                setMessage({ type: 'success', text: data.message });
+                fetchJadwal();
+            } else {
+                setMessage({ type: 'error', text: data.message });
+            }
+        } catch (error) {
+            setMessage({ type: 'error', text: 'Terjadi kesalahan' });
+        }
+    };
+
+    const formatTime = (time) => time ? time.substring(0, 5) : '--:--';
+
+    if (loading) {
+        return <PageSkeleton />;
+    }
+
+    return (
+        <>
+            {/* Header */}
+            <div className="flex flex-wrap justify-between items-center gap-4 mb-6">
+
+                <button
+                    onClick={openAddModal}
+                    className="px-4 py-2 bg-blue-500 text-white rounded-lg font-semibold hover:bg-blue-600"
+                >
+                    <i className="fas fa-plus mr-2"></i>Tambah Jadwal
+                </button>
+            </div>
+
+            {/* Message */}
+            {message.text && (
+                <div className={`mb-4 p-4 rounded-lg ${message.type === 'success' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
+                    {message.text}
+                    <button onClick={() => setMessage({ type: '', text: '' })} className="float-right font-bold">&times;</button>
+                </div>
+            )}
+
+            {/* Grid Cards */}
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {jadwalList.length === 0 ? (
+                    <div className="col-span-full bg-white rounded-xl shadow-sm p-8 text-center">
+                        <i className="fas fa-clock fa-3x text-gray-300 mb-3"></i>
+                        <h5 className="text-gray-500 font-semibold">Belum ada jadwal</h5>
+                        <p className="text-gray-400">Tambahkan jadwal absen terlebih dahulu</p>
+                    </div>
+                ) : (
+                    jadwalList.map((j) => (
+                        <div key={j.id} className="bg-white rounded-xl shadow-sm p-5">
+                            <div className="flex justify-between items-center mb-4">
+                                <h5 className="font-bold text-gray-800">{j.name}</h5>
+                                <div className="flex gap-2">
+                                    <button onClick={() => openEditModal(j)} className="p-2 text-blue-500 hover:bg-blue-50 rounded">
+                                        <i className="fas fa-edit"></i>
+                                    </button>
+                                    <button onClick={() => handleDelete(j.id, j.name)} className="p-2 text-red-500 hover:bg-red-50 rounded">
+                                        <i className="fas fa-trash"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div className="grid grid-cols-3 text-center gap-2 mb-4">
+                                <div>
+                                    <small className="text-gray-400 block">Mulai</small>
+                                    <strong className="text-green-500">{formatTime(j.start_time)}</strong>
+                                </div>
+                                <div>
+                                    <small className="text-gray-400 block">Tepat</small>
+                                    <strong className="text-blue-500">{formatTime(j.scheduled_time)}</strong>
+                                </div>
+                                <div>
+                                    <small className="text-gray-400 block">Tutup</small>
+                                    <strong className="text-red-500">{formatTime(j.end_time)}</strong>
+                                </div>
+                            </div>
+                            <div className="text-center border-t pt-3">
+                                <small className="text-gray-400">
+                                    <i className="fas fa-hourglass-half mr-1"></i>
+                                    Toleransi: <strong>{j.late_tolerance_minutes} menit</strong>
+                                </small>
+                            </div>
+                        </div>
+                    ))
+                )}
+            </div>
+
+            {/* Modal */}
+            {modalOpen && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+                    <div className="absolute inset-0 bg-black/50" onClick={() => setModalOpen(false)}></div>
+                    <div className="relative bg-white rounded-2xl shadow-xl w-full max-w-md overflow-hidden">
+                        <form onSubmit={handleSubmit}>
+                            <div className="px-6 py-4 border-b flex justify-between items-center">
+                                <h5 className="font-bold text-gray-800">{isEditing ? 'Edit Jadwal' : 'Tambah Jadwal'}</h5>
+                                <button type="button" onClick={() => setModalOpen(false)} className="text-gray-400 hover:text-gray-600">
+                                    <i className="fas fa-times"></i>
+                                </button>
+                            </div>
+                            <div className="p-6 space-y-4">
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-600 mb-1">Nama Jadwal <span className="text-red-500">*</span></label>
+                                    <input type="text" value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                                        className="w-full px-4 py-2 border border-gray-200 rounded-lg" placeholder="e.g. Absen Masuk" required />
+                                </div>
+                                <div className="grid grid-cols-3 gap-3">
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-600 mb-1">Mulai <span className="text-red-500">*</span></label>
+                                        <input type="time" value={formData.start_time} onChange={(e) => setFormData({ ...formData, start_time: e.target.value })}
+                                            className="w-full px-3 py-2 border border-gray-200 rounded-lg" required />
+                                    </div>
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-600 mb-1">Tepat <span className="text-red-500">*</span></label>
+                                        <input type="time" value={formData.scheduled_time} onChange={(e) => setFormData({ ...formData, scheduled_time: e.target.value })}
+                                            className="w-full px-3 py-2 border border-gray-200 rounded-lg" required />
+                                    </div>
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-600 mb-1">Tutup <span className="text-red-500">*</span></label>
+                                        <input type="time" value={formData.end_time} onChange={(e) => setFormData({ ...formData, end_time: e.target.value })}
+                                            className="w-full px-3 py-2 border border-gray-200 rounded-lg" required />
+                                    </div>
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-600 mb-1">Toleransi Terlambat (menit)</label>
+                                    <input type="number" value={formData.late_tolerance_minutes} onChange={(e) => setFormData({ ...formData, late_tolerance_minutes: e.target.value })}
+                                        className="w-full px-4 py-2 border border-gray-200 rounded-lg" min="0" />
+                                    <small className="text-gray-400">Berapa menit setelah waktu tepat masih tidak terlambat</small>
+                                </div>
+                            </div>
+                            <div className="px-6 py-4 border-t flex gap-3">
+                                <button type="button" onClick={() => setModalOpen(false)} className="flex-1 py-2 bg-gray-100 text-gray-600 rounded-lg font-semibold hover:bg-gray-200">Batal</button>
+                                <button type="submit" disabled={saving} className="flex-1 py-2 bg-blue-500 text-white rounded-lg font-semibold hover:bg-blue-600 disabled:opacity-50">
+                                    {saving ? 'Menyimpan...' : 'Simpan'}
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            )}
+        </>
+    );
+}

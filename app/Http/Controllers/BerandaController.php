@@ -8,6 +8,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
+use Inertia\Inertia;
 
 class BerandaController extends Controller
 {
@@ -82,22 +83,34 @@ class BerandaController extends Controller
             ];
         }
 
-        // Aktivitas terbaru
+        // Aktivitas terbaru with formatted dates
         $recentAktivitas = CatatanAktivitas::with('santri')
             ->whereNull('deleted_at')
             ->orderByDesc('created_at')
             ->limit(5)
-            ->get();
+            ->get()
+            ->map(function ($akt) {
+                return [
+                    'id' => $akt->id,
+                    'kategori' => $akt->kategori,
+                    'judul' => $akt->judul,
+                    'tanggal_formatted' => $akt->tanggal ? $akt->tanggal->format('d/m H:i') : '-',
+                    'santri' => $akt->santri ? [
+                        'nama_lengkap' => $akt->santri->nama_lengkap,
+                        'kelas' => $akt->santri->kelas,
+                    ] : null,
+                ];
+            });
 
-        return view('user.beranda', compact(
-            'siswaCount',
-            'userCount',
-            'aktivitasToday',
-            'presentToday',
-            'absentToday',
-            'chartData',
-            'lateSiswa',
-            'recentAktivitas'
-        ));
+        return Inertia::render('Beranda', [
+            'siswaCount' => $siswaCount,
+            'userCount' => $userCount,
+            'aktivitasToday' => $aktivitasToday,
+            'presentToday' => $presentToday,
+            'absentToday' => $absentToday,
+            'chartData' => $chartData,
+            'lateSiswa' => $lateSiswa,
+            'recentAktivitas' => $recentAktivitas,
+        ]);
     }
 }

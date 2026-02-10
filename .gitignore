@@ -22,3 +22,7 @@
 Homestead.json
 Homestead.yaml
 Thumbs.db
+/production sebelumnya/
+/production sebelumnya.zip
+*.zip
+DEPLOYMENT_UPDATE.md

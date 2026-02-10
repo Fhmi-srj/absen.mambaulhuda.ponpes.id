@@ -21,6 +21,14 @@ class KartuQrController extends Controller
         $qrData = $siswa->nisn ?? $siswa->id;
         $qrApiUrl = "https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=" . urlencode($qrData);
 
-        return view('kartu-qr', compact('siswa', 'schoolName', 'qrApiUrl'));
+        if (request()->expectsJson()) {
+            return response()->json([
+                'siswa' => $siswa,
+                'schoolName' => $schoolName,
+                'qrApiUrl' => $qrApiUrl
+            ]);
+        }
+
+        return view('spa');
     }
 }

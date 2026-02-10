@@ -8,6 +8,6 @@ class PrintIzinController extends Controller
 {
     public function index()
     {
-        return view('user.print-izin');
+        return view('spa');
     }
 }

@@ -14,6 +14,10 @@ class AbsensiLangsungController extends Controller
             ->orderBy('start_time', 'asc')
             ->get();
 
-        return view('user.absensi-langsung', compact('jadwalList'));
+        if (request()->expectsJson() || request()->ajax()) {
+            return response()->json(['jadwalList' => $jadwalList]);
+        }
+
+        return view('spa');
     }
 }

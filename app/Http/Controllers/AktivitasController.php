@@ -6,6 +6,7 @@ use App\Models\CatatanAktivitas;
 use App\Models\DataInduk;
 use App\Models\ActivityLog;
 use Illuminate\Http\Request;
+use Inertia\Inertia;
 
 class AktivitasController extends Controller
 {
@@ -16,7 +17,7 @@ class AktivitasController extends Controller
         // For kesehatan role, default to 'sakit' category
         $defaultKategori = $role === 'kesehatan' ? 'sakit' : null;
 
-        return view('user.aktivitas', [
+        return Inertia::render('Aktivitas', [
             'pageTitle' => $role === 'kesehatan' ? 'Laporan Kesehatan' : 'Aktivitas Santri',
             'defaultKategori' => $defaultKategori,
         ]);

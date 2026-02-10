@@ -33,6 +33,16 @@ class PenggunaController extends Controller
             'kesehatan' => 'Kesehatan'
         ];
 
-        return view('admin.pengguna', compact('users', 'roles', 'roleLabels', 'filterRole'));
+        // Return JSON for AJAX requests
+        if ($request->expectsJson() || $request->ajax()) {
+            return response()->json([
+                'users' => $users,
+                'roles' => $roles,
+                'roleLabels' => $roleLabels,
+                'filterRole' => $filterRole,
+            ]);
+        }
+
+        return view('spa');
     }
 }
