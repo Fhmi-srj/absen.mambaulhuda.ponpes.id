@@ -29,12 +29,3 @@ DEPLOYMENT_UPDATE.md
 
 # Hosting & Flattened Structure Discrepancies
 /hosting/
-/index.php
-/.htaccess
-/bootstrap/app.php
-/public/index.php
-/public/.htaccess
-/favicon.ico
-/robots.txt
-/logo-pondok.png
-/error_log
