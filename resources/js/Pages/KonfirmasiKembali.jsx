@@ -1,35 +1,41 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import axios from 'axios';
 import StandaloneLayout from '@/Layouts/StandaloneLayout';
-import { Html5Qrcode } from "html5-qrcode";
 
 export default function KonfirmasiKembali() {
+    // Table data
     const [allData, setAllData] = useState([]);
     const [filteredData, setFilteredData] = useState([]);
     const [stats, setStats] = useState({ total: 0, mendekat: 0, terlambat: 0 });
     const [counts, setCounts] = useState({ semua: 0, keluar: 0, pulang: 0 });
     const [currentCategory, setCurrentCategory] = useState('semua');
     const [filters, setFilters] = useState({ search: '', dateFrom: '', dateTo: '' });
-    const [isLoading, setIsLoading] = useState(true);
+    const [isLoadingData, setIsLoadingData] = useState(true);
 
-    const [selectedItem, setSelectedItem] = useState(null);
-    const [inputKode, setInputKode] = useState('');
-    const [isScannerActive, setIsScannerActive] = useState(false);
-    const [showModal, setShowModal] = useState(false);
-
+    // Scanner & confirmation
+    const [isScanning, setIsScanning] = useState(false);
+    const [kodeInput, setKodeInput] = useState('');
+    const [result, setResult] = useState(null);
+    const [detailModal, setDetailModal] = useState(null);
+    const [errorModal, setErrorModal] = useState(null);
+    const [isLoading, setIsLoading] = useState(false);
     const scannerRef = useRef(null);
+    const readerRef = useRef(null);
 
     useEffect(() => {
         document.title = 'Konfirmasi Kembali - Aktivitas Santri';
         loadData();
+        return () => { stopScanner(); };
     }, []);
 
     useEffect(() => {
         applyFilters();
     }, [allData, filters, currentCategory]);
 
+    // ========== TABLE DATA FUNCTIONS ==========
+
     const loadData = async () => {
-        setIsLoading(true);
+        setIsLoadingData(true);
         try {
             const response = await axios.get('/api/public/santri-izin-aktif');
             if (response.data.status === 'success') {
@@ -39,7 +45,7 @@ export default function KonfirmasiKembali() {
         } catch (error) {
             console.error('Error loading data:', error);
         } finally {
-            setIsLoading(false);
+            setIsLoadingData(false);
         }
     };
 
@@ -83,75 +89,24 @@ export default function KonfirmasiKembali() {
         }
 
         if (filters.dateFrom) {
-            const dFrom = new Date(filters.dateFrom);
+            const dFrom = new Date(filters.dateFrom + 'T00:00:00');
             filtered = filtered.filter(item => {
-                const itemDate = new Date(item.tanggal_raw || item.tanggal.split('/').reverse().join('-'));
+                if (!item.tanggal_raw && !item.tanggal) return false;
+                const itemDate = new Date(item.tanggal_raw || item.tanggal.split(' ')[0].split('/').reverse().join('-'));
                 return itemDate >= dFrom;
             });
         }
 
         if (filters.dateTo) {
-            const dTo = new Date(filters.dateTo);
+            const dTo = new Date(filters.dateTo + 'T23:59:59');
             filtered = filtered.filter(item => {
-                const itemDate = new Date(item.tanggal_raw || item.tanggal.split('/').reverse().join('-'));
+                if (!item.tanggal_raw && !item.tanggal) return false;
+                const itemDate = new Date(item.tanggal_raw || item.tanggal.split(' ')[0].split('/').reverse().join('-'));
                 return itemDate <= dTo;
             });
         }
 
         setFilteredData(filtered);
-    };
-
-    const handleKonfirmasiKlik = (item) => {
-        setSelectedItem(item);
-        setInputKode('');
-        setShowModal(true);
-    };
-
-    const submitKonfirmasi = async () => {
-        if (!inputKode) return alert('Masukkan kode konfirmasi');
-        try {
-            const response = await axios.post('/api/public/konfirmasi-kembali', {
-                id: selectedItem.id,
-                kode: inputKode
-            });
-            if (response.data.status === 'success') {
-                alert('Berhasil: ' + response.data.message);
-                setShowModal(false);
-                loadData();
-            }
-        } catch (error) {
-            alert('Gagal: ' + (error.response?.data?.message || 'Terjadi kesalahan'));
-        }
-    };
-
-    const startScanner = async () => {
-        setIsScannerActive(true);
-        setTimeout(() => {
-            const html5QrCode = new Html5Qrcode("qr-reader");
-            scannerRef.current = html5QrCode;
-            html5QrCode.start(
-                { facingMode: "environment" },
-                { fps: 10, qrbox: { width: 250, height: 250 } },
-                (decodedText) => {
-                    setInputKode(decodedText);
-                    stopScanner();
-                },
-                (errorMessage) => { }
-            ).catch(err => {
-                console.error("Scanner error:", err);
-                setIsScannerActive(false);
-            });
-        }, 100);
-    };
-
-    const stopScanner = () => {
-        if (scannerRef.current) {
-            scannerRef.current.stop().then(() => {
-                setIsScannerActive(false);
-            }).catch(err => console.error(err));
-        } else {
-            setIsScannerActive(false);
-        }
     };
 
     const getTimeStatus = (batasWaktuRaw) => {
@@ -173,266 +128,458 @@ export default function KonfirmasiKembali() {
         }
     };
 
+    // ========== SCANNER FUNCTIONS (same as Pemindai) ==========
+
+    const startScanner = async () => {
+        setIsScanning(true);
+        try {
+            const { Html5Qrcode } = await import('html5-qrcode');
+            scannerRef.current = new Html5Qrcode("qr-reader-konfirmasi");
+
+            await scannerRef.current.start(
+                { facingMode: "environment" },
+                { fps: 10, qrbox: { width: 250, height: 250 } },
+                onScanSuccess,
+                () => { }
+            );
+        } catch (err) {
+            console.error('Camera error:', err);
+            alert('Tidak dapat mengakses kamera: ' + err);
+            stopScanner();
+        }
+    };
+
+    const stopScanner = useCallback(() => {
+        if (scannerRef.current) {
+            scannerRef.current.stop().catch(() => { });
+            scannerRef.current = null;
+        }
+        setIsScanning(false);
+    }, []);
+
+    const onScanSuccess = (decodedText) => {
+        if (scannerRef.current) {
+            scannerRef.current.pause();
+        }
+        searchByKode(decodedText.trim());
+    };
+
+    const resumeScanner = () => {
+        if (scannerRef.current && isScanning) {
+            try { scannerRef.current.resume(); } catch (e) { }
+        }
+    };
+
+    const searchByKode = async (kode) => {
+        if (!kode) {
+            alert('Masukkan kode konfirmasi terlebih dahulu');
+            return;
+        }
+
+        setIsLoading(true);
+        try {
+            const formData = new FormData();
+            formData.append('kode', kode);
+
+            const response = await fetch('/api/public/konfirmasi/search', {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content,
+                },
+            });
+
+            const result = await response.json();
+
+            if (result.status === 'success') {
+                setDetailModal(result.data);
+            } else {
+                setErrorModal(result.message || 'Kode tidak ditemukan');
+            }
+        } catch (error) {
+            setErrorModal('Terjadi kesalahan: ' + error.message);
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    const handleSearch = () => {
+        searchByKode(kodeInput.trim());
+    };
+
+    const handleKeyPress = (e) => {
+        if (e.key === 'Enter') handleSearch();
+    };
+
+    const handleKonfirmasi = async () => {
+        if (!detailModal) return;
+
+        setIsLoading(true);
+        try {
+            const formData = new FormData();
+            formData.append('id', detailModal.id);
+
+            const response = await fetch('/api/public/konfirmasi/direct', {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content,
+                },
+            });
+
+            const result = await response.json();
+
+            if (result.status === 'success') {
+                setResult({ success: true, name: detailModal.nama_lengkap, message: result.message });
+                setTimeout(() => setResult(null), 3000);
+                setKodeInput('');
+                loadData(); // refresh table
+            } else {
+                setResult({ success: false, name: detailModal.nama_lengkap, message: result.message });
+                setTimeout(() => setResult(null), 3000);
+            }
+        } catch (error) {
+            setResult({ success: false, name: 'Error', message: 'Terjadi kesalahan: ' + error.message });
+            setTimeout(() => setResult(null), 3000);
+        } finally {
+            setIsLoading(false);
+            setDetailModal(null);
+            resumeScanner();
+        }
+    };
+
+    const getKategoriBadge = (kategori) => {
+        if (kategori === 'izin_keluar') return 'bg-amber-100 text-amber-500';
+        if (kategori === 'izin_pulang') return 'bg-orange-100 text-orange-500';
+        return 'bg-blue-100 text-blue-500';
+    };
+
     return (
         <StandaloneLayout>
-
-            <div className="bg-gradient-to-r from-slate-800 to-slate-900 text-white p-6 md:p-10">
-                <div className="max-w-6xl mx-auto">
-                    <h1 className="text-3xl font-bold flex items-center">
-                        <i className="fas fa-check-circle mr-4 text-emerald-400"></i>
+            {/* Header */}
+            <div className="bg-gradient-to-r from-slate-800 to-slate-900 text-white p-4 md:p-6">
+                <div className="max-w-7xl mx-auto">
+                    <h1 className="text-xl md:text-2xl font-bold flex items-center">
+                        <i className="fas fa-check-circle mr-3 text-emerald-400"></i>
                         Konfirmasi Kembali
                     </h1>
-                    <p className="opacity-70 mt-2">Pilih nama santri untuk konfirmasi sudah kembali ke pondok</p>
+                    <p className="opacity-70 mt-1 text-sm">Scan QR Code atau masukkan kode unik untuk konfirmasi santri sudah kembali</p>
                 </div>
             </div>
 
-            <div className="max-w-6xl mx-auto p-4 md:p-8">
+            <div className="max-w-7xl mx-auto p-4 md:p-6">
                 {/* Stats */}
-                <div className="grid grid-cols-3 gap-4 mb-8">
-                    <div className="bg-white p-4 rounded-2xl shadow-sm text-center border border-slate-100">
-                        <div className="text-2xl font-bold text-blue-600">{stats.total}</div>
-                        <div className="text-xs text-slate-500 uppercase tracking-wider font-semibold">Sedang Izin</div>
+                <div className="grid grid-cols-3 gap-3 mb-6">
+                    <div className="bg-white p-3 rounded-xl shadow-sm text-center border border-slate-100">
+                        <div className="text-xl font-bold text-blue-600">{stats.total}</div>
+                        <div className="text-[10px] text-slate-500 uppercase tracking-wider font-semibold">Sedang Izin</div>
                     </div>
-                    <div className="bg-white p-4 rounded-2xl shadow-sm text-center border border-slate-100">
-                        <div className="text-2xl font-bold text-amber-600">{stats.mendekat}</div>
-                        <div className="text-xs text-slate-500 uppercase tracking-wider font-semibold">Hampir Batas</div>
+                    <div className="bg-white p-3 rounded-xl shadow-sm text-center border border-slate-100">
+                        <div className="text-xl font-bold text-amber-600">{stats.mendekat}</div>
+                        <div className="text-[10px] text-slate-500 uppercase tracking-wider font-semibold">Hampir Batas</div>
                     </div>
-                    <div className="bg-white p-4 rounded-2xl shadow-sm text-center border border-slate-100">
-                        <div className="text-2xl font-bold text-red-600">{stats.terlambat}</div>
-                        <div className="text-xs text-slate-500 uppercase tracking-wider font-semibold">Terlambat</div>
+                    <div className="bg-white p-3 rounded-xl shadow-sm text-center border border-slate-100">
+                        <div className="text-xl font-bold text-red-600">{stats.terlambat}</div>
+                        <div className="text-[10px] text-slate-500 uppercase tracking-wider font-semibold">Terlambat</div>
                     </div>
                 </div>
 
-                {/* Categories */}
-                <div className="flex gap-3 mb-6 overflow-x-auto pb-2">
-                    {[
-                        { id: 'semua', label: 'Semua', icon: 'list', count: counts.semua, color: 'blue' },
-                        { id: 'izin_keluar', label: 'Izin Keluar', icon: 'sign-out-alt', count: counts.keluar, color: 'amber' },
-                        { id: 'izin_pulang', label: 'Izin Pulang', icon: 'home', count: counts.pulang, color: 'orange' }
-                    ].map(cat => (
+                {/* 2-Card Layout */}
+                <div className="grid md:grid-cols-2 gap-6">
+                    {/* Left Card - Scanner & Input (same as Pemindai) */}
+                    <div className="bg-white rounded-2xl shadow-sm p-6 border border-slate-100">
+                        {/* Scanner Area */}
+                        {isScanning ? (
+                            <div>
+                                <div className="bg-slate-50 rounded-xl p-4 text-center mb-3">
+                                    <i className="fas fa-camera text-2xl text-emerald-500 mb-2"></i>
+                                    <p className="text-sm text-slate-500 mb-0">Arahkan kamera ke QR Code slip izin santri</p>
+                                </div>
+
+                                <div id="qr-reader-konfirmasi" ref={readerRef} className="mb-3 rounded-xl overflow-hidden"></div>
+
+                                <button
+                                    onClick={stopScanner}
+                                    className="w-full py-3 bg-red-500 text-white rounded-xl font-semibold hover:bg-red-600 transition-colors"
+                                >
+                                    <i className="fas fa-stop mr-2"></i>Tutup Kamera
+                                </button>
+                            </div>
+                        ) : (
+                            <div>
+                                <div className="bg-slate-50 rounded-xl p-6 text-center mb-4">
+                                    <i className="fas fa-qrcode text-5xl text-emerald-500 mb-3"></i>
+                                    <h6 className="font-bold mb-1 text-slate-800">Scan QR Code</h6>
+                                    <p className="text-sm text-slate-500 mb-0">Scan QR Code slip izin atau masukkan kode unik</p>
+                                </div>
+
+                                <button
+                                    onClick={startScanner}
+                                    className="w-full py-3 bg-emerald-500 text-white rounded-xl font-bold text-lg hover:bg-emerald-600 transition-colors"
+                                >
+                                    <i className="fas fa-camera mr-2"></i>Mulai Scan
+                                </button>
+                            </div>
+                        )}
+
+                        {/* Divider */}
+                        <div className="flex items-center my-6">
+                            <div className="flex-1 border-b border-slate-200"></div>
+                            <span className="px-4 text-sm text-slate-400">atau masukkan kode</span>
+                            <div className="flex-1 border-b border-slate-200"></div>
+                        </div>
+
+                        {/* Manual Input */}
+                        <div className="mb-3">
+                            <input
+                                type="text"
+                                value={kodeInput}
+                                onChange={(e) => setKodeInput(e.target.value.toUpperCase())}
+                                onKeyPress={handleKeyPress}
+                                placeholder="Masukkan Kode Unik"
+                                maxLength={10}
+                                className="w-full text-center text-3xl font-black tracking-[0.3em] uppercase py-5 px-4 border-3 border-emerald-400 rounded-xl bg-emerald-50 text-gray-800 placeholder:text-emerald-300 placeholder:tracking-widest placeholder:text-lg placeholder:font-semibold focus:border-emerald-500 focus:bg-white focus:ring-2 focus:ring-emerald-200 focus:outline-none transition-all"
+                            />
+                        </div>
                         <button
-                            key={cat.id}
-                            onClick={() => setCurrentCategory(cat.id)}
-                            className={`flex items-center gap-3 p-4 rounded-xl border-2 transition-all min-w-[140px] flex-1 ${currentCategory === cat.id
-                                ? `border-blue-500 bg-blue-50`
-                                : 'border-transparent bg-white shadow-sm'
-                                }`}
+                            onClick={handleSearch}
+                            disabled={isLoading}
+                            className="w-full py-3 border-2 border-emerald-500 text-emerald-500 rounded-xl font-semibold hover:bg-emerald-50 transition-colors disabled:opacity-50"
                         >
-                            <div className={`w-10 h-10 rounded-lg flex items-center justify-center text-lg ${cat.id === 'semua' ? 'bg-blue-100 text-blue-600' :
-                                cat.id === 'izin_keluar' ? 'bg-amber-100 text-amber-600' : 'bg-orange-100 text-orange-600'
-                                }`}>
-                                <i className={`fas fa-${cat.icon}`}></i>
-                            </div>
-                            <div className="text-left flex-1">
-                                <div className="text-sm font-bold text-slate-800">{cat.label}</div>
-                                <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold ${currentCategory === cat.id ? 'bg-blue-600 text-white' : 'bg-slate-200 text-slate-600'
-                                    }`}>
-                                    {cat.count}
-                                </span>
-                            </div>
+                            {isLoading ? (
+                                <><i className="fas fa-spinner fa-spin mr-2"></i>Mencari...</>
+                            ) : (
+                                <><i className="fas fa-search mr-2"></i>Cari</>
+                            )}
                         </button>
-                    ))}
-                </div>
 
-                {/* Filters */}
-                <div className="bg-white p-4 rounded-2xl shadow-sm mb-6 border border-slate-100 flex flex-wrap gap-3 items-center">
-                    <div className="relative flex-1 min-w-[200px]">
-                        <i className="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"></i>
-                        <input
-                            type="text"
-                            placeholder="Cari nama santri..."
-                            value={filters.search}
-                            onChange={(e) => setFilters({ ...filters, search: e.target.value })}
-                            className="w-full pl-10 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-blue-500"
-                        />
+                        {/* Result Area */}
+                        {result && (
+                            <div className={`mt-4 rounded-xl p-6 text-center text-white ${result.success ? 'bg-gradient-to-br from-emerald-500 to-emerald-600' : 'bg-gradient-to-br from-red-500 to-red-600'}`}>
+                                <i className={`fas fa-${result.success ? 'check-circle' : 'times-circle'} text-5xl mb-2`}></i>
+                                <h5 className="font-bold mb-1">{result.name}</h5>
+                                <p className="mb-0">{result.message}</p>
+                            </div>
+                        )}
                     </div>
-                    <input
-                        type="date"
-                        value={filters.dateFrom}
-                        onChange={(e) => setFilters({ ...filters, dateFrom: e.target.value })}
-                        className="p-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-blue-500"
-                    />
-                    <input
-                        type="date"
-                        value={filters.dateTo}
-                        onChange={(e) => setFilters({ ...filters, dateTo: e.target.value })}
-                        className="p-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-blue-500"
-                    />
-                    <button
-                        onClick={() => setFilters({ search: '', dateFrom: '', dateTo: '' })}
-                        className="p-2 text-slate-500 hover:text-red-500 transition-colors"
-                    >
-                        <i className="fas fa-times mr-1"></i> Reset
-                    </button>
-                </div>
 
-                {/* Table */}
-                <div className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
-                    <div className="p-4 bg-emerald-600 text-white flex justify-between items-center font-bold">
-                        <span><i className="fas fa-list mr-2"></i>Daftar Santri Izin Aktif</span>
-                        <button onClick={loadData} className="hover:rotate-180 transition-transform duration-500">
-                            <i className="fas fa-sync-alt"></i>
-                        </button>
-                    </div>
-                    <div className="overflow-x-auto">
-                        <table className="w-full text-left">
-                            <thead className="bg-slate-50 border-b border-slate-100">
-                                <tr>
-                                    <th className="p-4 text-xs font-bold text-slate-500 uppercase">Santri</th>
-                                    <th className="p-4 text-xs font-bold text-slate-500 uppercase">Jenis</th>
-                                    <th className="p-4 text-xs font-bold text-slate-500 uppercase hidden md:table-cell">Keperluan</th>
-                                    <th className="p-4 text-xs font-bold text-slate-500 uppercase">Batas</th>
-                                    <th className="p-4 text-xs font-bold text-slate-500 uppercase">Status</th>
-                                    <th className="p-4 text-xs font-bold text-slate-500 uppercase">Aksi</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {isLoading ? (
+                    {/* Right Card - Table Daftar Santri Izin Aktif */}
+                    <div className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
+                        {/* Table Header */}
+                        <div className="p-4 bg-emerald-600 text-white flex justify-between items-center font-bold">
+                            <span className="text-sm"><i className="fas fa-list mr-2"></i>Daftar Santri Izin Aktif</span>
+                            <button onClick={loadData} className="hover:rotate-180 transition-transform duration-500">
+                                <i className="fas fa-sync-alt"></i>
+                            </button>
+                        </div>
+
+                        {/* Category Tabs */}
+                        <div className="flex border-b border-slate-100">
+                            {[
+                                { id: 'semua', label: 'Semua', count: counts.semua },
+                                { id: 'izin_keluar', label: 'Keluar', count: counts.keluar },
+                                { id: 'izin_pulang', label: 'Pulang', count: counts.pulang }
+                            ].map(cat => (
+                                <button
+                                    key={cat.id}
+                                    onClick={() => setCurrentCategory(cat.id)}
+                                    className={`flex-1 py-2 text-xs font-bold transition-colors ${currentCategory === cat.id
+                                        ? 'text-emerald-600 border-b-2 border-emerald-500 bg-emerald-50'
+                                        : 'text-slate-400 hover:text-slate-600'
+                                        }`}
+                                >
+                                    {cat.label} <span className="ml-1 text-[10px]">({cat.count})</span>
+                                </button>
+                            ))}
+                        </div>
+
+                        {/* Search & Filters */}
+                        <div className="p-3 border-b border-slate-100 space-y-2">
+                            <div className="relative">
+                                <i className="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+                                <input
+                                    type="text"
+                                    placeholder="Cari nama..."
+                                    value={filters.search}
+                                    onChange={(e) => setFilters({ ...filters, search: e.target.value })}
+                                    className="w-full pl-8 pr-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:outline-none focus:border-emerald-500"
+                                />
+                            </div>
+                            <div className="flex items-center gap-2">
+                                <input
+                                    type="date"
+                                    value={filters.dateFrom}
+                                    onChange={(e) => setFilters({ ...filters, dateFrom: e.target.value })}
+                                    className="flex-1 min-w-0 px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm text-gray-700 focus:outline-none focus:border-emerald-500"
+                                />
+                                <span className="text-slate-400 text-xs font-semibold shrink-0">s/d</span>
+                                <input
+                                    type="date"
+                                    value={filters.dateTo}
+                                    onChange={(e) => setFilters({ ...filters, dateTo: e.target.value })}
+                                    className="flex-1 min-w-0 px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm text-gray-700 focus:outline-none focus:border-emerald-500"
+                                />
+                                <button
+                                    onClick={() => setFilters({ search: '', dateFrom: '', dateTo: '' })}
+                                    className="p-2 bg-slate-100 text-slate-500 rounded-lg hover:bg-slate-200 shrink-0"
+                                    title="Reset Filter"
+                                >
+                                    <i className="fas fa-undo text-xs"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        {/* Table */}
+                        <div className="overflow-x-auto max-h-[500px] overflow-y-auto">
+                            <table className="w-full text-left">
+                                <thead className="bg-slate-50 border-b border-slate-100 sticky top-0">
                                     <tr>
-                                        <td colSpan="6" className="p-10 text-center">
-                                            <div className="animate-spin inline-block w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full mb-4"></div>
-                                            <p className="text-slate-500">Memuat data...</p>
-                                        </td>
+                                        <th className="px-3 py-2 text-[11px] font-bold text-slate-500 uppercase">Santri</th>
+                                        <th className="px-3 py-2 text-[11px] font-bold text-slate-500 uppercase">Jenis</th>
+                                        <th className="px-3 py-2 text-[11px] font-bold text-slate-500 uppercase">Batas</th>
+                                        <th className="px-3 py-2 text-[11px] font-bold text-slate-500 uppercase">Status</th>
                                     </tr>
-                                ) : filteredData.length > 0 ? (
-                                    filteredData.map(item => {
-                                        const status = getTimeStatus(item.batas_waktu_raw);
-                                        return (
-                                            <tr key={item.id} className="border-b border-slate-50 hover:bg-slate-50 transition-colors">
-                                                <td className="p-4">
-                                                    <div className="flex items-center gap-3">
-                                                        <div className="w-10 h-10 rounded-full bg-blue-500 flex items-center justify-center text-white font-bold text-sm">
-                                                            {item.nama_lengkap.substring(0, 1).toUpperCase()}
+                                </thead>
+                                <tbody>
+                                    {isLoadingData ? (
+                                        <tr>
+                                            <td colSpan="4" className="p-8 text-center">
+                                                <div className="animate-spin inline-block w-6 h-6 border-3 border-emerald-500 border-t-transparent rounded-full mb-2"></div>
+                                                <p className="text-slate-500 text-xs">Memuat data...</p>
+                                            </td>
+                                        </tr>
+                                    ) : filteredData.length > 0 ? (
+                                        filteredData.map(item => {
+                                            const status = getTimeStatus(item.batas_waktu_raw);
+                                            return (
+                                                <tr key={item.id} className="border-b border-slate-50 hover:bg-slate-50 transition-colors">
+                                                    <td className="px-3 py-2">
+                                                        <div className="flex items-center gap-2">
+                                                            <div className="w-7 h-7 rounded-full bg-emerald-500 flex items-center justify-center text-white font-bold text-[10px] flex-shrink-0">
+                                                                {item.nama_lengkap.substring(0, 1).toUpperCase()}
+                                                            </div>
+                                                            <div>
+                                                                <div className="font-bold text-xs text-slate-800">{item.nama_lengkap}</div>
+                                                                <div className="text-[10px] text-slate-500">Kelas {item.kelas}</div>
+                                                            </div>
                                                         </div>
-                                                        <div>
-                                                            <div className="font-bold text-slate-800">{item.nama_lengkap}</div>
-                                                            <div className="text-xs text-slate-500">Kelas {item.kelas}</div>
-                                                        </div>
-                                                    </div>
-                                                </td>
-                                                <td className="p-4">
-                                                    <span className={`px-2 py-1 rounded-md text-[10px] font-bold uppercase ${item.kategori === 'izin_keluar' ? 'bg-amber-100 text-amber-500' :
-                                                        item.kategori === 'izin_pulang' ? 'bg-orange-100 text-orange-500' :
-                                                            'bg-blue-100 text-blue-500'
-                                                        }`}>
-                                                        {item.kategori_label}
-                                                    </span>
-                                                </td>
-                                                <td className="p-4 hidden md:table-cell text-xs text-slate-600 truncate max-w-[150px]">
-                                                    {item.judul}
-                                                </td>
-                                                <td className="p-4 text-xs font-mono font-bold text-slate-600">
-                                                    {item.batas_waktu || '-'}
-                                                </td>
-                                                <td className="p-4">
-                                                    <span className={`px-2 py-1 rounded-md text-[10px] font-bold ${status.className}`}>
-                                                        {status.label}
-                                                    </span>
-                                                </td>
-                                                <td className="p-4">
-                                                    <button
-                                                        onClick={() => handleKonfirmasiKlik(item)}
-                                                        className="w-10 h-10 rounded-lg bg-emerald-500 text-white flex items-center justify-center hover:bg-emerald-600 transition-colors shadow-lg shadow-emerald-500/20"
-                                                    >
-                                                        <i className="fas fa-check"></i>
-                                                    </button>
-                                                </td>
-                                            </tr>
-                                        );
-                                    })
-                                ) : (
-                                    <tr>
-                                        <td colSpan="6" className="p-20 text-center opacity-40">
-                                            <i className="fas fa-inbox text-6xl mb-4 text-slate-300"></i>
-                                            <p className="text-lg text-slate-500">Belum ada data izin aktif</p>
-                                        </td>
-                                    </tr>
-                                )}
-                            </tbody>
-                        </table>
+                                                    </td>
+                                                    <td className="px-3 py-2">
+                                                        <span className={`px-2 py-0.5 rounded-md text-[10px] font-bold uppercase ${getKategoriBadge(item.kategori)}`}>
+                                                            {item.kategori_label}
+                                                        </span>
+                                                    </td>
+                                                    <td className="px-3 py-2 text-[11px] font-mono font-bold text-slate-600">
+                                                        {item.batas_waktu || '-'}
+                                                    </td>
+                                                    <td className="px-3 py-2">
+                                                        <span className={`px-2 py-0.5 rounded-md text-[10px] font-bold ${status.className}`}>
+                                                            {status.label}
+                                                        </span>
+                                                    </td>
+                                                </tr>
+                                            );
+                                        })
+                                    ) : (
+                                        <tr>
+                                            <td colSpan="4" className="p-12 text-center opacity-40">
+                                                <i className="fas fa-inbox text-4xl mb-3 text-slate-300 block"></i>
+                                                <p className="text-sm text-slate-500">Belum ada data izin aktif</p>
+                                            </td>
+                                        </tr>
+                                    )}
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
             </div>
 
-            {/* Confirmation Modal */}
-            {showModal && selectedItem && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm animate-in fade-in duration-300">
-                    <div className="bg-white rounded-2xl w-full max-w-md shadow-2xl overflow-hidden animate-in zoom-in-95 duration-300">
-                        <div className="p-4 bg-emerald-600 text-white font-bold flex justify-between items-center">
-                            <span><i className="fas fa-user-check mr-2"></i>Konfirmasi Kembali</span>
-                            <button onClick={() => setShowModal(false)} className="text-white/80 hover:text-white">
+            {/* Detail Modal (confirmation) */}
+            {detailModal && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+                    <div className="absolute inset-0 bg-black/50" onClick={() => { setDetailModal(null); resumeScanner(); }}></div>
+                    <div className="relative bg-white rounded-2xl shadow-xl w-full max-w-sm overflow-hidden">
+                        {/* Header */}
+                        <div className="bg-gradient-to-r from-emerald-500 to-emerald-400 text-white px-6 py-4 flex items-center justify-between">
+                            <h5 className="font-bold flex items-center gap-2">
+                                <i className="fas fa-clipboard-check"></i>Detail Izin
+                            </h5>
+                            <button onClick={() => { setDetailModal(null); resumeScanner(); }} className="text-white/80 hover:text-white">
                                 <i className="fas fa-times"></i>
                             </button>
                         </div>
+
+                        {/* Body */}
                         <div className="p-6">
-                            <div className="space-y-3 mb-6">
-                                {[
-                                    { label: 'Nama', value: selectedItem.nama_lengkap },
-                                    { label: 'Kelas', value: selectedItem.kelas },
-                                    { label: 'Jenis', value: selectedItem.kategori_label },
-                                    { label: 'Keperluan', value: selectedItem.judul },
-                                    { label: 'Batas', value: selectedItem.batas_waktu }
-                                ].map(row => (
-                                    <div key={row.label} className="flex justify-between text-sm py-2 border-b border-slate-50">
-                                        <span className="text-slate-400">{row.label}</span>
-                                        <span className="font-bold text-slate-800">{row.value}</span>
-                                    </div>
-                                ))}
-                            </div>
-
-                            <div className="mb-6">
-                                <label className="block text-sm font-bold text-slate-700 mb-2">Masukkan Kode Konfirmasi</label>
-                                <input
-                                    type="text"
-                                    value={inputKode}
-                                    onChange={(e) => setInputKode(e.target.value.toUpperCase())}
-                                    className="w-full bg-slate-50 border-2 border-slate-200 rounded-xl p-4 text-center text-3xl font-mono font-bold tracking-[8px] focus:outline-none focus:border-blue-500"
-                                    placeholder="ABC123"
-                                    maxLength={10}
-                                />
-                            </div>
-
-                            <div className="flex items-center gap-4 mb-6">
-                                <div className="flex-1 h-px bg-slate-100"></div>
-                                <span className="text-slate-400 text-xs font-bold uppercase">atau</span>
-                                <div className="flex-1 h-px bg-slate-100"></div>
-                            </div>
-
-                            {isScannerActive ? (
-                                <div className="bg-slate-50 rounded-xl p-3 mb-6 relative border border-slate-200">
-                                    <div id="qr-reader" className="w-full rounded-lg overflow-hidden"></div>
-                                    <button
-                                        onClick={stopScanner}
-                                        className="mt-3 w-full p-2 text-xs font-bold text-red-500 border border-red-200 rounded-lg bg-red-50 hover:bg-red-100"
-                                    >
-                                        Tutup Kamera
-                                    </button>
+                            {/* Avatar & Name */}
+                            <div className="text-center mb-6">
+                                <div className="w-16 h-16 bg-gradient-to-br from-emerald-500 to-emerald-400 rounded-full flex items-center justify-center mx-auto text-white text-2xl font-bold">
+                                    {(detailModal.nama_lengkap || 'S').charAt(0).toUpperCase()}
                                 </div>
-                            ) : (
-                                <button
-                                    onClick={startScanner}
-                                    className="w-full p-4 border-2 border-dashed border-slate-200 rounded-xl text-slate-400 hover:border-blue-500 hover:text-blue-500 transition-all mb-6"
-                                >
-                                    <i className="fas fa-qrcode text-2xl mb-1 block"></i>
-                                    <span className="text-xs font-bold">Scan QR Code</span>
-                                </button>
-                            )}
+                                <h5 className="font-bold mt-2 mb-1 text-gray-800">{detailModal.nama_lengkap}</h5>
+                                <p className="text-gray-500 text-sm">Kelas {detailModal.kelas}</p>
+                            </div>
 
-                            <div className="flex gap-3 mt-8">
-                                <button
-                                    onClick={() => setShowModal(false)}
-                                    className="flex-1 p-3 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-600 font-bold transition-colors"
-                                >
-                                    Batal
-                                </button>
-                                <button
-                                    onClick={submitKonfirmasi}
-                                    className="flex-1 p-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold transition-colors shadow-lg shadow-emerald-500/20"
-                                >
-                                    Konfirmasi
-                                </button>
+                            {/* Details */}
+                            <div className="space-y-3">
+                                <div className="flex justify-between py-2 border-b border-gray-100">
+                                    <span className="text-gray-500 text-sm">Jenis Izin</span>
+                                    <span className={`px-3 py-1 rounded-full text-xs font-semibold ${getKategoriBadge(detailModal.kategori)}`}>
+                                        {detailModal.kategori_label}
+                                    </span>
+                                </div>
+                                <div className="flex justify-between py-2 border-b border-gray-100">
+                                    <span className="text-gray-500 text-sm">Keperluan</span>
+                                    <span className="font-semibold text-gray-800 text-right">{detailModal.judul || '-'}</span>
+                                </div>
+                                <div className="flex justify-between py-2 border-b border-gray-100">
+                                    <span className="text-gray-500 text-sm">Batas Waktu</span>
+                                    <span className="font-semibold text-gray-800">{detailModal.batas_waktu || '-'}</span>
+                                </div>
                             </div>
                         </div>
+
+                        {/* Footer */}
+                        <div className="px-6 pb-6 flex gap-3">
+                            <button
+                                onClick={() => { setDetailModal(null); resumeScanner(); }}
+                                className="flex-1 py-3 bg-gray-100 text-gray-600 rounded-xl font-semibold hover:bg-gray-200 transition-colors"
+                            >
+                                Batal
+                            </button>
+                            <button
+                                onClick={handleKonfirmasi}
+                                disabled={isLoading}
+                                className="flex-1 py-3 bg-emerald-500 text-white rounded-xl font-semibold hover:bg-emerald-600 transition-colors disabled:opacity-50"
+                            >
+                                {isLoading ? (
+                                    <><i className="fas fa-spinner fa-spin mr-1"></i>Memproses...</>
+                                ) : (
+                                    <><i className="fas fa-check mr-1"></i>Konfirmasi Kembali</>
+                                )}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Error Modal */}
+            {errorModal && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+                    <div className="absolute inset-0 bg-black/50" onClick={() => { setErrorModal(null); resumeScanner(); }}></div>
+                    <div className="relative bg-white rounded-2xl shadow-xl w-full max-w-xs overflow-hidden p-6 text-center">
+                        <div className="w-16 h-16 bg-gradient-to-br from-red-500 to-red-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <i className="fas fa-times text-white text-2xl"></i>
+                        </div>
+                        <h5 className="font-bold mb-2 text-gray-800">Tidak Ditemukan</h5>
+                        <p className="text-gray-500 mb-4">{errorModal}</p>
+                        <button
+                            onClick={() => { setErrorModal(null); resumeScanner(); }}
+                            className="w-full py-3 bg-gray-100 text-gray-600 rounded-xl font-semibold hover:bg-gray-200 transition-colors"
+                        >
+                            Tutup
+                        </button>
                     </div>
                 </div>
             )}

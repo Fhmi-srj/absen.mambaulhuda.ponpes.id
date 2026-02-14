@@ -36,6 +36,7 @@ class KonfirmasiKembaliController extends Controller
                     'kategori_label' => $item->kategori === 'izin_keluar' ? 'Izin Keluar' : 'Izin Pulang',
                     'judul' => $item->judul,
                     'tanggal' => $item->tanggal?->format('d/m/Y H:i'),
+                    'tanggal_raw' => $item->tanggal?->toIso8601String(),
                     'batas_waktu' => $item->batas_waktu?->format('d/m/Y H:i'),
                     'batas_waktu_raw' => $item->batas_waktu?->toIso8601String(),
                 ];

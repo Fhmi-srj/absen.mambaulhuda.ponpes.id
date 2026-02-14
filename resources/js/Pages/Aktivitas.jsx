@@ -45,7 +45,18 @@ export default function Aktivitas() {
     const [totalRecords, setTotalRecords] = useState(0);
     const [selectedIds, setSelectedIds] = useState([]);
     const [isRefreshing, setIsRefreshing] = useState(false);
-    const [tableLoading, setTableLoading] = useState(false); // Added
+    const [tableLoading, setTableLoading] = useState(false);
+    const [sortConfig, setSortConfig] = useState({ key: null, direction: 'desc' });
+
+    // Print server status
+    const [printServerStatus, setPrintServerStatus] = useState(null);
+
+    // Second santri for izin_keluar
+    const [secondSiswa, setSecondSiswa] = useState(null);
+    const [secondSiswaQuery, setSecondSiswaQuery] = useState('');
+    const [secondSiswaResults, setSecondSiswaResults] = useState([]);
+    const [showSecondSiswa, setShowSecondSiswa] = useState(false);
+    const [isSearchingSecond, setIsSearchingSecond] = useState(false);
 
     // Modal state
     const [showInputModal, setShowInputModal] = useState(false);
@@ -57,6 +68,7 @@ export default function Aktivitas() {
     const [bulkWaList, setBulkWaList] = useState([]);
     const [reportText, setReportText] = useState('');
     const [printSlipData, setPrintSlipData] = useState(null);
+    const [activeDropdown, setActiveDropdown] = useState(null);
 
     // Form state
     const [formData, setFormData] = useState({
@@ -86,16 +98,15 @@ export default function Aktivitas() {
 
     // Fetch aktivitas data
     const fetchAktivitas = useCallback(async () => {
-        setTableLoading(true); // Changed from setIsRefreshing
+        setTableLoading(true);
         try {
-            const params = new URLSearchParams({
-                kategori: filterKategori === 'all' ? '' : filterKategori,
-                search_keyword: filterSearch,
-                tanggal_dari: filterTanggalDari,
-                tanggal_sampai: filterTanggalSampai,
-                page: currentPage,
-                length: 10,
-            });
+            // Map sort key names to DataTables column indices
+            const sortColumnMap = {
+                'id': 0, 'tanggal': 1, 'tanggal_selesai': 2,
+                'nama_lengkap': 3, 'kategori': 4, 'judul': 5, 'keterangan': 6
+            };
+            const orderColumn = sortColumnMap[sortConfig.key] ?? 1;
+            const orderDir = sortConfig.direction || 'desc';
 
             const response = await axios.post('/api/aktivitas/data', {
                 draw: 1,
@@ -105,6 +116,7 @@ export default function Aktivitas() {
                 search_keyword: filterSearch,
                 tanggal_dari: filterTanggalDari,
                 tanggal_sampai: filterTanggalSampai,
+                order: [{ column: orderColumn, dir: orderDir }],
             });
 
             const data = response.data;
@@ -117,7 +129,7 @@ export default function Aktivitas() {
         } finally {
             setTableLoading(false);
         }
-    }, [filterKategori, filterSearch, filterTanggalDari, filterTanggalSampai, currentPage]);
+    }, [filterKategori, filterSearch, filterTanggalDari, filterTanggalSampai, currentPage, sortConfig]);
 
     useEffect(() => {
         fetchAktivitas();
@@ -135,6 +147,26 @@ export default function Aktivitas() {
         return () => {
             document.removeEventListener('mousedown', handleClickOutside);
         };
+    }, []);
+
+    // Poll print server status every 10 seconds
+    useEffect(() => {
+        const checkPrintServerStatus = async () => {
+            try {
+                const response = await axios.get('/api/print-server/status');
+                if (response.data && response.data.data) {
+                    setPrintServerStatus(response.data.data);
+                } else {
+                    setPrintServerStatus({ online: false, printer_connected: false, printer_name: '-', last_heartbeat: null });
+                }
+            } catch (e) {
+                // Show offline instead of hiding badge
+                setPrintServerStatus({ online: false, printer_connected: false, printer_name: '-', last_heartbeat: null });
+            }
+        };
+        checkPrintServerStatus();
+        const interval = setInterval(checkPrintServerStatus, 10000);
+        return () => clearInterval(interval);
     }, []);
 
     // QR Scanner Functions // Added Start
@@ -202,6 +234,35 @@ export default function Aktivitas() {
 
     const resetSiswa = () => {
         setSelectedSiswa(null);
+        setSecondSiswa(null);
+        setShowSecondSiswa(false);
+        setSecondSiswaQuery('');
+        setSecondSiswaResults([]);
+    };
+
+    // Search second santri
+    const handleSearchSecondSiswa = async (query) => {
+        setSecondSiswaQuery(query);
+        if (query.length < 3) {
+            setSecondSiswaResults([]);
+            setIsSearchingSecond(false);
+            return;
+        }
+        setIsSearchingSecond(true);
+        try {
+            const response = await axios.get(`/api/santri/search?q=${encodeURIComponent(query)}`);
+            setSecondSiswaResults((response.data || []).filter(s => s.id !== selectedSiswa?.id));
+        } catch (err) {
+            console.error('Error searching second siswa:', err);
+        } finally {
+            setIsSearchingSecond(false);
+        }
+    };
+
+    const selectSecondSiswa = (siswa) => {
+        setSecondSiswa(siswa);
+        setSecondSiswaQuery('');
+        setSecondSiswaResults([]);
     };
 
     const generatePersonalMessage = (item) => {
@@ -314,6 +375,11 @@ Wassalamu'alaikum Wr. Wb.`;
             formDataObj.append('status_kegiatan', formData.status_kegiatan);
             formDataObj.append('status_paket', formData.status_paket);
 
+            // Second santri for izin_keluar
+            if (modalKategori === 'izin_keluar' && secondSiswa) {
+                formDataObj.append('siswa_id_2', secondSiswa.id);
+            }
+
             if (fotoFile) {
                 formDataObj.append('foto_dokumen_1', fotoFile);
             }
@@ -329,7 +395,8 @@ Wassalamu'alaikum Wr. Wb.`;
                 fetchAktivitas();
 
                 if (result.data?.kode_konfirmasi) {
-                    setPrintSlipData(result.data);
+                    // Simpan data lengkap (termasuk data_2 jika ada) ke state
+                    setPrintSlipData(result);
                     setShowPrintSlipModal(true);
                 } else {
                     alert(result.message || 'Data berhasil disimpan');
@@ -450,6 +517,30 @@ Wassalamu'alaikum Wr. Wb.`;
             console.error('Error deleting:', err);
             Swal.fire('Error', 'Gagal menghapus data', 'error');
         }
+    };
+
+    const handleReprint = (item) => {
+        if (!item.kode_konfirmasi) {
+            Swal.fire('Info', 'Kode konfirmasi tidak tersedia untuk data lama', 'info');
+            return;
+        }
+
+        const reprintData = {
+            status: 'success',
+            data: {
+                id: item.id,
+                nama_santri: item.nama_lengkap,
+                kelas: item.kelas,
+                kategori: item.kategori,
+                judul: item.judul,
+                batas_waktu: item.batas_waktu,
+                petugas: item.petugas,
+                kode_konfirmasi: item.kode_konfirmasi,
+            }
+        };
+
+        setPrintSlipData(reprintData);
+        setShowPrintSlipModal(true);
     };
 
     const handleBulkDelete = async () => {
@@ -588,22 +679,43 @@ Wassalamu'alaikum Wr. Wb.`;
         });
 
         try {
-            const response = await axios.post('/api/print-queue', {
+            // Print santri pertama
+            const print1 = axios.post('/api/print-queue', {
                 job_type: 'slip_konfirmasi',
-                nama_santri: printSlipData.nama_santri,
-                kelas: printSlipData.kelas,
-                kategori: printSlipData.kategori,
-                judul: printSlipData.judul,
-                batas_waktu: printSlipData.batas_waktu,
-                kode_konfirmasi: printSlipData.kode_konfirmasi
+                nama_santri: printSlipData.data.nama_santri,
+                kelas: printSlipData.data.kelas,
+                kategori: printSlipData.data.kategori,
+                judul: printSlipData.data.judul,
+                batas_waktu: printSlipData.data.batas_waktu,
+                petugas: printSlipData.data.petugas,
+                kode_konfirmasi: printSlipData.data.kode_konfirmasi
             });
 
-            if (response.data.success) {
+            // Print santri kedua jika ada
+            let print2 = Promise.resolve({ data: { success: true } });
+            if (printSlipData.data_2) {
+                print2 = axios.post('/api/print-queue', {
+                    job_type: 'slip_konfirmasi',
+                    nama_santri: printSlipData.data_2.nama_santri,
+                    kelas: printSlipData.data_2.kelas,
+                    kategori: printSlipData.data_2.kategori,
+                    judul: printSlipData.data_2.judul,
+                    batas_waktu: printSlipData.data_2.batas_waktu,
+                    petugas: printSlipData.data_2.petugas,
+                    kode_konfirmasi: printSlipData.data_2.kode_konfirmasi
+                });
+            }
+
+            const [res1, res2] = await Promise.all([print1, print2]);
+
+            if (res1.data.success && res2.data.success) {
                 setShowPrintSlipModal(false);
                 Swal.fire({
                     icon: 'success',
                     title: 'Terkirim!',
-                    text: `Slip dikirim ke antrian cetak (Job #${response.data.job_id})`,
+                    text: printSlipData.data_2
+                        ? 'Kedua slip dikirim ke antrian cetak'
+                        : `Slip dikirim ke antrian cetak (Job #${res1.data.job_id})`,
                     timer: 2000,
                     showConfirmButton: false
                 });
@@ -624,19 +736,55 @@ Wassalamu'alaikum Wr. Wb.`;
 
     // Get visible categories based on role
     // Table Rendering Helpers
+    // Sorting handler
+    const handleSort = (key) => {
+        setSortConfig(prev => ({
+            key,
+            direction: prev.key === key && prev.direction === 'asc' ? 'desc' : 'asc'
+        }));
+    };
+
+    const getSortedData = (data) => {
+        if (!sortConfig.key) return data;
+        return [...data].sort((a, b) => {
+            let aVal = a[sortConfig.key] ?? '';
+            let bVal = b[sortConfig.key] ?? '';
+            if (typeof aVal === 'string') aVal = aVal.toLowerCase();
+            if (typeof bVal === 'string') bVal = bVal.toLowerCase();
+            if (aVal < bVal) return sortConfig.direction === 'asc' ? -1 : 1;
+            if (aVal > bVal) return sortConfig.direction === 'asc' ? 1 : -1;
+            return 0;
+        });
+    };
+
     const renderTableHeaders = () => {
-        const commonClasses = "px-5 py-3 text-left text-xs font-semibold text-gray-500 uppercase whitespace-nowrap";
-        const stickyHeaderClasses = commonClasses + " sticky right-0 bg-gray-50 z-20 shadow-[-4px_0_10px_rgba(0,0,0,0.05)]";
+        const baseClasses = "px-3 py-2 text-left text-[11px] font-semibold text-gray-500 uppercase whitespace-nowrap";
+        const stickyHeaderClasses = baseClasses + " sticky right-0 bg-gray-50 z-20 shadow-[-4px_0_10px_rgba(0,0,0,0.05)]";
+
+        const SortTh = ({ sortKey, children }) => (
+            <th
+                className={baseClasses + " cursor-pointer hover:text-gray-700 select-none"}
+                onClick={() => handleSort(sortKey)}
+            >
+                <span className="inline-flex items-center gap-1">
+                    {children}
+                    <span className="inline-flex flex-col leading-none text-[8px]">
+                        <span className={sortConfig.key === sortKey && sortConfig.direction === 'asc' ? 'text-emerald-500' : 'text-gray-300'}>▲</span>
+                        <span className={sortConfig.key === sortKey && sortConfig.direction === 'desc' ? 'text-emerald-500' : 'text-gray-300'}>▼</span>
+                    </span>
+                </span>
+            </th>
+        );
 
         switch (filterKategori) {
             case 'sakit':
                 return (
                     <>
-                        <th className={commonClasses}>Tgl Sakit</th>
-                        <th className={commonClasses}>Tgl Sembuh</th>
-                        <th className={commonClasses}>Siswa</th>
-                        <th className={commonClasses}>Diagnosa</th>
-                        <th className={commonClasses}>Status</th>
+                        <SortTh sortKey="tanggal">Tgl Sakit</SortTh>
+                        <SortTh sortKey="tanggal_selesai">Tgl Sembuh</SortTh>
+                        <SortTh sortKey="nama_lengkap">Siswa</SortTh>
+                        <SortTh sortKey="judul">Diagnosa</SortTh>
+                        <SortTh sortKey="status">Status</SortTh>
                         <th className={stickyHeaderClasses}>Aksi</th>
                     </>
                 );
@@ -644,33 +792,33 @@ Wassalamu'alaikum Wr. Wb.`;
             case 'izin_pulang':
                 return (
                     <>
-                        <th className={commonClasses}>Waktu Pergi</th>
-                        <th className={commonClasses}>Waktu Kembali</th>
-                        <th className={commonClasses}>Siswa</th>
-                        <th className={commonClasses}>{filterKategori === 'izin_keluar' ? 'Keperluan' : 'Alasan'}</th>
-                        <th className={commonClasses}>Keterangan</th>
+                        <SortTh sortKey="tanggal">Waktu Pergi</SortTh>
+                        <SortTh sortKey="tanggal_selesai">Waktu Kembali</SortTh>
+                        <SortTh sortKey="nama_lengkap">Siswa</SortTh>
+                        <SortTh sortKey="judul">{filterKategori === 'izin_keluar' ? 'Keperluan' : 'Alasan'}</SortTh>
+                        <SortTh sortKey="keterangan">Keterangan</SortTh>
                         <th className={stickyHeaderClasses}>Aksi</th>
                     </>
                 );
             case 'sambangan':
                 return (
                     <>
-                        <th className={commonClasses}>Waktu</th>
-                        <th className={commonClasses}>Siswa</th>
-                        <th className={commonClasses}>Penjenguk</th>
-                        <th className={commonClasses}>Hubungan</th>
-                        <th className={commonClasses}>Keterangan</th>
+                        <SortTh sortKey="tanggal">Waktu</SortTh>
+                        <SortTh sortKey="nama_lengkap">Siswa</SortTh>
+                        <SortTh sortKey="judul">Penjenguk</SortTh>
+                        <SortTh sortKey="keterangan">Hubungan</SortTh>
+                        <SortTh sortKey="keterangan">Keterangan</SortTh>
                         <th className={stickyHeaderClasses}>Aksi</th>
                     </>
                 );
             case 'paket':
                 return (
                     <>
-                        <th className={commonClasses}>Tgl Tiba</th>
-                        <th className={commonClasses}>Tgl Terima</th>
-                        <th className={commonClasses}>Siswa</th>
-                        <th className={commonClasses}>Isi Paket</th>
-                        <th className={commonClasses}>Foto</th>
+                        <SortTh sortKey="tanggal">Tgl Tiba</SortTh>
+                        <SortTh sortKey="tanggal_selesai">Tgl Terima</SortTh>
+                        <SortTh sortKey="nama_lengkap">Siswa</SortTh>
+                        <SortTh sortKey="judul">Isi Paket</SortTh>
+                        <th className={baseClasses}>Foto</th>
                         <th className={stickyHeaderClasses}>Aksi</th>
                     </>
                 );
@@ -678,21 +826,21 @@ Wassalamu'alaikum Wr. Wb.`;
             case 'hafalan':
                 return (
                     <>
-                        <th className={commonClasses}>Tanggal</th>
-                        <th className={commonClasses}>Siswa</th>
-                        <th className={commonClasses}>{filterKategori === 'pelanggaran' ? 'Jenis' : 'Kitab/Surat'}</th>
-                        <th className={commonClasses}>Keterangan</th>
+                        <SortTh sortKey="tanggal">Tanggal</SortTh>
+                        <SortTh sortKey="nama_lengkap">Siswa</SortTh>
+                        <SortTh sortKey="judul">{filterKategori === 'pelanggaran' ? 'Jenis' : 'Kitab/Surat'}</SortTh>
+                        <SortTh sortKey="keterangan">Keterangan</SortTh>
                         <th className={stickyHeaderClasses}>Aksi</th>
                     </>
                 );
             default:
                 return (
                     <>
-                        <th className={commonClasses}>Tanggal</th>
-                        <th className={commonClasses}>Siswa</th>
-                        <th className={commonClasses}>Kategori</th>
-                        <th className={commonClasses}>Judul/Isi</th>
-                        <th className={commonClasses}>Keterangan</th>
+                        <SortTh sortKey="tanggal">Tanggal</SortTh>
+                        <SortTh sortKey="nama_lengkap">Siswa</SortTh>
+                        <SortTh sortKey="kategori">Kategori</SortTh>
+                        <SortTh sortKey="judul">Judul/Isi</SortTh>
+                        <SortTh sortKey="keterangan">Keterangan</SortTh>
                         <th className={stickyHeaderClasses}>Aksi</th>
                     </>
                 );
@@ -700,19 +848,25 @@ Wassalamu'alaikum Wr. Wb.`;
     };
 
     const renderTableRow = (item) => {
-        const commonTd = "px-5 py-4 text-sm text-gray-600 whitespace-nowrap";
-        const actionTd = "px-5 py-4 whitespace-nowrap";
+        const commonTd = "px-3 py-2 text-xs text-gray-600 whitespace-nowrap";
+        const actionTd = "px-3 py-2 whitespace-nowrap";
 
         const renderSiswaCell = () => (
-            <td className="px-5 py-4 whitespace-nowrap">
-                <div className="font-medium text-gray-800">{item.nama_lengkap}</div>
-                <div className="text-sm text-gray-500">{item.nomor_induk || '-'}</div>
+            <td className="px-3 py-2 whitespace-nowrap">
+                <div className="font-medium text-xs text-gray-800">{item.nama_lengkap}</div>
+                <div className="text-[11px] text-gray-500">{item.nomor_induk || '-'}</div>
             </td>
         );
 
         const renderActionCell = () => (
-            <td className={actionTd + " sticky right-0 bg-white z-10 shadow-[-4px_0_10px_rgba(0,0,0,0.05)]"}>
-                <div className="flex gap-1">
+            <td className={actionTd + ` sticky right-0 bg-white ${activeDropdown === item.id ? 'z-50' : 'z-20'} shadow-[-4px_0_10px_rgba(0,0,0,0.05)]`}>
+                {/* Desktop View (lg screens) */}
+                <div className="hidden lg:flex gap-1">
+                    {(item.kategori === 'izin_keluar' || item.kategori === 'izin_pulang') && (
+                        <button onClick={() => handleReprint(item)} className="p-1.5 h-8 w-8 flex items-center justify-center text-blue-500 border border-blue-200 rounded-lg hover:bg-blue-50" title="Cetak Ulang Slip">
+                            <i className="fas fa-print text-xs"></i>
+                        </button>
+                    )}
                     <button onClick={() => handleEdit(item.id)} className="p-1.5 h-8 w-8 flex items-center justify-center text-amber-500 border border-amber-200 rounded-lg hover:bg-amber-50" title="Edit">
                         <i className="fas fa-pencil-alt text-xs"></i>
                     </button>
@@ -723,6 +877,52 @@ Wassalamu'alaikum Wr. Wb.`;
                         <button onClick={() => handleDelete(item.id, item.nama_lengkap)} className="p-1.5 h-8 w-8 flex items-center justify-center text-red-500 border border-red-200 rounded-lg hover:bg-red-50" title="Hapus">
                             <i className="fas fa-trash-alt text-xs"></i>
                         </button>
+                    )}
+                </div>
+
+                {/* Mobile View (Dropdown) */}
+                <div className="lg:hidden relative">
+                    <button
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            setActiveDropdown(activeDropdown === item.id ? null : item.id);
+                        }}
+                        className={`p-1.5 h-8 w-8 flex items-center justify-center rounded-lg border transition-colors ${activeDropdown === item.id ? 'bg-emerald-50 border-emerald-200 text-emerald-600' : 'text-slate-400 border-slate-200 hover:bg-slate-50'}`}
+                    >
+                        <i className={`fas ${activeDropdown === item.id ? 'fa-times' : 'fa-ellipsis-v'} text-xs`}></i>
+                    </button>
+
+                    {activeDropdown === item.id && (
+                        <div className="absolute right-0 top-0 mr-10 w-48 bg-white rounded-xl shadow-2xl border border-slate-100 z-[60] py-1 animate-in fade-in zoom-in-95 duration-200">
+                            {(item.kategori === 'izin_keluar' || item.kategori === 'izin_pulang') && (
+                                <button
+                                    onClick={() => { handleReprint(item); setActiveDropdown(null); }}
+                                    className="w-full px-4 py-3 text-left text-[11px] font-bold text-slate-700 hover:bg-slate-50 flex items-center gap-3"
+                                >
+                                    <i className="fas fa-print text-blue-500 w-4 text-sm"></i> Cetak Ulang
+                                </button>
+                            )}
+                            <button
+                                onClick={() => { handleEdit(item.id); setActiveDropdown(null); }}
+                                className="w-full px-4 py-3 text-left text-[11px] font-bold text-slate-700 hover:bg-slate-50 flex items-center gap-3"
+                            >
+                                <i className="fas fa-pencil-alt text-amber-500 w-4 text-sm"></i> Edit Data
+                            </button>
+                            <button
+                                onClick={() => { handleSingleWa(item); setActiveDropdown(null); }}
+                                className="w-full px-4 py-3 text-left text-[11px] font-bold text-slate-700 hover:bg-slate-50 flex items-center gap-3"
+                            >
+                                <i className="fab fa-whatsapp text-emerald-500 w-4 text-sm"></i> Kirim WhatsApp
+                            </button>
+                            {isAdmin && (
+                                <button
+                                    onClick={() => { handleDelete(item.id, item.nama_lengkap); setActiveDropdown(null); }}
+                                    className="w-full px-4 py-3 text-left text-[11px] font-bold text-red-600 hover:bg-red-50 flex items-center gap-3 border-t border-slate-100"
+                                >
+                                    <i className="fas fa-trash-alt w-4 text-sm"></i> Hapus Data
+                                </button>
+                            )}
+                        </div>
                     )}
                 </div>
             </td>
@@ -845,11 +1045,36 @@ Wassalamu'alaikum Wr. Wb.`;
     // Set document title
     useEffect(() => {
         document.title = `${pageTitle} - Aktivitas Santri`;
+
+        // Close dropdown on outside click
+        const handleOutsideClick = () => setActiveDropdown(null);
+        window.addEventListener('click', handleOutsideClick);
+        return () => window.removeEventListener('click', handleOutsideClick);
     }, [pageTitle]);
 
     return (
         <>
-
+            {/* Print Server Status Badge */}
+            {printServerStatus && (
+                <div className={`mb-4 flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium ${printServerStatus.online && printServerStatus.printer_connected
+                    ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
+                    : printServerStatus.online
+                        ? 'bg-amber-50 text-amber-700 border border-amber-200'
+                        : 'bg-red-50 text-red-700 border border-red-200'
+                    }`}>
+                    <span className={`w-2.5 h-2.5 rounded-full animate-pulse ${printServerStatus.online && printServerStatus.printer_connected
+                        ? 'bg-emerald-500'
+                        : printServerStatus.online ? 'bg-amber-500' : 'bg-red-500'
+                        }`}></span>
+                    <i className={`fas fa-print text-xs`}></i>
+                    {printServerStatus.online && printServerStatus.printer_connected
+                        ? `Print Server Terhubung (${printServerStatus.printer_name})`
+                        : printServerStatus.online
+                            ? `Print Server Online - Printer Tidak Terhubung`
+                            : 'Print Server Offline'
+                    }
+                </div>
+            )}
 
             <div className="grid lg:grid-cols-12 gap-4">
                 {/* LEFT COLUMN - Input */}
@@ -1229,6 +1454,75 @@ Wassalamu'alaikum Wr. Wb.`;
                                         </div>
                                     )}
 
+                                    {/* Second Santri for Izin Keluar */}
+                                    {modalKategori === 'izin_keluar' && !editData && (
+                                        <div className="bg-amber-50 border border-amber-200 rounded-xl p-4">
+                                            <p className="text-xs font-bold text-amber-600 uppercase mb-2">
+                                                <i className="fas fa-user-plus mr-1"></i>Santri Tambahan (Opsional, Max 2)
+                                            </p>
+                                            {!showSecondSiswa && !secondSiswa ? (
+                                                <button
+                                                    type="button"
+                                                    onClick={() => setShowSecondSiswa(true)}
+                                                    className="w-full py-2 border-2 border-dashed border-amber-300 rounded-lg text-amber-600 text-sm font-semibold hover:bg-amber-100 transition-colors"
+                                                >
+                                                    <i className="fas fa-plus mr-1"></i>Tambah 1 Santri Lagi
+                                                </button>
+                                            ) : secondSiswa ? (
+                                                <div className="flex items-center justify-between bg-white rounded-lg p-3 border border-amber-200">
+                                                    <div>
+                                                        <div className="font-bold text-sm text-gray-800">{secondSiswa.nama_lengkap}</div>
+                                                        <div className="text-xs text-gray-500">{secondSiswa.kelas} | {secondSiswa.nisn}</div>
+                                                    </div>
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => { setSecondSiswa(null); setShowSecondSiswa(false); }}
+                                                        className="text-red-400 hover:text-red-600"
+                                                    >
+                                                        <i className="fas fa-times"></i>
+                                                    </button>
+                                                </div>
+                                            ) : (
+                                                <div className="relative">
+                                                    <input
+                                                        type="text"
+                                                        value={secondSiswaQuery}
+                                                        onChange={(e) => handleSearchSecondSiswa(e.target.value)}
+                                                        placeholder="Cari nama santri kedua..."
+                                                        className="w-full px-3 py-2 border border-amber-200 rounded-lg text-sm focus:border-amber-400 focus:outline-none"
+                                                    />
+                                                    {isSearchingSecond && (
+                                                        <div className="absolute right-3 top-1/2 -translate-y-1/2">
+                                                            <div className="animate-spin rounded-full h-4 w-4 border-2 border-amber-500 border-t-transparent"></div>
+                                                        </div>
+                                                    )}
+                                                    {secondSiswaResults.length > 0 && (
+                                                        <div className="absolute top-full left-0 right-0 z-10 mt-1 bg-white shadow-lg rounded-lg border border-gray-200 max-h-32 overflow-y-auto">
+                                                            {secondSiswaResults.map(s => (
+                                                                <button
+                                                                    type="button"
+                                                                    key={s.id}
+                                                                    onClick={() => selectSecondSiswa(s)}
+                                                                    className="w-full text-left px-3 py-2 hover:bg-amber-50 text-sm border-b border-gray-50 last:border-0"
+                                                                >
+                                                                    <div className="font-medium">{s.nama_lengkap}</div>
+                                                                    <div className="text-xs text-gray-500">{s.kelas} | {s.nisn}</div>
+                                                                </button>
+                                                            ))}
+                                                        </div>
+                                                    )}
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => { setShowSecondSiswa(false); setSecondSiswaQuery(''); setSecondSiswaResults([]); }}
+                                                        className="absolute -right-0 -top-6 text-xs text-red-400 hover:text-red-600"
+                                                    >
+                                                        Batal
+                                                    </button>
+                                                </div>
+                                            )}
+                                        </div>
+                                    )}
+
                                     <div>
                                         <label className="text-xs font-bold text-gray-400 uppercase block mb-1">KETERANGAN</label>
                                         <textarea
@@ -1416,41 +1710,52 @@ Wassalamu'alaikum Wr. Wb.`;
                             <div className="p-6 overflow-y-auto flex-1 custom-scrollbar">
                                 <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-4 text-sm text-blue-700 no-print">
                                     <i className="fas fa-info-circle mr-1"></i>
-                                    Cetak slip ini dan berikan kepada santri.
+                                    {printSlipData.data_2 ? 'Cetak kedua slip ini dan berikan kepada masing-masing santri.' : 'Cetak slip ini dan berikan kepada santri.'}
                                 </div>
-                                <div className="border border-gray-200 rounded-lg p-4 bg-white text-center">
-                                    <h5 className="font-bold text-gray-800 mb-1">{printSlipData.nama_santri}</h5>
-                                    <small className="text-gray-500">Kelas {printSlipData.kelas}</small>
-                                    <div className="flex justify-between my-4 px-2 text-left">
-                                        <div>
-                                            <small className="text-gray-400">Keperluan</small>
-                                            <div className="font-semibold">{printSlipData.judul || '-'}</div>
-                                        </div>
-                                        <div className="text-right">
-                                            <small className="text-gray-400">Batas Waktu</small>
-                                            <div className="font-semibold text-red-500">
-                                                {printSlipData.batas_waktu ? new Date(printSlipData.batas_waktu).toLocaleString('id-ID', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' }) : '-'}
+
+                                {/* Render Slip untuk Santri 1 dan 2 */}
+                                {[printSlipData.data, printSlipData.data_2].filter(Boolean).map((slip, idx) => (
+                                    <div key={idx} className={`border border-gray-200 rounded-lg p-4 bg-white text-center ${idx > 0 ? 'mt-6 pt-6 border-t-2 border-dashed' : ''}`}>
+                                        {idx > 0 && <div className="mb-4 text-xs font-bold text-emerald-600 no-print">--- SLIP SANTRI KE-2 ---</div>}
+                                        <h5 className="font-bold text-gray-800 mb-1 uppercase">{slip.nama_santri}</h5>
+                                        <small className="text-gray-500">Kelas {slip.kelas}</small>
+                                        <div className="flex justify-between mt-4 px-2 text-left">
+                                            <div>
+                                                <small className="text-gray-400 font-medium">Keperluan</small>
+                                                <div className="font-semibold text-gray-800">{slip.judul || '-'}</div>
+                                            </div>
+                                            <div className="text-right">
+                                                <small className="text-gray-400 font-medium">Batas Waktu</small>
+                                                <div className="font-semibold text-red-500">
+                                                    {slip.batas_waktu ? new Date(slip.batas_waktu).toLocaleString('id-ID', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' }) : '-'}
+                                                </div>
                                             </div>
                                         </div>
-                                    </div>
-                                    <hr className="my-4" />
-                                    <div className="text-3xl font-bold tracking-widest font-mono bg-gray-100 rounded py-2 mb-2">
-                                        {printSlipData.kode_konfirmasi}
-                                    </div>
-                                    <small className="text-gray-400">Kode Konfirmasi</small>
-
-                                    <div className="mt-6 flex flex-col items-center">
-                                        <div className="bg-white p-3 rounded-xl border border-gray-100 shadow-sm">
-                                            <QRCodeSVG
-                                                value={printSlipData.kode_konfirmasi}
-                                                size={160}
-                                                level="H"
-                                                includeMargin={true}
-                                            />
+                                        <div className="mt-3 px-2 text-left">
+                                            <small className="text-gray-400 font-medium">Dizinkan oleh</small>
+                                            <div className="text-xs font-semibold text-gray-700 italic border-l-2 border-emerald-500 pl-2 mt-0.5">
+                                                {slip.petugas || 'Administrator'}
+                                            </div>
                                         </div>
-                                        <small className="text-gray-400 mt-2">Scan untuk verifikasi</small>
+                                        <hr className="my-4" />
+                                        <div className="text-3xl font-bold tracking-widest font-mono bg-gray-100 rounded py-2 mb-2">
+                                            {slip.kode_konfirmasi}
+                                        </div>
+                                        <small className="text-gray-400">Kode Konfirmasi</small>
+
+                                        <div className="mt-6 flex flex-col items-center">
+                                            <div className="bg-white p-3 rounded-xl border border-gray-100 shadow-sm">
+                                                <QRCodeSVG
+                                                    value={slip.kode_konfirmasi}
+                                                    size={160}
+                                                    level="H"
+                                                    includeMargin={true}
+                                                />
+                                            </div>
+                                            <small className="text-gray-400 mt-2">Scan untuk verifikasi</small>
+                                        </div>
                                     </div>
-                                </div>
+                                ))}
                             </div>
                             <div className="px-6 py-4 bg-gray-50 flex justify-end gap-3 no-print flex-shrink-0 border-t border-gray-100">
                                 <button onClick={() => setShowPrintSlipModal(false)} className="px-4 py-2 bg-gray-100 border border-gray-200 rounded-lg font-medium">

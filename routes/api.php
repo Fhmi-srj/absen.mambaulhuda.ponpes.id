@@ -38,4 +38,7 @@ Route::middleware('auth:sanctum')->group(function () {
     
     // Riwayat
     Route::get('/riwayat', [RiwayatController::class, 'index']);
+
+    // Print Server Status
+    Route::get('/print-server/status', [\App\Http\Controllers\PrintServerStatusController::class, 'status']);
 });

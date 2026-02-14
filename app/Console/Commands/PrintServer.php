@@ -45,8 +45,31 @@ class PrintServer extends Command
         $this->info("✓ Printer terhubung. Menunggu antrian...");
         $this->newLine();
 
+        $lastPrinterCheck = 0;
+        $printerConnected = true;
+
         // Main loop
         while (true) {
+            // Write heartbeat to database (shared between machines)
+            DB::table('system_settings')->updateOrInsert(
+                ['setting_key' => 'print_server_last_heartbeat'],
+                ['value' => now()->toIso8601String(), 'updated_at' => now()]
+            );
+            DB::table('system_settings')->updateOrInsert(
+                ['setting_key' => 'print_server_printer_name'],
+                ['value' => $this->printerName, 'updated_at' => now()]
+            );
+
+            // Only test printer connection every 10 seconds
+            if (time() - $lastPrinterCheck >= 10) {
+                $printerConnected = $this->testPrinter();
+                DB::table('system_settings')->updateOrInsert(
+                    ['setting_key' => 'print_server_printer_connected'],
+                    ['value' => $printerConnected ? '1' : '0', 'updated_at' => now()]
+                );
+                $lastPrinterCheck = time();
+            }
+
             $this->pollAndProcess();
             sleep($this->pollInterval);
         }
@@ -217,54 +240,62 @@ PS;
         $GS = "\x1D";
         
         $kode = $data['kode_konfirmasi'] ?? '000000';
-        $nama = mb_substr($data['nama_santri'] ?? '-', 0, 20);
+        $nama = $data['nama_santri'] ?? '-';
         $kelas = $data['kelas'] ?? '-';
-        $judul = mb_substr($data['judul'] ?? '-', 0, 20);
+        $judul = mb_substr($data['judul'] ?? '-', 0, 28);
         $batas = isset($data['batas_waktu']) 
             ? date('d/m H:i', strtotime($data['batas_waktu'])) 
             : '-';
+        $petugas = mb_substr($data['petugas'] ?? '-', 0, 20);
+        $waktuCetak = date('d/m/Y H:i');
+
+        $namaLen = mb_strlen($nama);
+        $LINE  = "================================\n";
+        $DLINE = "________________________________\n";
 
         $output = "";
         
         // Reset printer
         $output .= $ESC . "@";
         
-        // Center align
-        $output .= $ESC . "a\x01";
-        
-        // Bold + Double height for name
-        $output .= $ESC . "E\x01" . $GS . "!\x10";
-        $output .= $nama . "\n";
-        
-        // Normal size
+        // ===== NAMA SANTRI =====
+        if ($namaLen <= 16) {
+            $output .= $ESC . "E\x01" . $GS . "!\x11";
+            $output .= $nama . "\n";
+        } elseif ($namaLen <= 32) {
+            $output .= $ESC . "E\x01" . $GS . "!\x01";
+            $output .= $nama . "\n";
+        } else {
+            $output .= $ESC . "E\x01" . $ESC . "M\x01" . $GS . "!\x00";
+            $output .= $nama . "\n";
+            $output .= $ESC . "M\x00";
+        }
         $output .= $GS . "!\x00" . $ESC . "E\x00";
-        $output .= "Kelas {$kelas}\n";
-        $output .= "--------------------------------\n";
+        $output .= "Kelas " . $kelas . "\n";
+        $output .= $DLINE;
         
-        // Left align
-        $output .= $ESC . "a\x00";
-        $output .= "Keperluan: {$judul}\n";
-        $output .= "Batas    : {$batas}\n";
-        $output .= "--------------------------------\n";
+        // ===== INFO DETAIL =====
+        $output .= $ESC . "a\x00"; // left align
+        $output .= " Keperluan : " . $judul . "\n";
+        $output .= " Batas     : " . $batas . "\n";
+        $output .= " Petugas   : " . $petugas . "\n";
+        $output .= $DLINE;
         
-        // Center align for QR
-        $output .= $ESC . "a\x01";
-        
-        // QR Code (ESC/POS native)
+        // ===== QR CODE =====
+        $output .= $ESC . "a\x01"; // center
         $output .= $this->generateQRCode($kode);
-        
         $output .= "\n";
         
-        // Big code text
+        // ===== KODE KONFIRMASI =====
         $output .= $ESC . "E\x01" . $GS . "!\x11";
         $output .= $kode . "\n";
-        
-        // Normal
         $output .= $GS . "!\x00" . $ESC . "E\x00";
         $output .= "Kode Konfirmasi\n";
-        $output .= "--------------------------------\n";
+        $output .= $LINE;
+        
+        // ===== FOOTER =====
         $output .= "Scan QR/input kode di:\n";
-        $output .= "/konfirmasi-kembali\n\n\n\n";
+        $output .= "/konfirmasi-kembali\n\n\n";
         
         // Cut paper
         $output .= $GS . "V\x00";
@@ -283,8 +314,8 @@ PS;
         $qr = "";
         // Model select (model 2)
         $qr .= $GS . "(k\x04\x00\x31\x41\x32\x00";
-        // Size (module size 6 - optimal for 58mm paper)  
-        $qr .= $GS . "(k\x03\x00\x31\x43\x06";
+        // Size (module size 8 - larger for easy scanning)  
+        $qr .= $GS . "(k\x03\x00\x31\x43\x08";
         // Error correction (M - medium, 15% recovery)
         $qr .= $GS . "(k\x03\x00\x31\x45\x31";
         // Store data

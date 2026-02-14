@@ -119,6 +119,9 @@ Route::middleware('auth')->group(function () {
         Route::post('/print-queue/{id}/complete', [PrintQueueApiController::class, 'complete'])->name('api.print-queue.complete');
         Route::post('/print-queue/{id}/fail', [PrintQueueApiController::class, 'fail'])->name('api.print-queue.fail');
 
+        // Print Server Status
+        Route::get('/print-server/status', [\App\Http\Controllers\PrintServerStatusController::class, 'status'])->name('api.print-server.status');
+
         // Admin APIs
         Route::prefix('admin')->group(function () {
             // Pengguna API

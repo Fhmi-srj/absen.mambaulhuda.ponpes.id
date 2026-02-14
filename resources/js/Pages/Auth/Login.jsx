@@ -109,17 +109,12 @@ export default function Login() {
                             </div>
 
                             <div className="form-group">
-                                <label className="remember-me" onClick={() => setRememberMe(!rememberMe)}>
-                                    <input
-                                        type="checkbox"
-                                        checked={rememberMe}
-                                        onChange={(e) => setRememberMe(e.target.checked)}
-                                    />
+                                <div className="remember-me" onClick={() => setRememberMe(!rememberMe)}>
                                     <span className={`checkmark ${rememberMe ? 'checked' : ''}`}>
                                         <i className="fas fa-check"></i>
                                     </span>
                                     <span className="label-text">Ingat Saya</span>
-                                </label>
+                                </div>
                             </div>
 
                             <button type="submit" className="btn-login" disabled={isLoading}>
@@ -318,9 +313,6 @@ const cssStyles = `
         letter-spacing: normal;
     }
 
-    .remember-me input[type="checkbox"] {
-        display: none;
-    }
 
     .remember-me .checkmark {
         width: 20px;

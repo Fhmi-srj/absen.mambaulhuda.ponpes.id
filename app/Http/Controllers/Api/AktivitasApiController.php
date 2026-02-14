@@ -97,7 +97,8 @@ class AktivitasApiController extends Controller
                 'foto_dokumen_1' => $item->foto_dokumen_1,
                 'foto_dokumen_2' => $item->foto_dokumen_2,
                 'dibuat_oleh' => $item->dibuat_oleh,
-                'pembuat_nama' => $item->dibuatOleh->name ?? '-',
+                'petugas' => $item->dibuatOleh->name ?? '-',
+                'kode_konfirmasi' => $item->kode_konfirmasi,
                 'created_at' => $item->created_at?->format('Y-m-d H:i:s'),
             ];
         });
@@ -245,10 +246,52 @@ class AktivitasApiController extends Controller
                 "Tambah aktivitas {$request->kategori}"
             );
 
+            // Handle second santri for izin_keluar
+            $aktivitas2 = null;
+            $santri2 = null;
+            $kodeKonfirmasi2 = null;
+            if ($request->siswa_id_2 && $request->kategori === 'izin_keluar') {
+                $santri2 = DataInduk::where('id', $request->siswa_id_2)
+                    ->whereNull('deleted_at')
+                    ->first();
+
+                if ($santri2) {
+                    $kodeKonfirmasi2 = strtoupper(substr(md5(uniqid(mt_rand(), true)), 0, 6));
+                    $aktivitas2 = CatatanAktivitas::create([
+                        'siswa_id' => $request->siswa_id_2,
+                        'kategori' => $request->kategori,
+                        'judul' => $request->judul,
+                        'keterangan' => $request->keterangan,
+                        'status_sambangan' => $request->status_sambangan,
+                        'status_kegiatan' => $request->status_kegiatan,
+                        'tanggal' => $request->tanggal,
+                        'batas_waktu' => $request->batas_waktu ?: null,
+                        'tanggal_selesai' => $request->tanggal_selesai ?: null,
+                        'kode_konfirmasi' => $kodeKonfirmasi2,
+                        'foto_dokumen_1' => $foto1,
+                        'foto_dokumen_2' => $foto2,
+                        'dibuat_oleh' => $user->id,
+                    ]);
+
+                    ActivityLog::log(
+                        'CREATE',
+                        'catatan_aktivitas',
+                        $aktivitas2->id,
+                        $santri2->nama_lengkap ?? 'Unknown',
+                        null,
+                        [
+                            'kategori' => $request->kategori,
+                            'judul' => $request->judul,
+                        ],
+                        "Tambah aktivitas {$request->kategori} (santri ke-2)"
+                    );
+                }
+            }
+
             // Return with kode_konfirmasi for print slip
             $response = [
                 'status' => 'success',
-                'message' => 'Data aktivitas berhasil disimpan!'
+                'message' => $aktivitas2 ? 'Data 2 santri berhasil disimpan!' : 'Data aktivitas berhasil disimpan!'
             ];
 
             if ($kodeKonfirmasi) {
@@ -259,8 +302,22 @@ class AktivitasApiController extends Controller
                     'kategori' => $request->kategori,
                     'judul' => $request->judul,
                     'batas_waktu' => $request->batas_waktu,
+                    'petugas' => $user->name, // Added petugas name
                     'kode_konfirmasi' => $kodeKonfirmasi,
                 ];
+
+                if ($aktivitas2 && $santri2) {
+                    $response['data_2'] = [
+                        'id' => $aktivitas2->id,
+                        'nama_santri' => $santri2->nama_lengkap ?? '-',
+                        'kelas' => $santri2->kelas ?? '-',
+                        'kategori' => $request->kategori,
+                        'judul' => $request->judul,
+                        'batas_waktu' => $request->batas_waktu,
+                        'petugas' => $user->name, // Added petugas name
+                        'kode_konfirmasi' => $kodeKonfirmasi2,
+                    ];
+                }
             }
 
             return response()->json($response);

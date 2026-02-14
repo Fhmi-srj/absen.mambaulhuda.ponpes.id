@@ -111,11 +111,11 @@ export default function Riwayat() {
 
             {/* Filter */}
             <div className="bg-white rounded-xl shadow-sm p-4 mb-6">
-                <div className="flex flex-wrap items-center gap-3">
+                <div className="flex items-center gap-2">
                     <select
                         value={selectedMonth}
                         onChange={(e) => setSelectedMonth(e.target.value)}
-                        className="px-3 py-2 border border-gray-200 rounded-lg"
+                        className="flex-1 min-w-0 px-2 py-2 border border-gray-200 rounded-lg text-sm"
                     >
                         {Object.entries(months).map(([val, label]) => (
                             <option key={val} value={val}>{label}</option>
@@ -124,7 +124,7 @@ export default function Riwayat() {
                     <select
                         value={selectedYear}
                         onChange={(e) => setSelectedYear(e.target.value)}
-                        className="px-3 py-2 border border-gray-200 rounded-lg"
+                        className="w-20 flex-shrink-0 px-2 py-2 border border-gray-200 rounded-lg text-sm"
                     >
                         {years.map(y => (
                             <option key={y} value={y}>{y}</option>
@@ -132,7 +132,7 @@ export default function Riwayat() {
                     </select>
                     <button
                         onClick={handleFilter}
-                        className="px-4 py-2 bg-blue-500 text-white rounded-lg font-semibold hover:bg-blue-600"
+                        className="flex-shrink-0 px-3 py-2 bg-blue-500 text-white rounded-lg font-semibold hover:bg-blue-600 text-sm"
                     >
                         <i className="fas fa-filter mr-1"></i> Filter
                     </button>

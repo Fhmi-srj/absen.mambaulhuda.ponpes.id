@@ -177,9 +177,8 @@ export default function Pemindai() {
 
     return (
         <>
-            <div className="max-w-md mx-auto">
-
-
+            <div className="grid md:grid-cols-2 gap-6">
+                {/* Left Card - Scanner & Input */}
                 <div className="bg-white rounded-2xl shadow-sm p-6 border border-gray-100">
                     {/* Scanner Area */}
                     {isScanning ? (
@@ -255,30 +254,31 @@ export default function Pemindai() {
                             <p className="mb-0">{result.message}</p>
                         </div>
                     )}
+                </div>
 
-                    {/* Recent Confirmations */}
-                    <div className="mt-6">
-                        <h6 className="font-bold text-gray-400 mb-3 text-sm">
-                            <i className="fas fa-history mr-1"></i>Konfirmasi Terakhir
-                        </h6>
-                        <div className="space-y-2">
-                            {recentScans.length === 0 ? (
-                                <div className="text-center text-gray-400 text-sm py-3">
-                                    Belum ada konfirmasi
-                                </div>
-                            ) : (
-                                recentScans.map((scan, idx) => (
-                                    <div key={idx} className="flex justify-between items-center bg-gray-50 rounded-lg p-3">
-                                        <div>
-                                            <i className={`fas fa-${scan.success ? 'check text-green-500' : 'times text-red-500'} mr-2`}></i>
-                                            <strong className="text-gray-800">{scan.name}</strong>
-                                            <small className="text-gray-500 block ml-6">{scan.message}</small>
-                                        </div>
-                                        <small className="text-gray-400">{scan.time}</small>
+                {/* Right Card - Recent Confirmations */}
+                <div className="bg-white rounded-2xl shadow-sm p-6 border border-gray-100">
+                    <h6 className="font-bold text-gray-700 mb-4 text-sm flex items-center gap-2">
+                        <i className="fas fa-history text-blue-500"></i>Konfirmasi Terakhir
+                    </h6>
+                    <div className="space-y-2">
+                        {recentScans.length === 0 ? (
+                            <div className="text-center text-gray-400 text-sm py-12">
+                                <i className="fas fa-inbox text-4xl text-gray-300 mb-3 block"></i>
+                                Belum ada konfirmasi
+                            </div>
+                        ) : (
+                            recentScans.map((scan, idx) => (
+                                <div key={idx} className="flex justify-between items-center bg-gray-50 rounded-lg p-3">
+                                    <div>
+                                        <i className={`fas fa-${scan.success ? 'check text-green-500' : 'times text-red-500'} mr-2`}></i>
+                                        <strong className="text-gray-800 text-sm">{scan.name}</strong>
+                                        <small className="text-gray-500 block ml-6">{scan.message}</small>
                                     </div>
-                                ))
-                            )}
-                        </div>
+                                    <small className="text-gray-400">{scan.time}</small>
+                                </div>
+                            ))
+                        )}
                     </div>
                 </div>
             </div>
