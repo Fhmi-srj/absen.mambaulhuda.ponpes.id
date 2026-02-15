@@ -8,7 +8,7 @@
     <title>Aktivitas Santri</title>
     
     <!-- Favicon -->
-    <link rel="icon" type="image/png" href="{{ asset('img/logo.png') }}">
+    <link rel="icon" type="image/png" href="{{ asset('logo-pondok.png') }}">
     
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.bunny.net">
