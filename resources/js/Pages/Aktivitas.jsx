@@ -399,14 +399,28 @@ Wassalamu'alaikum Wr. Wb.`;
                     setPrintSlipData(result);
                     setShowPrintSlipModal(true);
                 } else {
-                    alert(result.message || 'Data berhasil disimpan');
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Berhasil',
+                        text: result.message || 'Data berhasil disimpan',
+                        timer: 2000,
+                        showConfirmButton: false
+                    });
                 }
             } else {
-                alert(result.message || 'Terjadi kesalahan');
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Gagal',
+                    text: result.message || 'Terjadi kesalahan'
+                });
             }
         } catch (err) {
             console.error('Error submitting form:', err);
-            alert('Terjadi kesalahan');
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'Terjadi kesalahan saat menyimpan data'
+            });
         } finally {
             setLoading(false);
         }

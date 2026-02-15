@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import axios from 'axios';
 import StandaloneLayout from '@/Layouts/StandaloneLayout';
+import Swal from 'sweetalert2';
 
 export default function KonfirmasiKembali() {
     // Table data
@@ -172,7 +173,11 @@ export default function KonfirmasiKembali() {
 
     const searchByKode = async (kode) => {
         if (!kode) {
-            alert('Masukkan kode konfirmasi terlebih dahulu');
+            Swal.fire({
+                icon: 'warning',
+                title: 'Kode Kosong',
+                text: 'Masukkan kode konfirmasi terlebih dahulu'
+            });
             return;
         }
 
@@ -181,15 +186,8 @@ export default function KonfirmasiKembali() {
             const formData = new FormData();
             formData.append('kode', kode);
 
-            const response = await fetch('/api/public/konfirmasi/search', {
-                method: 'POST',
-                body: formData,
-                headers: {
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content,
-                },
-            });
-
-            const result = await response.json();
+            const response = await axios.post('/api/public/konfirmasi/search', formData);
+            const result = response.data;
 
             if (result.status === 'success') {
                 setDetailModal(result.data);
@@ -197,7 +195,8 @@ export default function KonfirmasiKembali() {
                 setErrorModal(result.message || 'Kode tidak ditemukan');
             }
         } catch (error) {
-            setErrorModal('Terjadi kesalahan: ' + error.message);
+            console.error('Search error:', error);
+            setErrorModal('Terjadi kesalahan: ' + (error.response?.data?.message || error.message));
         } finally {
             setIsLoading(false);
         }
@@ -219,15 +218,8 @@ export default function KonfirmasiKembali() {
             const formData = new FormData();
             formData.append('id', detailModal.id);
 
-            const response = await fetch('/api/public/konfirmasi/direct', {
-                method: 'POST',
-                body: formData,
-                headers: {
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content,
-                },
-            });
-
-            const result = await response.json();
+            const response = await axios.post('/api/public/konfirmasi/direct', formData);
+            const result = response.data;
 
             if (result.status === 'success') {
                 setResult({ success: true, name: detailModal.nama_lengkap, message: result.message });
@@ -239,7 +231,12 @@ export default function KonfirmasiKembali() {
                 setTimeout(() => setResult(null), 3000);
             }
         } catch (error) {
-            setResult({ success: false, name: 'Error', message: 'Terjadi kesalahan: ' + error.message });
+            console.error('Confirmation error:', error);
+            setResult({
+                success: false,
+                name: 'Error',
+                message: 'Terjadi kesalahan: ' + (error.response?.data?.message || error.message)
+            });
             setTimeout(() => setResult(null), 3000);
         } finally {
             setIsLoading(false);
