@@ -57,14 +57,18 @@ class RiwayatController extends Controller
 
         $attendances = $query->orderBy('a.attendance_time', 'desc')->get();
 
-        // Calculate stats for the whole day (ignores status and kelas filter for stats reliability)
-        $statsQuery = \Illuminate\Support\Facades\DB::table('attendances')
-            ->whereNull('deleted_at')
-            ->where('attendance_date', $filterDate);
+        // Calculate stats matching all active filters (jadwal + kelas)
+        $statsQuery = \Illuminate\Support\Facades\DB::table('attendances as a2')
+            ->join('data_induk as di2', 'a2.user_id', '=', 'di2.id')
+            ->whereNull('a2.deleted_at')
+            ->where('a2.attendance_date', $filterDate);
         if ($filterJadwal) {
-            $statsQuery->where('jadwal_id', $filterJadwal);
+            $statsQuery->where('a2.jadwal_id', $filterJadwal);
         }
-        $allAttendances = $statsQuery->get();
+        if ($filterKelas) {
+            $statsQuery->where('di2.kelas', $filterKelas);
+        }
+        $allAttendances = $statsQuery->select('a2.status')->get();
 
         $totalHadir = $allAttendances->where('status', 'hadir')->count();
         $totalTerlambat = $allAttendances->where('status', 'terlambat')->count();
