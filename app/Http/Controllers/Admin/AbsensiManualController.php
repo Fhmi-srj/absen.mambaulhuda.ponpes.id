@@ -21,6 +21,7 @@ class AbsensiManualController extends Controller
             ->get();
 
         $jadwalList = JadwalAbsen::whereNull('deleted_at')
+            ->where('is_active', true)
             ->orderBy('start_time')
             ->get();
 
@@ -30,7 +31,7 @@ class AbsensiManualController extends Controller
             })
             ->leftJoin('jadwal_absens as j', 'a.jadwal_id', '=', 'j.id')
             ->whereNull('a.deleted_at')
-            ->select('a.*', 'di.nama_lengkap', 'di.kelas', 'j.name as jadwal_name')
+            ->select('a.id', 'a.*', 'di.nama_lengkap', 'di.kelas', 'j.name as jadwal_name')
             ->orderBy('a.created_at', 'desc')
             ->limit(20)
             ->get();
@@ -67,19 +68,27 @@ class AbsensiManualController extends Controller
                 'status' => $request->status,
                 'notes' => $request->notes,
             ]);
-            return back()->with('success', 'Data absensi berhasil diperbarui!');
+        } else {
+            Attendance::create([
+                'user_id' => $request->siswa_id,
+                'jadwal_id' => $request->jadwal_id,
+                'attendance_date' => $request->attendance_date,
+                'attendance_time' => $request->attendance_time,
+                'status' => $request->status,
+                'notes' => $request->notes,
+            ]);
         }
 
-        Attendance::create([
-            'user_id' => $request->siswa_id,
-            'jadwal_id' => $request->jadwal_id,
-            'attendance_date' => $request->attendance_date,
-            'attendance_time' => $request->attendance_time,
-            'status' => $request->status,
-            'notes' => $request->notes,
-        ]);
+        $message = $existing ? 'Data absensi berhasil diperbarui!' : 'Data absensi berhasil ditambahkan!';
 
-        return back()->with('success', 'Data absensi berhasil ditambahkan!');
+        if ($request->expectsJson() || $request->ajax()) {
+            return response()->json([
+                'status' => 'success',
+                'message' => $message
+            ]);
+        }
+
+        return back()->with('success', $message);
     }
 
     public function destroy(Request $request, $id)
@@ -89,15 +98,20 @@ class AbsensiManualController extends Controller
         $attendance->deleted_by = Auth::id();
         $attendance->save();
 
-        ActivityLog::create([
-            'user_id' => Auth::id(),
-            'user_name' => Auth::user()->name,
-            'action' => 'delete',
-            'module' => 'attendances',
-            'description' => 'Hapus absensi ke trash',
-            'ip_address' => $request->ip(),
-            'user_agent' => $request->userAgent(),
-        ]);
+        ActivityLog::log(
+            action: 'DELETE',
+            tableName: 'attendances',
+            recordId: $attendance->id,
+            recordName: "Absensi santri ID: {$attendance->user_id}",
+            description: 'Hapus absensi ke trash'
+        );
+
+        if ($request->expectsJson() || $request->ajax()) {
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Data absensi dipindahkan ke trash!'
+            ]);
+        }
 
         return back()->with('success', 'Data absensi dipindahkan ke trash!');
     }

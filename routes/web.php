@@ -39,6 +39,11 @@ Route::post('/api/public/konfirmasi-kembali', [KonfirmasiKembaliController::clas
 Route::post('/api/public/konfirmasi/search', [KonfirmasiKembaliController::class, 'searchByKode']);
 Route::post('/api/public/konfirmasi/direct', [KonfirmasiKembaliController::class, 'konfirmasiDirect']);
 
+// Kiosk Manual Attendance - Public (no login required)
+Route::get('/api/public/santri/search', [\App\Http\Controllers\Api\SantriApiController::class, 'search']);
+Route::post('/api/public/attendance/manual', [\App\Http\Controllers\Api\AttendanceApiController::class, 'manualKiosk']);
+Route::get('/api/public/kios/roster', [\App\Http\Controllers\KiosController::class, 'roster']);
+
 // Guest routes - SPA will handle login UI
 Route::middleware('guest')->group(function () {
     // SPA handles login page
@@ -149,6 +154,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/santri', [\App\Http\Controllers\Admin\SantriController::class, 'index'])->name('admin.santri');
         Route::get('/jadwal', [\App\Http\Controllers\Admin\JadwalController::class, 'index'])->name('admin.jadwal');
         Route::get('/kehadiran', [\App\Http\Controllers\Admin\KehadiranController::class, 'index'])->name('admin.kehadiran');
+        Route::get('/kehadiran/export', [\App\Http\Controllers\Admin\KehadiranController::class, 'export'])->name('admin.kehadiran.export');
 
         // Absensi Manual
         Route::get('/absensi-manual', [\App\Http\Controllers\Admin\AbsensiManualController::class, 'index'])->name('admin.absensi-manual');

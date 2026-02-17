@@ -27,6 +27,7 @@ class JadwalApiController extends Controller
                 'scheduled_time' => $request->scheduled_time,
                 'end_time' => $request->end_time,
                 'late_tolerance_minutes' => $request->late_tolerance_minutes ?? 15,
+                'is_active' => $request->has('is_active') ? (bool)$request->is_active : true,
             ]);
 
             ActivityLog::create([
@@ -57,6 +58,7 @@ class JadwalApiController extends Controller
                 'scheduled_time' => $request->scheduled_time,
                 'end_time' => $request->end_time,
                 'late_tolerance_minutes' => $request->late_tolerance_minutes ?? 15,
+                'is_active' => $request->has('is_active') ? (bool)$request->is_active : true,
             ]);
 
             ActivityLog::create([

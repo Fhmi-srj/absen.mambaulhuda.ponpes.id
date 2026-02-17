@@ -223,4 +223,79 @@ class AttendanceApiController extends Controller
             'status' => $status
         ]);
     }
+
+    /**
+     * Process manual attendance for kiosk (by siswa_id)
+     */
+    public function manualKiosk(Request $request)
+    {
+        $request->validate([
+            'siswa_id' => 'required|integer',
+            'jadwal_id' => 'required|integer',
+        ]);
+
+        $siswaId = $request->siswa_id;
+        $jadwalId = $request->jadwal_id;
+        $today = date('Y-m-d');
+        $now = date('H:i:s');
+
+        // Find santri
+        $santri = DB::table('data_induk')
+            ->where('id', $siswaId)
+            ->whereNull('deleted_at')
+            ->first();
+
+        if (!$santri) {
+            return response()->json(['success' => false, 'message' => 'Santri tidak ditemukan']);
+        }
+
+        // Check if already attended today for this jadwal
+        $existing = DB::table('attendances')
+            ->where('user_id', $santri->id)
+            ->where('jadwal_id', $jadwalId)
+            ->where('attendance_date', $today)
+            ->first();
+
+        if ($existing) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Sudah absen untuk jadwal ini hari ini',
+                'santri' => $santri
+            ]);
+        }
+
+        // Get jadwal to determine if late
+        $jadwal = DB::table('jadwal_absens')->find($jadwalId);
+        $status = 'hadir';
+
+        if ($jadwal) {
+            $lateTime = null;
+            if (!empty($jadwal->late_time)) {
+                $lateTime = $jadwal->late_time;
+            } elseif (!empty($jadwal->scheduled_time) && isset($jadwal->late_tolerance_minutes)) {
+                $lateTime = date('H:i:s', strtotime($jadwal->scheduled_time) + ($jadwal->late_tolerance_minutes * 60));
+            }
+
+            if ($lateTime && strtotime($now) > strtotime($lateTime)) {
+                $status = 'terlambat';
+            }
+        }
+
+        DB::table('attendances')->insert([
+            'user_id' => $santri->id,
+            'jadwal_id' => $jadwalId,
+            'status' => $status,
+            'attendance_date' => $today,
+            'attendance_time' => $now,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Absensi berhasil',
+            'santri' => $santri,
+            'status' => $status
+        ]);
+    }
 }

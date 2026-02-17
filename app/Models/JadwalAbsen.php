@@ -15,9 +15,13 @@ class JadwalAbsen extends Model
         'name',
         'type',
         'start_time',
+        'scheduled_time',
         'end_time',
         'tolerance_minutes',
+        'late_tolerance_minutes',
+        'late_time',
         'is_active',
+        'deleted_by',
     ];
 
     protected $casts = [

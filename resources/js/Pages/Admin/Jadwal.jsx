@@ -17,6 +17,7 @@ export default function Jadwal() {
         scheduled_time: '',
         end_time: '',
         late_tolerance_minutes: 15,
+        is_active: true,
     });
 
     useEffect(() => {
@@ -48,7 +49,7 @@ export default function Jadwal() {
         setFormData({
             id: '', name: '', type: 'absen',
             start_time: '', scheduled_time: '', end_time: '',
-            late_tolerance_minutes: 15,
+            late_tolerance_minutes: 15, is_active: true,
         });
         setIsEditing(false);
     };
@@ -67,6 +68,7 @@ export default function Jadwal() {
             scheduled_time: j.scheduled_time || '',
             end_time: j.end_time || '',
             late_tolerance_minutes: j.late_tolerance_minutes || 15,
+            is_active: j.is_active !== undefined ? (j.is_active ? true : false) : true,
         });
         setIsEditing(true);
         setModalOpen(true);
@@ -80,7 +82,11 @@ export default function Jadwal() {
         try {
             const form = new FormData();
             Object.keys(formData).forEach(key => {
-                if (formData[key] !== '') form.append(key, formData[key]);
+                if (key === 'is_active') {
+                    form.append(key, formData[key] ? '1' : '0');
+                } else if (formData[key] !== '') {
+                    form.append(key, formData[key]);
+                }
             });
 
             const url = isEditing
@@ -184,9 +190,12 @@ export default function Jadwal() {
                     </div>
                 ) : (
                     jadwalList.map((j) => (
-                        <div key={j.id} className="bg-white rounded-xl shadow-sm p-5">
+                        <div key={j.id} className={`bg-white rounded-xl shadow-sm p-5 ${!j.is_active ? 'opacity-50' : ''}`}>
                             <div className="flex justify-between items-center mb-4">
-                                <h5 className="font-bold text-gray-800">{j.name}</h5>
+                                <div className="flex items-center gap-2">
+                                    <h5 className="font-bold text-gray-800">{j.name}</h5>
+                                    {!j.is_active && <span className="text-[10px] bg-red-100 text-red-600 px-2 py-0.5 rounded-full font-bold">Non-Aktif</span>}
+                                </div>
                                 <div className="flex gap-2">
                                     <button onClick={() => openEditModal(j)} className="p-2 text-blue-500 hover:bg-blue-50 rounded">
                                         <i className="fas fa-edit"></i>
@@ -261,6 +270,16 @@ export default function Jadwal() {
                                     <input type="number" value={formData.late_tolerance_minutes} onChange={(e) => setFormData({ ...formData, late_tolerance_minutes: e.target.value })}
                                         className="w-full px-4 py-2 border border-gray-200 rounded-lg" min="0" />
                                     <small className="text-gray-400">Berapa menit setelah waktu tepat masih tidak terlambat</small>
+                                </div>
+                                <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700">Status Jadwal</label>
+                                        <small className="text-gray-400">{formData.is_active ? 'Jadwal aktif dan muncul di kiosk' : 'Jadwal non-aktif, tidak muncul di kiosk'}</small>
+                                    </div>
+                                    <button type="button" onClick={() => setFormData({ ...formData, is_active: !formData.is_active })}
+                                        className={`relative w-12 h-6 rounded-full transition-colors duration-200 ${formData.is_active ? 'bg-emerald-500' : 'bg-gray-300'}`}>
+                                        <span className={`absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform duration-200 ${formData.is_active ? 'translate-x-6' : ''}`}></span>
+                                    </button>
                                 </div>
                             </div>
                             <div className="px-6 py-4 border-t flex gap-3">

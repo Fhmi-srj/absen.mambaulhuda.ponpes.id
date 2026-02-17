@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 import Swal from 'sweetalert2';
+import axios from 'axios';
 
 export default function AdminAbsensiManual() {
     const { user } = useAuth();
@@ -18,6 +19,14 @@ export default function AdminAbsensiManual() {
         status: 'hadir',
         notes: ''
     });
+
+    // Autocomplete state
+    const [searchQuery, setSearchQuery] = useState('');
+    const [searchResults, setSearchResults] = useState([]);
+    const [showSearchResults, setShowSearchResults] = useState(false);
+    const [isSearching, setIsSearching] = useState(false);
+    const [selectedSiswa, setSelectedSiswa] = useState(null);
+    const searchRef = useRef(null);
 
     useEffect(() => {
         document.title = 'Absensi Manual - Admin';
@@ -45,6 +54,52 @@ export default function AdminAbsensiManual() {
         }
     };
 
+    // Autocomplete search handler
+    const handleSearchSiswa = async (query) => {
+        setSearchQuery(query);
+        if (query.length < 3) {
+            setSearchResults([]);
+            setShowSearchResults(false);
+            setIsSearching(false);
+            return;
+        }
+        setIsSearching(true);
+        try {
+            const response = await axios.get(`/api/santri/search?q=${encodeURIComponent(query)}`);
+            setSearchResults(response.data || []);
+            setShowSearchResults(true);
+        } catch (err) {
+            console.error('Error searching siswa:', err);
+        } finally {
+            setIsSearching(false);
+        }
+    };
+
+    const selectSiswa = (siswa) => {
+        setSelectedSiswa(siswa);
+        setFormData(prev => ({ ...prev, siswa_id: siswa.id }));
+        setSearchQuery('');
+        setShowSearchResults(false);
+    };
+
+    const resetSiswa = () => {
+        setSelectedSiswa(null);
+        setFormData(prev => ({ ...prev, siswa_id: '' }));
+        setSearchQuery('');
+        setSearchResults([]);
+    };
+
+    // Close search results on outside click
+    useEffect(() => {
+        const handleClickOutside = (e) => {
+            if (searchRef.current && !searchRef.current.contains(e.target)) {
+                setShowSearchResults(false);
+            }
+        };
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => document.removeEventListener('mousedown', handleClickOutside);
+    }, []);
+
     const handleInputChange = (e) => {
         const { name, value } = e.target;
         setFormData(prev => ({ ...prev, [name]: value }));
@@ -52,6 +107,16 @@ export default function AdminAbsensiManual() {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+
+        if (!formData.siswa_id) {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Siswa Belum Dipilih',
+                text: 'Silakan cari dan pilih siswa terlebih dahulu'
+            });
+            return;
+        }
+
         setIsSubmitting(true);
 
         try {
@@ -68,10 +133,16 @@ export default function AdminAbsensiManual() {
             const result = await response.json();
 
             if (response.ok) {
-                Swal.fire('Berhasil', result.message || 'Data absensi berhasil disimpan', 'success');
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Berhasil',
+                    text: result.message || 'Data absensi berhasil disimpan',
+                    timer: 2000,
+                    showConfirmButton: false
+                });
+                resetSiswa();
                 setFormData(prev => ({
                     ...prev,
-                    siswa_id: '',
                     notes: ''
                 }));
                 fetchData();
@@ -150,20 +221,65 @@ export default function AdminAbsensiManual() {
                         </h6>
 
                         <form onSubmit={handleSubmit} className="space-y-4">
-                            <div>
+                            <div ref={searchRef}>
                                 <label className="block text-sm font-bold text-gray-700 mb-2">Siswa <span className="text-red-500">*</span></label>
-                                <select
-                                    name="siswa_id"
-                                    className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 focus:border-blue-500 focus:ring-0 transition-colors"
-                                    value={formData.siswa_id}
-                                    onChange={handleInputChange}
-                                    required
-                                >
-                                    <option value="">-- Pilih Siswa --</option>
-                                    {siswaList.map(s => (
-                                        <option key={s.id} value={s.id}>{s.nama_lengkap} ({s.kelas})</option>
-                                    ))}
-                                </select>
+                                {selectedSiswa ? (
+                                    <div className="flex items-center justify-between bg-emerald-50 border border-emerald-200 rounded-xl px-4 py-3">
+                                        <div>
+                                            <span className="font-bold text-emerald-700">{selectedSiswa.nama_lengkap}</span>
+                                            <span className="ml-2 text-xs text-emerald-500">({selectedSiswa.kelas})</span>
+                                        </div>
+                                        <button type="button" onClick={resetSiswa} className="text-emerald-400 hover:text-red-500 transition-colors ml-2">
+                                            <i className="fas fa-times"></i>
+                                        </button>
+                                    </div>
+                                ) : (
+                                    <div className="relative">
+                                        <input
+                                            type="text"
+                                            className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 pr-10 focus:border-blue-500 focus:ring-0 transition-colors"
+                                            placeholder="Ketik min. 3 huruf nama santri..."
+                                            value={searchQuery}
+                                            onChange={(e) => handleSearchSiswa(e.target.value)}
+                                            autoComplete="off"
+                                        />
+                                        <div className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400">
+                                            {isSearching ? (
+                                                <i className="fas fa-spinner fa-spin text-blue-500"></i>
+                                            ) : (
+                                                <i className="fas fa-search"></i>
+                                            )}
+                                        </div>
+
+                                        {showSearchResults && searchResults.length > 0 && (
+                                            <div className="absolute z-50 w-full mt-1 bg-white rounded-xl shadow-xl border border-gray-100 max-h-48 overflow-y-auto">
+                                                {searchResults.map(s => (
+                                                    <button
+                                                        key={s.id}
+                                                        type="button"
+                                                        onClick={() => selectSiswa(s)}
+                                                        className="w-full px-4 py-3 text-left hover:bg-blue-50 flex items-center gap-3 transition-colors border-b border-gray-50 last:border-0"
+                                                    >
+                                                        <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center text-blue-500 text-xs font-bold">
+                                                            {s.nama_lengkap?.charAt(0)}
+                                                        </div>
+                                                        <div>
+                                                            <div className="font-bold text-gray-700 text-sm">{s.nama_lengkap}</div>
+                                                            <div className="text-xs text-gray-400">{s.kelas}</div>
+                                                        </div>
+                                                    </button>
+                                                ))}
+                                            </div>
+                                        )}
+
+                                        {showSearchResults && searchResults.length === 0 && searchQuery.length >= 3 && !isSearching && (
+                                            <div className="absolute z-50 w-full mt-1 bg-white rounded-xl shadow-xl border border-gray-100 px-4 py-3 text-sm text-gray-400 text-center">
+                                                Tidak ada hasil untuk "{searchQuery}"
+                                            </div>
+                                        )}
+                                    </div>
+                                )}
+                                <input type="hidden" name="siswa_id" value={formData.siswa_id} required />
                             </div>
 
                             <div>
@@ -300,9 +416,9 @@ export default function AdminAbsensiManual() {
                                                 </td>
                                                 <td className="px-6 py-4">
                                                     <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider ${a.status === 'hadir' ? 'bg-green-100 text-green-600' :
-                                                            a.status === 'terlambat' ? 'bg-amber-100 text-amber-600' :
-                                                                a.status === 'absen' ? 'bg-red-100 text-red-600' :
-                                                                    'bg-blue-100 text-blue-600'
+                                                        a.status === 'terlambat' ? 'bg-amber-100 text-amber-600' :
+                                                            a.status === 'absen' ? 'bg-red-100 text-red-600' :
+                                                                'bg-blue-100 text-blue-600'
                                                         }`}>
                                                         {a.status}
                                                     </span>

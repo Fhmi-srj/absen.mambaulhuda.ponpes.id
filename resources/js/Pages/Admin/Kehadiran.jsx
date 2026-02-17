@@ -87,6 +87,10 @@ export default function Kehadiran() {
                     <button type="submit" className="px-4 py-2 bg-blue-500 text-white rounded-lg text-sm font-semibold">
                         <i className="fas fa-filter mr-1"></i>Filter
                     </button>
+                    <a href={`/admin/kehadiran/export?date=${filterDate}&jadwal=${filterJadwal}`}
+                        className="px-4 py-2 bg-emerald-500 text-white rounded-lg text-sm font-semibold inline-flex items-center hover:bg-emerald-600 transition-colors">
+                        <i className="fas fa-file-excel mr-1"></i>Export Excel
+                    </a>
                 </form>
             </div>
 
