@@ -74,7 +74,7 @@ class RiwayatController extends Controller
         $attendances = $query->orderBy('a.attendance_time', 'asc')->get();
 
         $jadwalName = $filterJadwal
-            ? (JadwalAbsen::find($filterJadwal)->name ?? 'Semua')
+            ? (JadwalAbsen::find($filterJadwal)?->name ?? 'Semua')
             : 'Semua';
 
         $spreadsheet = new Spreadsheet();
@@ -151,12 +151,12 @@ class RiwayatController extends Controller
 
         $filename = "Riwayat_Kehadiran_{$filterDate}_{$jadwalName}.xlsx";
 
-        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-        header('Content-Disposition: attachment; filename="' . $filename . '"');
-        header('Cache-Control: max-age=0');
-
-        $writer = new Xlsx($spreadsheet);
-        $writer->save('php://output');
-        exit;
+        return response()->streamDownload(function () use ($spreadsheet) {
+            $writer = new Xlsx($spreadsheet);
+            $writer->save('php://output');
+        }, $filename, [
+            'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+            'Cache-Control' => 'max-age=0',
+        ]);
     }
 }
