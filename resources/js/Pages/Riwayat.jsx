@@ -42,7 +42,7 @@ export default function Riwayat() {
                     total: data.attendances?.length || 0,
                     hadir: data.totalHadir || 0,
                     terlambat: data.totalTerlambat || 0,
-                    absen: data.totalAbsen || 0,
+                    alpha: data.totalAlpha || 0,
                 });
             }
         } catch (error) {
@@ -62,7 +62,7 @@ export default function Riwayat() {
         const badges = {
             hadir: 'bg-green-100 text-green-600',
             terlambat: 'bg-amber-100 text-amber-600',
-            absen: 'bg-red-100 text-red-600',
+            alpha: 'bg-red-100 text-red-600',
             izin: 'bg-blue-100 text-blue-600',
         };
         return badges[status] || 'bg-gray-100 text-gray-600';
@@ -99,7 +99,6 @@ export default function Riwayat() {
                             <option value="">Semua Status</option>
                             <option value="hadir">Hadir</option>
                             <option value="terlambat">Terlambat</option>
-                            <option value="absen">Absen</option>
                             <option value="alpha">Alpha</option>
                         </select>
                     </div>
@@ -138,8 +137,8 @@ export default function Riwayat() {
                     <div className="text-sm text-gray-500">Terlambat</div>
                 </div>
                 <div className="bg-red-50 rounded-xl p-4 text-center">
-                    <div className="text-2xl font-bold text-red-600">{stats.absen}</div>
-                    <div className="text-sm text-gray-500">Absen</div>
+                    <div className="text-2xl font-bold text-red-600">{stats.alpha}</div>
+                    <div className="text-sm text-gray-500">Alpha</div>
                 </div>
             </div>
 

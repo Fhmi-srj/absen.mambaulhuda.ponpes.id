@@ -68,7 +68,7 @@ class RiwayatController extends Controller
 
         $totalHadir = $allAttendances->where('status', 'hadir')->count();
         $totalTerlambat = $allAttendances->where('status', 'terlambat')->count();
-        $totalAbsen = $allAttendances->where('status', 'absen')->count();
+        $totalAlpha = $allAttendances->where('status', 'alpha')->count();
 
         return response()->json([
             'jadwalList' => $jadwalList,
@@ -80,7 +80,7 @@ class RiwayatController extends Controller
             'filterKelas' => $filterKelas,
             'totalHadir' => $totalHadir,
             'totalTerlambat' => $totalTerlambat,
-            'totalAbsen' => $totalAbsen,
+            'totalAlpha' => $totalAlpha,
         ]);
     }
 
@@ -172,7 +172,8 @@ class RiwayatController extends Controller
             $statusColor = match ($a->status) {
                 'hadir' => 'C6EFCE',
                 'terlambat' => 'FFEB9C',
-                'absen', 'izin', 'sakit' => 'FFC7CE',
+                'alpha' => 'FFC7CE',
+                'izin', 'sakit' => 'BDE0FE',
                 default => 'FFFFFF'
             };
             if ($statusColor !== 'FFFFFF') {
