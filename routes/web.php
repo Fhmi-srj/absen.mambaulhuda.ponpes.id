@@ -6,7 +6,6 @@ use App\Http\Controllers\BerandaController;
 use App\Http\Controllers\PemindaiController;
 use App\Http\Controllers\DaftarRfidController;
 use App\Http\Controllers\AbsensiLangsungController;
-use App\Http\Controllers\RiwayatController;
 use App\Http\Controllers\ProfilController;
 use App\Http\Controllers\CetakKartuController;
 use App\Http\Controllers\KartuQrController;

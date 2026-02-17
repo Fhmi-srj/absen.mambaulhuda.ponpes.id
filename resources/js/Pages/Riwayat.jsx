@@ -7,6 +7,7 @@ export default function Riwayat() {
     const [jadwalList, setJadwalList] = useState([]);
     const [filterDate, setFilterDate] = useState(new Date().toISOString().split('T')[0]);
     const [filterJadwal, setFilterJadwal] = useState('');
+    const [filterStatus, setFilterStatus] = useState('');
     const [stats, setStats] = useState({ total: 0, hadir: 0, terlambat: 0, absen: 0 });
 
     useEffect(() => {
@@ -16,7 +17,11 @@ export default function Riwayat() {
 
     const fetchData = async () => {
         try {
-            const params = new URLSearchParams({ date: filterDate, jadwal: filterJadwal });
+            const params = new URLSearchParams({
+                date: filterDate,
+                jadwal: filterJadwal,
+                status: filterStatus
+            });
             // Using the api/riwayat endpoint which now has daily logic
             const response = await fetch(`/api/riwayat?${params}`, {
                 credentials: 'include',
@@ -83,10 +88,20 @@ export default function Riwayat() {
                             ))}
                         </select>
                     </div>
+                    <div className="w-40">
+                        <label className="block text-xs text-gray-500 mb-1">Status</label>
+                        <select value={filterStatus} onChange={(e) => setFilterStatus(e.target.value)}
+                            className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm">
+                            <option value="">Semua Status</option>
+                            <option value="hadir">Hadir</option>
+                            <option value="terlambat">Terlambat</option>
+                            <option value="absen">Absen</option>
+                        </select>
+                    </div>
                     <button type="submit" className="px-4 py-2 bg-blue-500 text-white rounded-lg text-sm font-semibold">
                         <i className="fas fa-filter mr-1"></i>Filter
                     </button>
-                    <a href={`/admin/riwayat/export?date=${filterDate}&jadwal=${filterJadwal}`}
+                    <a href={`/admin/riwayat/export?date=${filterDate}&jadwal=${filterJadwal}&status=${filterStatus}`}
                         className="px-4 py-2 bg-emerald-500 text-white rounded-lg text-sm font-semibold inline-flex items-center hover:bg-emerald-600 transition-colors">
                         <i className="fas fa-file-excel mr-1"></i>Export Excel
                     </a>
