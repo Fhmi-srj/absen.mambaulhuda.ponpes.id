@@ -1,196 +1,170 @@
 import React, { useState, useEffect } from 'react';
-import { useSearchParams } from 'react-router-dom';
 import { PageSkeleton } from '../Components/Skeleton';
-import axios from 'axios';
 
 export default function Riwayat() {
-    const [searchParams, setSearchParams] = useSearchParams();
     const [loading, setLoading] = useState(true);
-    const [data, setData] = useState({
-        groupedAttendances: {},
-        stats: { total: 0, hadir: 0, terlambat: 0, pulang: 0 },
-    });
-    const [selectedMonth, setSelectedMonth] = useState(searchParams.get('month') || new Date().getMonth() + 1);
-    const [selectedYear, setSelectedYear] = useState(searchParams.get('year') || new Date().getFullYear());
-
-    const months = {
-        '1': 'Januari', '2': 'Februari', '3': 'Maret', '4': 'April',
-        '5': 'Mei', '6': 'Juni', '7': 'Juli', '8': 'Agustus',
-        '9': 'September', '10': 'Oktober', '11': 'November', '12': 'Desember'
-    };
-
-    const dayNames = {
-        'Sunday': 'Minggu', 'Monday': 'Senin', 'Tuesday': 'Selasa',
-        'Wednesday': 'Rabu', 'Thursday': 'Kamis', 'Friday': 'Jumat', 'Saturday': 'Sabtu'
-    };
+    const [attendances, setAttendances] = useState([]);
+    const [jadwalList, setJadwalList] = useState([]);
+    const [filterDate, setFilterDate] = useState(new Date().toISOString().split('T')[0]);
+    const [filterJadwal, setFilterJadwal] = useState('');
+    const [stats, setStats] = useState({ total: 0, hadir: 0, terlambat: 0, absen: 0 });
 
     useEffect(() => {
         document.title = 'Riwayat Kehadiran - Aktivitas Santri';
         fetchData();
     }, []);
 
-    const fetchData = async (month = selectedMonth, year = selectedYear) => {
-        setLoading(true);
+    const fetchData = async () => {
         try {
-            const response = await axios.get(`/api/riwayat?month=${month}&year=${year}`);
-            setData(response.data);
+            const params = new URLSearchParams({ date: filterDate, jadwal: filterJadwal });
+            // Using the api/riwayat endpoint which now has daily logic
+            const response = await fetch(`/api/riwayat?${params}`, {
+                credentials: 'include',
+                headers: {
+                    'Accept': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest',
+                },
+            });
+            if (response.ok) {
+                const data = await response.json();
+                setAttendances(data.attendances || []);
+                setJadwalList(data.jadwalList || []);
+                setStats({
+                    total: data.attendances?.length || 0,
+                    hadir: data.totalHadir || 0,
+                    terlambat: data.totalTerlambat || 0,
+                    absen: data.totalAbsen || 0,
+                });
+            }
         } catch (error) {
-            console.error('Error fetching riwayat:', error);
+            console.error('Error fetching data:', error);
         } finally {
             setLoading(false);
         }
     };
 
-    const handleFilter = () => {
-        setSearchParams({ month: selectedMonth, year: selectedYear });
-        fetchData(selectedMonth, selectedYear);
-    };
-
-    const formatTime = (time) => {
-        if (!time) return '-';
-        return time.substring(0, 5);
-    };
-
-    const getDayName = (dateStr) => {
-        if (!dateStr) return '';
-        const d = new Date(dateStr);
-        const dayEnglish = d.toLocaleDateString('en-US', { weekday: 'long' });
-        return dayNames[dayEnglish] || dayEnglish;
-    };
-
-    const formatDateIndo = (dateStr) => {
-        if (!dateStr) return '-';
-        const d = new Date(dateStr);
-        return d.toLocaleDateString('id-ID', { day: '2-digit', month: 'long', year: 'numeric' });
+    const handleFilter = (e) => {
+        e.preventDefault();
+        setLoading(true);
+        fetchData();
     };
 
     const getStatusBadge = (status) => {
-        const styles = {
-            hadir: 'bg-green-100 text-green-700',
-            terlambat: 'bg-amber-100 text-amber-700',
-            pulang: 'bg-blue-100 text-blue-700',
+        const badges = {
+            hadir: 'bg-green-100 text-green-600',
+            terlambat: 'bg-amber-100 text-amber-600',
+            absen: 'bg-red-100 text-red-600',
+            izin: 'bg-blue-100 text-blue-600',
         };
-        return styles[status] || 'bg-gray-100 text-gray-600';
+        return badges[status] || 'bg-gray-100 text-gray-600';
     };
 
     if (loading) {
         return <PageSkeleton />;
     }
 
-    const years = [];
-    const currentYear = new Date().getFullYear();
-    for (let y = currentYear; y >= currentYear - 5; y--) {
-        years.push(y);
-    }
-
-    const sortedDates = Object.keys(data.groupedAttendances || {}).sort((a, b) => new Date(b) - new Date(a));
-
     return (
         <>
+            {/* Filters */}
+            <div className="bg-white rounded-xl shadow-sm p-4 mb-4">
+                <form onSubmit={handleFilter} className="flex flex-wrap gap-3 items-end">
+                    <div className="w-40">
+                        <label className="block text-xs text-gray-500 mb-1">Tanggal</label>
+                        <input type="date" value={filterDate} onChange={(e) => setFilterDate(e.target.value)}
+                            className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm" />
+                    </div>
+                    <div className="w-40">
+                        <label className="block text-xs text-gray-500 mb-1">Jadwal</label>
+                        <select value={filterJadwal} onChange={(e) => setFilterJadwal(e.target.value)}
+                            className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm">
+                            <option value="">Semua Jadwal</option>
+                            {jadwalList.map((j) => (
+                                <option key={j.id} value={j.id}>{j.name}</option>
+                            ))}
+                        </select>
+                    </div>
+                    <button type="submit" className="px-4 py-2 bg-blue-500 text-white rounded-lg text-sm font-semibold">
+                        <i className="fas fa-filter mr-1"></i>Filter
+                    </button>
+                    <a href={`/admin/riwayat/export?date=${filterDate}&jadwal=${filterJadwal}`}
+                        className="px-4 py-2 bg-emerald-500 text-white rounded-lg text-sm font-semibold inline-flex items-center hover:bg-emerald-600 transition-colors">
+                        <i className="fas fa-file-excel mr-1"></i>Export Excel
+                    </a>
+                </form>
+            </div>
 
-
-            {/* Stats Cards */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-                <div className="bg-white rounded-xl p-4 shadow-sm text-center">
-                    <div className="text-2xl font-bold text-gray-800">{data.stats?.total || 0}</div>
+            {/* Stats */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4">
+                <div className="bg-blue-50 rounded-xl p-4 text-center">
+                    <div className="text-2xl font-bold text-blue-600">{stats.total}</div>
                     <div className="text-sm text-gray-500">Total Absensi</div>
                 </div>
-                <div className="bg-white rounded-xl p-4 shadow-sm text-center">
-                    <div className="text-2xl font-bold text-green-600">{data.stats?.hadir || 0}</div>
+                <div className="bg-green-50 rounded-xl p-4 text-center">
+                    <div className="text-2xl font-bold text-green-600">{stats.hadir}</div>
                     <div className="text-sm text-gray-500">Hadir</div>
                 </div>
-                <div className="bg-white rounded-xl p-4 shadow-sm text-center">
-                    <div className="text-2xl font-bold text-amber-600">{data.stats?.terlambat || 0}</div>
+                <div className="bg-amber-50 rounded-xl p-4 text-center">
+                    <div className="text-2xl font-bold text-amber-600">{stats.terlambat}</div>
                     <div className="text-sm text-gray-500">Terlambat</div>
                 </div>
-                <div className="bg-white rounded-xl p-4 shadow-sm text-center">
-                    <div className="text-2xl font-bold text-blue-600">{data.stats?.pulang || 0}</div>
-                    <div className="text-sm text-gray-500">Pulang</div>
+                <div className="bg-red-50 rounded-xl p-4 text-center">
+                    <div className="text-2xl font-bold text-red-600">{stats.absen}</div>
+                    <div className="text-sm text-gray-500">Absen</div>
                 </div>
             </div>
 
-            {/* Filter */}
-            <div className="bg-white rounded-xl shadow-sm p-4 mb-6">
-                <div className="flex items-center gap-2">
-                    <select
-                        value={selectedMonth}
-                        onChange={(e) => setSelectedMonth(e.target.value)}
-                        className="flex-1 min-w-0 px-2 py-2 border border-gray-200 rounded-lg text-sm"
-                    >
-                        {Object.entries(months).map(([val, label]) => (
-                            <option key={val} value={val}>{label}</option>
-                        ))}
-                    </select>
-                    <select
-                        value={selectedYear}
-                        onChange={(e) => setSelectedYear(e.target.value)}
-                        className="w-20 flex-shrink-0 px-2 py-2 border border-gray-200 rounded-lg text-sm"
-                    >
-                        {years.map(y => (
-                            <option key={y} value={y}>{y}</option>
-                        ))}
-                    </select>
-                    <button
-                        onClick={handleFilter}
-                        className="flex-shrink-0 px-3 py-2 bg-blue-500 text-white rounded-lg font-semibold hover:bg-blue-600 text-sm"
-                    >
-                        <i className="fas fa-filter mr-1"></i> Filter
-                    </button>
+            {/* Table */}
+            <div className="bg-white rounded-xl shadow-sm overflow-hidden">
+                <div className="overflow-x-auto">
+                    <table className="w-full text-sm">
+                        <thead className="bg-gray-50">
+                            <tr>
+                                <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase">Waktu</th>
+                                <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase">Siswa</th>
+                                <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase">Jadwal</th>
+                                <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase">Status</th>
+                                <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase">Terlambat</th>
+                                <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase">Catatan</th>
+                            </tr>
+                        </thead>
+                        <tbody className="divide-y divide-gray-100">
+                            {attendances.length === 0 ? (
+                                <tr>
+                                    <td colSpan="6" className="px-4 py-8 text-center text-gray-400">
+                                        Tidak ada data absensi
+                                    </td>
+                                </tr>
+                            ) : (
+                                attendances.map((a, i) => (
+                                    <tr key={i} className="hover:bg-gray-50">
+                                        <td className="px-4 py-3 font-semibold">
+                                            {a.attendance_time ? new Date('1970-01-01T' + a.attendance_time).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) : '-'}
+                                        </td>
+                                        <td className="px-4 py-3">
+                                            <div className="font-semibold text-gray-800">{a.nama_lengkap}</div>
+                                            <small className="text-gray-400">{a.kelas} - {a.nomor_induk}</small>
+                                        </td>
+                                        <td className="px-4 py-3">
+                                            <span className="px-2 py-1 bg-blue-100 text-blue-600 text-xs font-semibold rounded-full">
+                                                {a.jadwal_name || '-'}
+                                            </span>
+                                        </td>
+                                        <td className="px-4 py-3">
+                                            <span className={`px-2 py-1 text-xs font-semibold rounded-full capitalize ${getStatusBadge(a.status)}`}>
+                                                {a.status}
+                                            </span>
+                                        </td>
+                                        <td className="px-4 py-3 text-gray-600">
+                                            {a.minutes_late ? `${a.minutes_late} menit` : '-'}
+                                        </td>
+                                        <td className="px-4 py-3 text-gray-600">{a.notes || '-'}</td>
+                                    </tr>
+                                ))
+                            )}
+                        </tbody>
+                    </table>
                 </div>
             </div>
-
-            {/* Attendance List */}
-            {sortedDates.length === 0 ? (
-                <div className="bg-white rounded-xl shadow-sm p-12 text-center">
-                    <i className="fas fa-inbox text-5xl text-gray-300 mb-4"></i>
-                    <p className="text-gray-500">Tidak ada data kehadiran untuk bulan ini</p>
-                </div>
-            ) : (
-                <div className="space-y-4">
-                    {sortedDates.map(date => (
-                        <div key={date} className="bg-white rounded-xl shadow-sm overflow-hidden">
-                            <div className="px-4 py-3 bg-gray-50 border-b border-gray-100/50 flex flex-wrap items-center justify-between gap-2">
-                                <div className="font-semibold text-gray-800 text-sm sm:text-base">
-                                    {getDayName(date)}, {formatDateIndo(date)}
-                                </div>
-                                <span className="text-xs sm:text-sm text-gray-500">
-                                    {data.groupedAttendances[date]?.length || 0} data
-                                </span>
-                            </div>
-                            <div className="overflow-x-auto">
-                                <table className="w-full min-w-[650px]">
-                                    <thead className="bg-gray-50">
-                                        <tr>
-                                            <th className="px-5 py-3 text-left text-xs font-semibold text-gray-500 uppercase whitespace-nowrap">Waktu</th>
-                                            <th className="px-5 py-3 text-left text-xs font-semibold text-gray-500 uppercase whitespace-nowrap">Nama</th>
-                                            <th className="px-5 py-3 text-left text-xs font-semibold text-gray-500 uppercase whitespace-nowrap">Kelas</th>
-                                            <th className="px-5 py-3 text-left text-xs font-semibold text-gray-500 uppercase whitespace-nowrap">Jadwal</th>
-                                            <th className="px-5 py-3 text-left text-xs font-semibold text-gray-500 uppercase whitespace-nowrap">Status</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody className="divide-y divide-gray-100/50">
-                                        {data.groupedAttendances[date]?.map((att, idx) => (
-                                            <tr key={idx} className="hover:bg-gray-50">
-                                                <td className="px-5 py-4 text-sm text-gray-600 whitespace-nowrap">{formatTime(att.attendance_time)}</td>
-                                                <td className="px-5 py-4 whitespace-nowrap">
-                                                    <div className="font-medium text-gray-800">{att.nama_lengkap || '-'}</div>
-                                                </td>
-                                                <td className="px-5 py-4 text-sm text-gray-600 whitespace-nowrap">{att.kelas || '-'}</td>
-                                                <td className="px-5 py-4 text-sm text-gray-600 whitespace-nowrap">{att.jadwal_name || '-'}</td>
-                                                <td className="px-5 py-4 whitespace-nowrap">
-                                                    <span className={`px-2 py-1 text-xs font-medium rounded capitalize ${getStatusBadge(att.status)}`}>
-                                                        {att.status || '-'}
-                                                    </span>
-                                                </td>
-                                            </tr>
-                                        ))}
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    ))}
-                </div>
-            )}
         </>
     );
 }

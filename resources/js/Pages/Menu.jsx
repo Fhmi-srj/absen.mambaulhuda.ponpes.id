@@ -50,7 +50,6 @@ export default function Menu() {
                 { to: '/admin/santri', icon: 'fa-user-graduate', label: 'Data Santri' },
                 { to: '/admin/santri-import', icon: 'fa-file-import', label: 'Import Santri' },
                 { to: '/admin/jadwal', icon: 'fa-calendar-alt', label: 'Jadwal Absen' },
-                { to: '/admin/kehadiran', icon: 'fa-clipboard-check', label: 'Data Kehadiran' },
                 { to: '/admin/absensi-manual', icon: 'fa-edit', label: 'Absensi Manual' },
                 { to: '/admin/laporan', icon: 'fa-chart-bar', label: 'Laporan' },
                 { to: '/admin/log-aktivitas', icon: 'fa-history', label: 'Log Aktivitas' },

@@ -27,7 +27,6 @@ export default function Sidebar({ user }) {
         { to: '/admin/pengguna', icon: 'fa-users-cog', label: 'Pengguna' },
         { to: '/admin/santri', icon: 'fa-user-graduate', label: 'Data Santri' },
         { to: '/admin/jadwal', icon: 'fa-calendar-alt', label: 'Jadwal Absen' },
-        { to: '/admin/kehadiran', icon: 'fa-clipboard-check', label: 'Kehadiran' },
         { to: '/admin/absensi-manual', icon: 'fa-edit', label: 'Absensi Manual' },
         { to: '/admin/laporan', icon: 'fa-chart-bar', label: 'Laporan' },
         { to: '/admin/log-aktivitas', icon: 'fa-history', label: 'Log Aktivitas' },

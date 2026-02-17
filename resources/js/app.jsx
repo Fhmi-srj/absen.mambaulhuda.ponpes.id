@@ -20,7 +20,6 @@ import Menu from './Pages/Menu';
 import AdminPengguna from './Pages/Admin/Pengguna';
 import AdminSantri from './Pages/Admin/Santri';
 import AdminJadwal from './Pages/Admin/Jadwal';
-import AdminKehadiran from './Pages/Admin/Kehadiran';
 import AdminAbsensiManual from './Pages/Admin/AbsensiManual';
 import AdminLaporan from './Pages/Admin/Laporan';
 import AdminLogAktivitas from './Pages/Admin/LogAktivitas';
@@ -69,7 +68,6 @@ function App() {
                                     <Route path="/admin/pengguna" element={<AdminPengguna />} />
                                     <Route path="/admin/santri" element={<AdminSantri />} />
                                     <Route path="/admin/jadwal" element={<AdminJadwal />} />
-                                    <Route path="/admin/kehadiran" element={<AdminKehadiran />} />
                                     <Route path="/admin/absensi-manual" element={<AdminAbsensiManual />} />
                                     <Route path="/admin/laporan" element={<AdminLaporan />} />
                                     <Route path="/admin/log-aktivitas" element={<AdminLogAktivitas />} />

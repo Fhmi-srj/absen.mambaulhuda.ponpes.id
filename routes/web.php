@@ -153,8 +153,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/pengguna', [\App\Http\Controllers\Admin\PenggunaController::class, 'index'])->name('admin.pengguna');
         Route::get('/santri', [\App\Http\Controllers\Admin\SantriController::class, 'index'])->name('admin.santri');
         Route::get('/jadwal', [\App\Http\Controllers\Admin\JadwalController::class, 'index'])->name('admin.jadwal');
-        Route::get('/kehadiran', [\App\Http\Controllers\Admin\KehadiranController::class, 'index'])->name('admin.kehadiran');
-        Route::get('/kehadiran/export', [\App\Http\Controllers\Admin\KehadiranController::class, 'export'])->name('admin.kehadiran.export');
+        Route::get('/riwayat/export', [\App\Http\Controllers\Api\RiwayatController::class, 'export'])->name('api.riwayat.export');
 
         // Absensi Manual
         Route::get('/absensi-manual', [\App\Http\Controllers\Admin\AbsensiManualController::class, 'index'])->name('admin.absensi-manual');
