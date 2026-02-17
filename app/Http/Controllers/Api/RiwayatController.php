@@ -19,10 +19,20 @@ class RiwayatController extends Controller
         $filterDate = $request->get('date', date('Y-m-d'));
         $filterJadwal = $request->get('jadwal', '');
         $filterStatus = $request->get('status', '');
+        $filterKelas = $request->get('kelas', '');
 
         $jadwalList = \App\Models\JadwalAbsen::whereNull('deleted_at')
             ->orderBy('start_time')
             ->get();
+
+        // Get unique classes for filter
+        $classList = \Illuminate\Support\Facades\DB::table('data_induk')
+            ->whereNull('deleted_at')
+            ->whereNotNull('kelas')
+            ->select('kelas')
+            ->distinct()
+            ->orderBy('kelas')
+            ->pluck('kelas');
 
         $query = \Illuminate\Support\Facades\DB::table('attendances as a')
             ->join('data_induk as di', function ($j) {
@@ -41,9 +51,13 @@ class RiwayatController extends Controller
             $query->where('a.status', $filterStatus);
         }
 
+        if ($filterKelas) {
+            $query->where('di.kelas', $filterKelas);
+        }
+
         $attendances = $query->orderBy('a.attendance_time', 'desc')->get();
 
-        // Calculate stats for the whole day (ignores status filter for stats reliability)
+        // Calculate stats for the whole day (ignores status and kelas filter for stats reliability)
         $statsQuery = \Illuminate\Support\Facades\DB::table('attendances')
             ->whereNull('deleted_at')
             ->where('attendance_date', $filterDate);
@@ -58,10 +72,12 @@ class RiwayatController extends Controller
 
         return response()->json([
             'jadwalList' => $jadwalList,
+            'classList' => $classList,
             'attendances' => $attendances,
             'filterDate' => $filterDate,
             'filterJadwal' => $filterJadwal,
             'filterStatus' => $filterStatus,
+            'filterKelas' => $filterKelas,
             'totalHadir' => $totalHadir,
             'totalTerlambat' => $totalTerlambat,
             'totalAbsen' => $totalAbsen,
@@ -73,6 +89,7 @@ class RiwayatController extends Controller
         $filterDate = $request->get('date', date('Y-m-d'));
         $filterJadwal = $request->get('jadwal', '');
         $filterStatus = $request->get('status', '');
+        $filterKelas = $request->get('kelas', '');
 
         $query = \Illuminate\Support\Facades\DB::table('attendances as a')
             ->join('data_induk as di', function ($j) {
@@ -89,6 +106,10 @@ class RiwayatController extends Controller
 
         if ($filterStatus) {
             $query->where('a.status', $filterStatus);
+        }
+
+        if ($filterKelas) {
+            $query->where('di.kelas', $filterKelas);
         }
 
         $attendances = $query->orderBy('a.attendance_time', 'asc')->get();
@@ -109,7 +130,8 @@ class RiwayatController extends Controller
 
         $sheet->setCellValue('A2', 'Tanggal: ' . $filterDate);
         $sheet->setCellValue('A3', 'Jadwal: ' . $jadwalName);
-        $sheet->setCellValue('A4', 'Status: ' . ($filterStatus ?: 'Semua'));
+        $sheet->setCellValue('A4', 'Kelas: ' . ($filterKelas ?: 'Semua'));
+        $sheet->setCellValue('D4', 'Status: ' . ($filterStatus ?: 'Semua'));
 
         // Header Row
         $headers = ['No', 'Waktu', 'Nama Siswa', 'Kelas', 'Nomor Induk', 'Jadwal', 'Status', 'Terlambat (menit)', 'Catatan'];
@@ -170,7 +192,7 @@ class RiwayatController extends Controller
             $sheet->getStyle('A5:I' . ($row - 1))->getBorders()->getAllBorders()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN);
         }
 
-        $filename = "Riwayat_Kehadiran_{$filterDate}_{$jadwalName}.xlsx";
+        $filename = "Riwayat_Kehadiran_{$filterDate}_{$jadwalName}_" . ($filterKelas ?: 'Semua') . ".xlsx";
 
         return response()->streamDownload(function () use ($spreadsheet) {
             $writer = new \PhpOffice\PhpSpreadsheet\Writer\Xlsx($spreadsheet);

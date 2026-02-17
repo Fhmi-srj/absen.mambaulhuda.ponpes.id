@@ -57,16 +57,16 @@ class AttendanceApiController extends Controller
             $now = Carbon::now();
 
             // Check if already absen today for this jadwal
-            $existing = Attendance::where('user_id', $siswa->id)
+            $attendance = Attendance::where('user_id', $siswa->id)
                 ->where('jadwal_id', $jadwalId)
                 ->where('attendance_date', $today)
                 ->first();
 
-            if ($existing) {
+            if ($attendance && !in_array($attendance->status, ['alpha', 'absen'])) {
                 return response()->json([
                     'success' => false,
                     'siswa_name' => $siswa->nama_lengkap,
-                    'message' => 'Sudah absen hari ini pada ' . Carbon::parse($existing->attendance_time)->format('H:i')
+                    'message' => 'Sudah absen hari ini pada ' . Carbon::parse($attendance->attendance_time)->format('H:i')
                 ]);
             }
 
@@ -83,17 +83,27 @@ class AttendanceApiController extends Controller
                 $minutesLate = $now->diffInMinutes($startTime);
             }
 
-            // Create attendance record
-            $attendance = Attendance::create([
-                'user_id' => $siswa->id,
-                'jadwal_id' => $jadwalId,
-                'attendance_date' => $today,
-                'attendance_time' => $now->format('H:i:s'),
-                'status' => $status,
-                'minutes_late' => $minutesLate,
-                'latitude' => $latitude,
-                'longitude' => $longitude,
-            ]);
+            // Create or Update attendance record
+            if ($attendance) {
+                $attendance->update([
+                    'attendance_time' => $now->format('H:i:s'),
+                    'status' => $status,
+                    'minutes_late' => $minutesLate,
+                    'latitude' => $latitude,
+                    'longitude' => $longitude,
+                ]);
+            } else {
+                $attendance = Attendance::create([
+                    'user_id' => $siswa->id,
+                    'jadwal_id' => $jadwalId,
+                    'attendance_date' => $today,
+                    'attendance_time' => $now->format('H:i:s'),
+                    'status' => $status,
+                    'minutes_late' => $minutesLate,
+                    'latitude' => $latitude,
+                    'longitude' => $longitude,
+                ]);
+            }
 
             // Log activity
             if (auth()->check()) {
@@ -186,13 +196,13 @@ class AttendanceApiController extends Controller
         }
 
         // Check if already attended today for this jadwal
-        $existing = DB::table('attendances')
+        $attendance = DB::table('attendances')
             ->where('user_id', $santri->id)
             ->where('jadwal_id', $jadwalId)
             ->where('attendance_date', $today)
             ->first();
 
-        if ($existing) {
+        if ($attendance && !in_array($attendance->status, ['alpha', 'absen'])) {
             return response()->json(['success' => false, 'message' => 'Sudah absen untuk jadwal ini hari ini', 'santri' => $santri]);
         }
 
@@ -206,15 +216,25 @@ class AttendanceApiController extends Controller
             }
         }
 
-        DB::table('attendances')->insert([
-            'user_id' => $santri->id,
-            'jadwal_id' => $jadwalId,
-            'status' => $status,
-            'attendance_date' => $today,
-            'attendance_time' => $now,
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
+        if ($attendance) {
+            DB::table('attendances')
+                ->where('id', $attendance->id)
+                ->update([
+                    'status' => $status,
+                    'attendance_time' => $now,
+                    'updated_at' => now(),
+                ]);
+        } else {
+            DB::table('attendances')->insert([
+                'user_id' => $santri->id,
+                'jadwal_id' => $jadwalId,
+                'status' => $status,
+                'attendance_date' => $today,
+                'attendance_time' => $now,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+        }
 
         return response()->json([
             'success' => true,
@@ -250,13 +270,13 @@ class AttendanceApiController extends Controller
         }
 
         // Check if already attended today for this jadwal
-        $existing = DB::table('attendances')
+        $attendance = DB::table('attendances')
             ->where('user_id', $santri->id)
             ->where('jadwal_id', $jadwalId)
             ->where('attendance_date', $today)
             ->first();
 
-        if ($existing) {
+        if ($attendance && !in_array($attendance->status, ['alpha', 'absen'])) {
             return response()->json([
                 'success' => false,
                 'message' => 'Sudah absen untuk jadwal ini hari ini',
@@ -281,15 +301,25 @@ class AttendanceApiController extends Controller
             }
         }
 
-        DB::table('attendances')->insert([
-            'user_id' => $santri->id,
-            'jadwal_id' => $jadwalId,
-            'status' => $status,
-            'attendance_date' => $today,
-            'attendance_time' => $now,
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
+        if ($attendance) {
+            DB::table('attendances')
+                ->where('id', $attendance->id)
+                ->update([
+                    'status' => $status,
+                    'attendance_time' => $now,
+                    'updated_at' => now(),
+                ]);
+        } else {
+            DB::table('attendances')->insert([
+                'user_id' => $santri->id,
+                'jadwal_id' => $jadwalId,
+                'status' => $status,
+                'attendance_date' => $today,
+                'attendance_time' => $now,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+        }
 
         return response()->json([
             'success' => true,

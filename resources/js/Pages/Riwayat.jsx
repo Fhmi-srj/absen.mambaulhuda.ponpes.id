@@ -5,9 +5,11 @@ export default function Riwayat() {
     const [loading, setLoading] = useState(true);
     const [attendances, setAttendances] = useState([]);
     const [jadwalList, setJadwalList] = useState([]);
+    const [classList, setClassList] = useState([]);
     const [filterDate, setFilterDate] = useState(new Date().toISOString().split('T')[0]);
     const [filterJadwal, setFilterJadwal] = useState('');
     const [filterStatus, setFilterStatus] = useState('');
+    const [filterKelas, setFilterKelas] = useState('');
     const [stats, setStats] = useState({ total: 0, hadir: 0, terlambat: 0, absen: 0 });
 
     useEffect(() => {
@@ -20,7 +22,8 @@ export default function Riwayat() {
             const params = new URLSearchParams({
                 date: filterDate,
                 jadwal: filterJadwal,
-                status: filterStatus
+                status: filterStatus,
+                kelas: filterKelas
             });
             // Using the api/riwayat endpoint which now has daily logic
             const response = await fetch(`/api/riwayat?${params}`, {
@@ -34,6 +37,7 @@ export default function Riwayat() {
                 const data = await response.json();
                 setAttendances(data.attendances || []);
                 setJadwalList(data.jadwalList || []);
+                setClassList(data.classList || []);
                 setStats({
                     total: data.attendances?.length || 0,
                     hadir: data.totalHadir || 0,
@@ -96,12 +100,23 @@ export default function Riwayat() {
                             <option value="hadir">Hadir</option>
                             <option value="terlambat">Terlambat</option>
                             <option value="absen">Absen</option>
+                            <option value="alpha">Alpha</option>
+                        </select>
+                    </div>
+                    <div className="w-40">
+                        <label className="block text-xs text-gray-500 mb-1">Kelas</label>
+                        <select value={filterKelas} onChange={(e) => setFilterKelas(e.target.value)}
+                            className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm">
+                            <option value="">Semua Kelas</option>
+                            {classList.map((k) => (
+                                <option key={k} value={k}>{k}</option>
+                            ))}
                         </select>
                     </div>
                     <button type="submit" className="px-4 py-2 bg-blue-500 text-white rounded-lg text-sm font-semibold">
                         <i className="fas fa-filter mr-1"></i>Filter
                     </button>
-                    <a href={`/admin/riwayat/export?date=${filterDate}&jadwal=${filterJadwal}&status=${filterStatus}`}
+                    <a href={`/admin/riwayat/export?date=${filterDate}&jadwal=${filterJadwal}&status=${filterStatus}&kelas=${filterKelas}`}
                         className="px-4 py-2 bg-emerald-500 text-white rounded-lg text-sm font-semibold inline-flex items-center hover:bg-emerald-600 transition-colors">
                         <i className="fas fa-file-excel mr-1"></i>Export Excel
                     </a>
