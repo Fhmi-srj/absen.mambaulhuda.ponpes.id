@@ -16,8 +16,9 @@ export default function Menu() {
             ]
         },
         {
-            title: 'ABSENSI - SCAN QR',
+            title: 'ABSENSI',
             items: [
+                { to: '/kios', icon: 'fa-tablet-alt', label: 'Absensi', subtitle: 'Absensi RFID & Manual' },
                 { to: '/pemindai', icon: 'fa-qrcode', label: 'Pemindai QR Code' },
             ]
         },

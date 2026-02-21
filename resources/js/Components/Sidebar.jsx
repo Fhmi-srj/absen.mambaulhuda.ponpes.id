@@ -14,6 +14,7 @@ export default function Sidebar({ user }) {
 
     const userMenuItems = [
         { to: '/beranda', icon: 'fa-home', label: 'Beranda' },
+        { to: '/kios', icon: 'fa-tablet-alt', label: 'Absensi' },
         { to: '/aktivitas', icon: 'fa-clipboard-list', label: 'Aktivitas' },
         { to: '/pemindai', icon: 'fa-qrcode', label: 'Scan QR' },
         { to: '/riwayat', icon: 'fa-history', label: 'Riwayat' },
