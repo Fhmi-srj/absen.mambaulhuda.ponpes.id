@@ -385,7 +385,7 @@ export default function Kiosk() {
                                 <option value="" className={t.selectOption}>-- Pilih Jenis Absen --</option>
                                 {jadwalList.map(j => (
                                     <option key={j.id} value={j.id} className={t.selectOption}>
-                                        {j.name} ({j.start_time.substring(0, 5)})
+                                        {j.name} {j.start_time ? `(${j.start_time.substring(0, 5)})` : ''}
                                     </option>
                                 ))}
                             </select>
@@ -564,7 +564,7 @@ export default function Kiosk() {
                                     filteredAttendances.map((item) => (
                                         <div key={item.id} className={`flex items-center p-4 rounded-xl border transition-colors duration-500 ${t.attendanceItem}`}>
                                             <div className="w-14 h-14 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-xl font-bold mr-4 shadow-lg shadow-blue-500/20 text-white">
-                                                {item.nama_lengkap.substring(0, 1).toUpperCase()}
+                                                {(item.nama_lengkap || '?').substring(0, 1).toUpperCase()}
                                             </div>
                                             <div className="flex-1">
                                                 <div className="font-bold text-lg">{item.nama_lengkap}</div>
@@ -574,7 +574,7 @@ export default function Kiosk() {
                                             </div>
                                             <div className="text-right">
                                                 <div className="text-xl font-bold font-mono">
-                                                    {item.attendance_time.substring(0, 5)}
+                                                    {item.attendance_time ? item.attendance_time.substring(0, 5) : '-'}
                                                 </div>
                                                 <span className={`text-[10px] uppercase font-black px-2 py-0.5 rounded-full text-white ${item.status === 'hadir' ? 'bg-emerald-500' :
                                                     item.status === 'terlambat' ? 'bg-amber-500' : 'bg-blue-500'
