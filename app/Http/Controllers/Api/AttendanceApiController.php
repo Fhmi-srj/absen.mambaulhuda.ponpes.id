@@ -278,6 +278,8 @@ class AttendanceApiController extends Controller
         }
 
         // Check if already attended for this jadwal
+        $jadwal = DB::table('jadwal_absens')->find($jadwalId);
+
         $attendanceQuery = DB::table('attendances')
             ->where('user_id', $santri->id)
             ->where('jadwal_id', $jadwalId);
@@ -296,8 +298,7 @@ class AttendanceApiController extends Controller
             ]);
         }
 
-        // Get jadwal to determine if late
-        $jadwal = DB::table('jadwal_absens')->find($jadwalId);
+        // Determine if late
         $status = 'hadir';
 
         if ($jadwal) {
