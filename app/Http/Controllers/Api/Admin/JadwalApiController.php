@@ -13,22 +13,30 @@ class JadwalApiController extends Controller
     public function store(Request $request)
     {
         try {
-            $request->validate([
-                'name' => 'required|string|max:255',
-                'start_time' => 'required',
-                'scheduled_time' => 'required',
-                'end_time' => 'required',
-            ]);
+            $disableDailyReset = $request->has('disable_daily_reset') ? (bool)$request->disable_daily_reset : false;
+
+            $rules = ['name' => 'required|string|max:255'];
+            if ($disableDailyReset) {
+                $rules['no_reset_start_date'] = 'required|date';
+                $rules['no_reset_end_date'] = 'nullable|date|after_or_equal:no_reset_start_date';
+            } else {
+                $rules['start_time'] = 'required';
+                $rules['scheduled_time'] = 'required';
+                $rules['end_time'] = 'required';
+            }
+            $request->validate($rules);
 
             $jadwal = JadwalAbsen::create([
                 'name' => $request->name,
                 'type' => $request->type ?? 'absen',
-                'start_time' => $request->start_time,
-                'scheduled_time' => $request->scheduled_time,
-                'end_time' => $request->end_time,
-                'late_tolerance_minutes' => $request->late_tolerance_minutes ?? 15,
+                'start_time' => $disableDailyReset ? null : $request->start_time,
+                'scheduled_time' => $disableDailyReset ? null : $request->scheduled_time,
+                'end_time' => $disableDailyReset ? null : $request->end_time,
+                'late_tolerance_minutes' => $disableDailyReset ? null : ($request->late_tolerance_minutes ?? 15),
                 'is_active' => $request->has('is_active') ? (bool)$request->is_active : true,
-                'disable_daily_reset' => $request->has('disable_daily_reset') ? (bool)$request->disable_daily_reset : false,
+                'disable_daily_reset' => $disableDailyReset,
+                'no_reset_start_date' => $disableDailyReset ? $request->no_reset_start_date : null,
+                'no_reset_end_date' => $disableDailyReset ? $request->no_reset_end_date : null,
             ]);
 
             ActivityLog::create([
@@ -52,15 +60,19 @@ class JadwalApiController extends Controller
         try {
             $jadwal = JadwalAbsen::findOrFail($id);
 
+            $disableDailyReset = $request->has('disable_daily_reset') ? (bool)$request->disable_daily_reset : false;
+
             $jadwal->update([
                 'name' => $request->name,
                 'type' => $request->type ?? 'absen',
-                'start_time' => $request->start_time,
-                'scheduled_time' => $request->scheduled_time,
-                'end_time' => $request->end_time,
-                'late_tolerance_minutes' => $request->late_tolerance_minutes ?? 15,
+                'start_time' => $disableDailyReset ? null : $request->start_time,
+                'scheduled_time' => $disableDailyReset ? null : $request->scheduled_time,
+                'end_time' => $disableDailyReset ? null : $request->end_time,
+                'late_tolerance_minutes' => $disableDailyReset ? null : ($request->late_tolerance_minutes ?? 15),
                 'is_active' => $request->has('is_active') ? (bool)$request->is_active : true,
-                'disable_daily_reset' => $request->has('disable_daily_reset') ? (bool)$request->disable_daily_reset : false,
+                'disable_daily_reset' => $disableDailyReset,
+                'no_reset_start_date' => $disableDailyReset ? $request->no_reset_start_date : null,
+                'no_reset_end_date' => $disableDailyReset ? $request->no_reset_end_date : null,
             ]);
 
             ActivityLog::create([

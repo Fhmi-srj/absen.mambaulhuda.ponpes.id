@@ -75,16 +75,33 @@ class AttendanceApiController extends Controller
             }
 
             // Calculate late status
-            $startTime = Carbon::createFromFormat('H:i:s', $jadwal->start_time);
-            $tolerance = $jadwal->tolerance_minutes ?? 0;
-            $lateThreshold = $startTime->copy()->addMinutes($tolerance);
-
             $status = 'hadir';
             $minutesLate = 0;
 
-            if ($now->gt($lateThreshold)) {
-                $status = 'terlambat';
-                $minutesLate = $now->diffInMinutes($startTime);
+            if ($jadwal->disable_daily_reset) {
+                // No-reset mode: hadir on start date, terlambat after
+                $noResetStart = $jadwal->no_reset_start_date;
+                if ($noResetStart && $today > $noResetStart) {
+                    $status = 'terlambat';
+                }
+                // Auto-deactivate if end date passed
+                $noResetEnd = $jadwal->no_reset_end_date;
+                if ($noResetEnd && $today > $noResetEnd) {
+                    $jadwal->update(['is_active' => false]);
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Jadwal sudah berakhir dan dinonaktifkan'
+                    ]);
+                }
+            } else {
+                $startTime = Carbon::createFromFormat('H:i:s', $jadwal->start_time);
+                $tolerance = $jadwal->tolerance_minutes ?? 0;
+                $lateThreshold = $startTime->copy()->addMinutes($tolerance);
+
+                if ($now->gt($lateThreshold)) {
+                    $status = 'terlambat';
+                    $minutesLate = $now->diffInMinutes($startTime);
+                }
             }
 
             // Create or Update attendance record
@@ -199,6 +216,15 @@ class AttendanceApiController extends Controller
             return response()->json(['success' => false, 'message' => 'Kartu RFID tidak terdaftar']);
         }
 
+        // Get jadwal
+        $jadwal = DB::table('jadwal_absens')->find($jadwalId);
+
+        // Auto-deactivate if end date passed
+        if ($jadwal && $jadwal->disable_daily_reset && $jadwal->no_reset_end_date && $today > $jadwal->no_reset_end_date) {
+            DB::table('jadwal_absens')->where('id', $jadwalId)->update(['is_active' => false]);
+            return response()->json(['success' => false, 'message' => 'Jadwal sudah berakhir dan dinonaktifkan']);
+        }
+
         // Check if already attended for this jadwal
         $attendanceQuery = DB::table('attendances')
             ->where('user_id', $santri->id)
@@ -214,11 +240,15 @@ class AttendanceApiController extends Controller
             return response()->json(['success' => false, 'message' => 'Sudah absen untuk jadwal ini hari ini', 'santri' => $santri]);
         }
 
-        // Get jadwal to determine if late
-        $jadwal = DB::table('jadwal_absens')->find($jadwalId);
+        // Determine status
         $status = 'hadir';
 
-        if ($jadwal && $jadwal->late_time) {
+        if ($jadwal && $jadwal->disable_daily_reset) {
+            // No-reset mode: hadir on start date, terlambat after
+            if ($jadwal->no_reset_start_date && $today > $jadwal->no_reset_start_date) {
+                $status = 'terlambat';
+            }
+        } elseif ($jadwal && $jadwal->late_time) {
             if (strtotime($now) > strtotime($jadwal->late_time)) {
                 $status = 'terlambat';
             }
@@ -298,10 +328,21 @@ class AttendanceApiController extends Controller
             ]);
         }
 
-        // Determine if late
+        // Auto-deactivate if end date passed
+        if ($jadwal && $jadwal->disable_daily_reset && $jadwal->no_reset_end_date && $today > $jadwal->no_reset_end_date) {
+            DB::table('jadwal_absens')->where('id', $jadwalId)->update(['is_active' => false]);
+            return response()->json(['success' => false, 'message' => 'Jadwal sudah berakhir dan dinonaktifkan']);
+        }
+
+        // Determine status
         $status = 'hadir';
 
-        if ($jadwal) {
+        if ($jadwal && $jadwal->disable_daily_reset) {
+            // No-reset mode: hadir on start date, terlambat after
+            if ($jadwal->no_reset_start_date && $today > $jadwal->no_reset_start_date) {
+                $status = 'terlambat';
+            }
+        } elseif ($jadwal) {
             $lateTime = null;
             if (!empty($jadwal->late_time)) {
                 $lateTime = $jadwal->late_time;

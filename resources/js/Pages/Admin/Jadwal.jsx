@@ -19,6 +19,8 @@ export default function Jadwal() {
         late_tolerance_minutes: 15,
         is_active: true,
         disable_daily_reset: false,
+        no_reset_start_date: '',
+        no_reset_end_date: '',
     });
 
     useEffect(() => {
@@ -51,6 +53,7 @@ export default function Jadwal() {
             id: '', name: '', type: 'absen',
             start_time: '', scheduled_time: '', end_time: '',
             late_tolerance_minutes: 15, is_active: true, disable_daily_reset: false,
+            no_reset_start_date: '', no_reset_end_date: '',
         });
         setIsEditing(false);
     };
@@ -71,6 +74,8 @@ export default function Jadwal() {
             late_tolerance_minutes: j.late_tolerance_minutes || 15,
             is_active: j.is_active !== undefined ? (j.is_active ? true : false) : true,
             disable_daily_reset: j.disable_daily_reset ? true : false,
+            no_reset_start_date: j.no_reset_start_date || '',
+            no_reset_end_date: j.no_reset_end_date || '',
         });
         setIsEditing(true);
         setModalOpen(true);
@@ -210,26 +215,43 @@ export default function Jadwal() {
                                     {j.disable_daily_reset && <span className="text-[10px] bg-amber-100 text-amber-600 px-2 py-0.5 rounded-full font-bold"><i className="fas fa-infinity mr-1"></i>Tanpa Reset Harian</span>}
                                 </div>
                             )}
-                            <div className="grid grid-cols-3 text-center gap-2 mb-4">
-                                <div>
-                                    <small className="text-gray-400 block">Mulai</small>
-                                    <strong className="text-green-500">{formatTime(j.start_time)}</strong>
+                            {j.disable_daily_reset ? (
+                                <div className="mb-4">
+                                    <div className="grid grid-cols-2 text-center gap-2">
+                                        <div>
+                                            <small className="text-gray-400 block">Tanggal Mulai</small>
+                                            <strong className="text-green-500 text-sm">{j.no_reset_start_date || '-'}</strong>
+                                        </div>
+                                        <div>
+                                            <small className="text-gray-400 block">Tanggal Selesai</small>
+                                            <strong className="text-red-500 text-sm">{j.no_reset_end_date || 'Tidak ditentukan'}</strong>
+                                        </div>
+                                    </div>
                                 </div>
-                                <div>
-                                    <small className="text-gray-400 block">Tepat</small>
-                                    <strong className="text-blue-500">{formatTime(j.scheduled_time)}</strong>
-                                </div>
-                                <div>
-                                    <small className="text-gray-400 block">Tutup</small>
-                                    <strong className="text-red-500">{formatTime(j.end_time)}</strong>
-                                </div>
-                            </div>
-                            <div className="text-center border-t pt-3">
-                                <small className="text-gray-400">
-                                    <i className="fas fa-hourglass-half mr-1"></i>
-                                    Toleransi: <strong>{j.late_tolerance_minutes} menit</strong>
-                                </small>
-                            </div>
+                            ) : (
+                                <>
+                                    <div className="grid grid-cols-3 text-center gap-2 mb-4">
+                                        <div>
+                                            <small className="text-gray-400 block">Mulai</small>
+                                            <strong className="text-green-500">{formatTime(j.start_time)}</strong>
+                                        </div>
+                                        <div>
+                                            <small className="text-gray-400 block">Tepat</small>
+                                            <strong className="text-blue-500">{formatTime(j.scheduled_time)}</strong>
+                                        </div>
+                                        <div>
+                                            <small className="text-gray-400 block">Tutup</small>
+                                            <strong className="text-red-500">{formatTime(j.end_time)}</strong>
+                                        </div>
+                                    </div>
+                                    <div className="text-center border-t pt-3">
+                                        <small className="text-gray-400">
+                                            <i className="fas fa-hourglass-half mr-1"></i>
+                                            Toleransi: <strong>{j.late_tolerance_minutes} menit</strong>
+                                        </small>
+                                    </div>
+                                </>
+                            )}
                         </div>
                     ))
                 )}
@@ -253,29 +275,49 @@ export default function Jadwal() {
                                     <input type="text" value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                                         className="w-full px-4 py-2 border border-gray-200 rounded-lg" placeholder="e.g. Absen Masuk" required />
                                 </div>
-                                <div className="grid grid-cols-3 gap-3">
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-600 mb-1">Mulai <span className="text-red-500">*</span></label>
-                                        <input type="time" value={formData.start_time} onChange={(e) => setFormData({ ...formData, start_time: e.target.value })}
-                                            className="w-full px-3 py-2 border border-gray-200 rounded-lg" required />
+                                {!formData.disable_daily_reset && (
+                                    <>
+                                        <div className="grid grid-cols-3 gap-3">
+                                            <div>
+                                                <label className="block text-sm font-medium text-gray-600 mb-1">Mulai <span className="text-red-500">*</span></label>
+                                                <input type="time" value={formData.start_time} onChange={(e) => setFormData({ ...formData, start_time: e.target.value })}
+                                                    className="w-full px-3 py-2 border border-gray-200 rounded-lg" required />
+                                            </div>
+                                            <div>
+                                                <label className="block text-sm font-medium text-gray-600 mb-1">Tepat <span className="text-red-500">*</span></label>
+                                                <input type="time" value={formData.scheduled_time} onChange={(e) => setFormData({ ...formData, scheduled_time: e.target.value })}
+                                                    className="w-full px-3 py-2 border border-gray-200 rounded-lg" required />
+                                            </div>
+                                            <div>
+                                                <label className="block text-sm font-medium text-gray-600 mb-1">Tutup <span className="text-red-500">*</span></label>
+                                                <input type="time" value={formData.end_time} onChange={(e) => setFormData({ ...formData, end_time: e.target.value })}
+                                                    className="w-full px-3 py-2 border border-gray-200 rounded-lg" required />
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-600 mb-1">Toleransi Terlambat (menit)</label>
+                                            <input type="number" value={formData.late_tolerance_minutes} onChange={(e) => setFormData({ ...formData, late_tolerance_minutes: e.target.value })}
+                                                className="w-full px-4 py-2 border border-gray-200 rounded-lg" min="0" />
+                                            <small className="text-gray-400">Berapa menit setelah waktu tepat masih tidak terlambat</small>
+                                        </div>
+                                    </>
+                                )}
+                                {formData.disable_daily_reset && (
+                                    <div className="grid grid-cols-2 gap-3">
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-600 mb-1">Tanggal Mulai <span className="text-red-500">*</span></label>
+                                            <input type="date" value={formData.no_reset_start_date} onChange={(e) => setFormData({ ...formData, no_reset_start_date: e.target.value })}
+                                                className="w-full px-3 py-2 border border-gray-200 rounded-lg" required />
+                                            <small className="text-gray-400">Absensi hadir penuh pada tanggal ini</small>
+                                        </div>
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-600 mb-1">Tanggal Selesai</label>
+                                            <input type="date" value={formData.no_reset_end_date} onChange={(e) => setFormData({ ...formData, no_reset_end_date: e.target.value })}
+                                                className="w-full px-3 py-2 border border-gray-200 rounded-lg" />
+                                            <small className="text-gray-400">Opsional. Jadwal otomatis nonaktif setelah tanggal ini</small>
+                                        </div>
                                     </div>
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-600 mb-1">Tepat <span className="text-red-500">*</span></label>
-                                        <input type="time" value={formData.scheduled_time} onChange={(e) => setFormData({ ...formData, scheduled_time: e.target.value })}
-                                            className="w-full px-3 py-2 border border-gray-200 rounded-lg" required />
-                                    </div>
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-600 mb-1">Tutup <span className="text-red-500">*</span></label>
-                                        <input type="time" value={formData.end_time} onChange={(e) => setFormData({ ...formData, end_time: e.target.value })}
-                                            className="w-full px-3 py-2 border border-gray-200 rounded-lg" required />
-                                    </div>
-                                </div>
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-600 mb-1">Toleransi Terlambat (menit)</label>
-                                    <input type="number" value={formData.late_tolerance_minutes} onChange={(e) => setFormData({ ...formData, late_tolerance_minutes: e.target.value })}
-                                        className="w-full px-4 py-2 border border-gray-200 rounded-lg" min="0" />
-                                    <small className="text-gray-400">Berapa menit setelah waktu tepat masih tidak terlambat</small>
-                                </div>
+                                )}
                                 <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
                                     <div>
                                         <label className="block text-sm font-medium text-gray-700">Status Jadwal</label>
