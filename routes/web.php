@@ -153,6 +153,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/santri', [\App\Http\Controllers\Admin\SantriController::class, 'index'])->name('admin.santri');
         Route::get('/jadwal', [\App\Http\Controllers\Admin\JadwalController::class, 'index'])->name('admin.jadwal');
         Route::get('/riwayat/export', [\App\Http\Controllers\Api\RiwayatController::class, 'export'])->name('api.riwayat.export');
+        Route::get('/riwayat/export-pdf', [\App\Http\Controllers\Api\RiwayatController::class, 'exportPdf'])->name('api.riwayat.export-pdf');
 
         // Absensi Manual
         Route::get('/absensi-manual', [\App\Http\Controllers\Admin\AbsensiManualController::class, 'index'])->name('admin.absensi-manual');

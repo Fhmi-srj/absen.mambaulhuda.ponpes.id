@@ -43,10 +43,14 @@ class LiveAttendanceApiController extends Controller
                 ->orderBy('nama_lengkap', 'asc')
                 ->get(['id', 'nama_lengkap', 'kelas', 'nisn']);
 
-            // Get today's attendance for this jadwal
-            $attendances = Attendance::where('jadwal_id', $jadwalId)
-                ->where('attendance_date', $today)
-                ->get()
+            // Get attendance for this jadwal
+            $attQuery = Attendance::where('jadwal_id', $jadwalId);
+
+            if (!$jadwal->disable_daily_reset) {
+                $attQuery->where('attendance_date', $today);
+            }
+
+            $attendances = $attQuery->get()
                 ->keyBy('user_id');
 
             $hadir = [];

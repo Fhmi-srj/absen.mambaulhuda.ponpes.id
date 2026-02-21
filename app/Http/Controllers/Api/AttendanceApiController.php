@@ -56,11 +56,15 @@ class AttendanceApiController extends Controller
             $today = Carbon::today()->format('Y-m-d');
             $now = Carbon::now();
 
-            // Check if already absen today for this jadwal
-            $attendance = Attendance::where('user_id', $siswa->id)
-                ->where('jadwal_id', $jadwalId)
-                ->where('attendance_date', $today)
-                ->first();
+            // Check if already absen for this jadwal
+            $attendanceQuery = Attendance::where('user_id', $siswa->id)
+                ->where('jadwal_id', $jadwalId);
+
+            if (!$jadwal->disable_daily_reset) {
+                $attendanceQuery->where('attendance_date', $today);
+            }
+
+            $attendance = $attendanceQuery->first();
 
             if ($attendance && !in_array($attendance->status, ['alpha', 'absen'])) {
                 return response()->json([
@@ -195,12 +199,16 @@ class AttendanceApiController extends Controller
             return response()->json(['success' => false, 'message' => 'Kartu RFID tidak terdaftar']);
         }
 
-        // Check if already attended today for this jadwal
-        $attendance = DB::table('attendances')
+        // Check if already attended for this jadwal
+        $attendanceQuery = DB::table('attendances')
             ->where('user_id', $santri->id)
-            ->where('jadwal_id', $jadwalId)
-            ->where('attendance_date', $today)
-            ->first();
+            ->where('jadwal_id', $jadwalId);
+
+        if (!$jadwal || !$jadwal->disable_daily_reset) {
+            $attendanceQuery->where('attendance_date', $today);
+        }
+
+        $attendance = $attendanceQuery->first();
 
         if ($attendance && !in_array($attendance->status, ['alpha', 'absen'])) {
             return response()->json(['success' => false, 'message' => 'Sudah absen untuk jadwal ini hari ini', 'santri' => $santri]);
@@ -269,12 +277,16 @@ class AttendanceApiController extends Controller
             return response()->json(['success' => false, 'message' => 'Santri tidak ditemukan']);
         }
 
-        // Check if already attended today for this jadwal
-        $attendance = DB::table('attendances')
+        // Check if already attended for this jadwal
+        $attendanceQuery = DB::table('attendances')
             ->where('user_id', $santri->id)
-            ->where('jadwal_id', $jadwalId)
-            ->where('attendance_date', $today)
-            ->first();
+            ->where('jadwal_id', $jadwalId);
+
+        if (!$jadwal || !$jadwal->disable_daily_reset) {
+            $attendanceQuery->where('attendance_date', $today);
+        }
+
+        $attendance = $attendanceQuery->first();
 
         if ($attendance && !in_array($attendance->status, ['alpha', 'absen'])) {
             return response()->json([

@@ -18,6 +18,7 @@ export default function Jadwal() {
         end_time: '',
         late_tolerance_minutes: 15,
         is_active: true,
+        disable_daily_reset: false,
     });
 
     useEffect(() => {
@@ -49,7 +50,7 @@ export default function Jadwal() {
         setFormData({
             id: '', name: '', type: 'absen',
             start_time: '', scheduled_time: '', end_time: '',
-            late_tolerance_minutes: 15, is_active: true,
+            late_tolerance_minutes: 15, is_active: true, disable_daily_reset: false,
         });
         setIsEditing(false);
     };
@@ -69,6 +70,7 @@ export default function Jadwal() {
             end_time: j.end_time || '',
             late_tolerance_minutes: j.late_tolerance_minutes || 15,
             is_active: j.is_active !== undefined ? (j.is_active ? true : false) : true,
+            disable_daily_reset: j.disable_daily_reset ? true : false,
         });
         setIsEditing(true);
         setModalOpen(true);
@@ -82,7 +84,7 @@ export default function Jadwal() {
         try {
             const form = new FormData();
             Object.keys(formData).forEach(key => {
-                if (key === 'is_active') {
+                if (key === 'is_active' || key === 'disable_daily_reset') {
                     form.append(key, formData[key] ? '1' : '0');
                 } else if (formData[key] !== '') {
                     form.append(key, formData[key]);
@@ -191,12 +193,9 @@ export default function Jadwal() {
                 ) : (
                     jadwalList.map((j) => (
                         <div key={j.id} className={`bg-white rounded-xl shadow-sm p-5 ${!j.is_active ? 'opacity-50' : ''}`}>
-                            <div className="flex justify-between items-center mb-4">
-                                <div className="flex items-center gap-2">
-                                    <h5 className="font-bold text-gray-800">{j.name}</h5>
-                                    {!j.is_active && <span className="text-[10px] bg-red-100 text-red-600 px-2 py-0.5 rounded-full font-bold">Non-Aktif</span>}
-                                </div>
-                                <div className="flex gap-2">
+                            <div className="flex justify-between items-start mb-3">
+                                <h5 className="font-bold text-gray-800">{j.name}</h5>
+                                <div className="flex gap-1 shrink-0 ml-2">
                                     <button onClick={() => openEditModal(j)} className="p-2 text-blue-500 hover:bg-blue-50 rounded">
                                         <i className="fas fa-edit"></i>
                                     </button>
@@ -205,6 +204,12 @@ export default function Jadwal() {
                                     </button>
                                 </div>
                             </div>
+                            {(!j.is_active || j.disable_daily_reset) && (
+                                <div className="flex flex-wrap gap-1.5 mb-3">
+                                    {!j.is_active && <span className="text-[10px] bg-red-100 text-red-600 px-2 py-0.5 rounded-full font-bold">Non-Aktif</span>}
+                                    {j.disable_daily_reset && <span className="text-[10px] bg-amber-100 text-amber-600 px-2 py-0.5 rounded-full font-bold"><i className="fas fa-infinity mr-1"></i>Tanpa Reset Harian</span>}
+                                </div>
+                            )}
                             <div className="grid grid-cols-3 text-center gap-2 mb-4">
                                 <div>
                                     <small className="text-gray-400 block">Mulai</small>
@@ -279,6 +284,16 @@ export default function Jadwal() {
                                     <button type="button" onClick={() => setFormData({ ...formData, is_active: !formData.is_active })}
                                         className={`relative w-12 h-6 rounded-full transition-colors duration-200 ${formData.is_active ? 'bg-emerald-500' : 'bg-gray-300'}`}>
                                         <span className={`absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform duration-200 ${formData.is_active ? 'translate-x-6' : ''}`}></span>
+                                    </button>
+                                </div>
+                                <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700">Nonaktifkan Reset Harian</label>
+                                        <small className="text-gray-400">{formData.disable_daily_reset ? 'Absensi tidak reset per hari (sekali absen selamanya)' : 'Absensi reset setiap hari (default)'}</small>
+                                    </div>
+                                    <button type="button" onClick={() => setFormData({ ...formData, disable_daily_reset: !formData.disable_daily_reset })}
+                                        className={`relative w-12 h-6 rounded-full transition-colors duration-200 ${formData.disable_daily_reset ? 'bg-amber-500' : 'bg-gray-300'}`}>
+                                        <span className={`absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform duration-200 ${formData.disable_daily_reset ? 'translate-x-6' : ''}`}></span>
                                     </button>
                                 </div>
                             </div>

@@ -21,10 +21,12 @@ class JadwalAbsen extends Model
         'late_tolerance_minutes',
         'late_time',
         'is_active',
+        'disable_daily_reset',
         'deleted_by',
     ];
 
     protected $casts = [
         'is_active' => 'boolean',
+        'disable_daily_reset' => 'boolean',
     ];
 }

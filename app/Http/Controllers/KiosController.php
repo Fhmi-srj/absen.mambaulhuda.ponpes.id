@@ -89,15 +89,21 @@ class KiosController extends Controller
 
         $students = $query->orderBy('nama_lengkap')->get();
 
-        // Get today's attendance for this jadwal
+        // Get attendance for this jadwal
         $attendedIds = [];
         $attendanceMap = [];
         if ($jadwalId) {
-            $attendances = DB::table('attendances')
+            $jadwal = DB::table('jadwal_absens')->find($jadwalId);
+
+            $attQuery = DB::table('attendances')
                 ->whereNull('deleted_at')
-                ->where('jadwal_id', $jadwalId)
-                ->where('attendance_date', $today)
-                ->get();
+                ->where('jadwal_id', $jadwalId);
+
+            if (!$jadwal || !$jadwal->disable_daily_reset) {
+                $attQuery->where('attendance_date', $today);
+            }
+
+            $attendances = $attQuery->get();
 
             foreach ($attendances as $att) {
                 $attendedIds[] = $att->user_id;
