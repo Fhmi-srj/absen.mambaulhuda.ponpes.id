@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { PageSkeleton } from '../Components/Skeleton';
 import LoadingSpinner from '../Components/LoadingSpinner';
 
@@ -20,6 +20,71 @@ export default function Riwayat() {
     const [iframeLoading, setIframeLoading] = useState(true);
     const printIframeRef = useRef(null);
     const isFirstLoad = useRef(true);
+    const [sortColumn, setSortColumn] = useState('attendance_date');
+    const [sortDirection, setSortDirection] = useState('desc');
+
+    const handleSort = (column) => {
+        if (sortColumn === column) {
+            setSortDirection(prev => prev === 'asc' ? 'desc' : 'asc');
+        } else {
+            setSortColumn(column);
+            setSortDirection('asc');
+        }
+        setCurrentPage(1);
+    };
+
+    const SortHeader = ({ column, label }) => (
+        <th
+            className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase cursor-pointer hover:bg-gray-100 select-none transition-colors"
+            onClick={() => handleSort(column)}
+        >
+            <span className="inline-flex items-center gap-1">
+                {label}
+                <span className="flex flex-col text-[8px] leading-none">
+                    <i className={`fas fa-caret-up ${sortColumn === column && sortDirection === 'asc' ? 'text-blue-600' : 'text-gray-300'}`}></i>
+                    <i className={`fas fa-caret-down ${sortColumn === column && sortDirection === 'desc' ? 'text-blue-600' : 'text-gray-300'}`}></i>
+                </span>
+            </span>
+        </th>
+    );
+
+    const sortedAttendances = useMemo(() => {
+        const sorted = [...attendances].sort((a, b) => {
+            let valA, valB;
+            switch (sortColumn) {
+                case 'attendance_date':
+                    valA = `${a.attendance_date} ${a.attendance_time || '00:00:00'}`;
+                    valB = `${b.attendance_date} ${b.attendance_time || '00:00:00'}`;
+                    break;
+                case 'nama_lengkap':
+                    valA = (a.nama_lengkap || '').toLowerCase();
+                    valB = (b.nama_lengkap || '').toLowerCase();
+                    break;
+                case 'jadwal_name':
+                    valA = (a.jadwal_name || '').toLowerCase();
+                    valB = (b.jadwal_name || '').toLowerCase();
+                    break;
+                case 'status':
+                    valA = (a.status || '').toLowerCase();
+                    valB = (b.status || '').toLowerCase();
+                    break;
+                case 'minutes_late':
+                    valA = a.minutes_late || 0;
+                    valB = b.minutes_late || 0;
+                    break;
+                case 'catatan':
+                    valA = (a.catatan || '').toLowerCase();
+                    valB = (b.catatan || '').toLowerCase();
+                    break;
+                default:
+                    return 0;
+            }
+            if (valA < valB) return sortDirection === 'asc' ? -1 : 1;
+            if (valA > valB) return sortDirection === 'asc' ? 1 : -1;
+            return 0;
+        });
+        return sorted;
+    }, [attendances, sortColumn, sortDirection]);
 
     const fetchData = useCallback(async () => {
         try {
@@ -218,12 +283,12 @@ export default function Riwayat() {
                             <table className="w-full text-sm">
                                 <thead className="bg-gray-50">
                                     <tr>
-                                        <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase">Waktu</th>
-                                        <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase">Siswa</th>
-                                        <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase">Jadwal</th>
-                                        <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase">Status</th>
-                                        <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase">Terlambat</th>
-                                        <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase">Catatan</th>
+                                        <SortHeader column="attendance_date" label="Waktu" />
+                                        <SortHeader column="nama_lengkap" label="Siswa" />
+                                        <SortHeader column="jadwal_name" label="Jadwal" />
+                                        <SortHeader column="status" label="Status" />
+                                        <SortHeader column="minutes_late" label="Terlambat" />
+                                        <SortHeader column="catatan" label="Catatan" />
                                     </tr>
                                 </thead>
                                 <tbody className="divide-y divide-gray-100">
@@ -234,7 +299,7 @@ export default function Riwayat() {
                                             </td>
                                         </tr>
                                     ) : (
-                                        attendances.slice((currentPage - 1) * perPage, currentPage * perPage).map((a, i) => (
+                                        sortedAttendances.slice((currentPage - 1) * perPage, currentPage * perPage).map((a, i) => (
                                             <tr key={i} className="hover:bg-gray-50">
                                                 <td className="px-4 py-3">
                                                     <div className="text-xs text-gray-400">{formatDate(a.attendance_date)}</div>
