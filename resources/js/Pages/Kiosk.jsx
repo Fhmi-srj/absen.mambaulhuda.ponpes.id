@@ -286,7 +286,7 @@ export default function Kiosk() {
 
     return (
         <StandaloneLayout>
-            <div className={`h-screen grid grid-cols-1 lg:grid-cols-[1fr_1.5fr] gap-8 p-8 overflow-hidden transition-colors duration-500 ${t.bg} ${t.text}`}>
+            <div className={`min-h-screen lg:h-screen lg:overflow-hidden overflow-y-auto grid grid-cols-1 lg:grid-cols-[1fr_1.5fr] gap-4 lg:gap-8 p-4 lg:p-8 transition-colors duration-500 ${t.bg} ${t.text}`}>
                 {/* Theme Toggle - floating button */}
                 <button
                     onClick={toggleTheme}
