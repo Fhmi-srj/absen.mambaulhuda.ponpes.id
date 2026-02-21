@@ -303,7 +303,9 @@ export default function Riwayat() {
                                             <tr key={i} className="hover:bg-gray-50">
                                                 <td className="px-4 py-3">
                                                     <div className="text-xs text-gray-400">{formatDate(a.attendance_date)}</div>
-                                                    <div className="font-semibold text-gray-800">{formatTime(a.attendance_time)}</div>
+                                                    <div className="font-semibold text-gray-800">
+                                                        {a.status === 'alpha' || !a.attendance_time || a.attendance_time === '00:00:00' ? '-' : formatTime(a.attendance_time)}
+                                                    </div>
                                                 </td>
                                                 <td className="px-4 py-3">
                                                     <div className="font-semibold text-gray-800">{a.nama_lengkap}</div>
