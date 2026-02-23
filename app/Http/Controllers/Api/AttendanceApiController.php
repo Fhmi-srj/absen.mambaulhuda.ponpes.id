@@ -294,8 +294,8 @@ class AttendanceApiController extends Controller
 
         $siswaId = $request->siswa_id;
         $jadwalId = $request->jadwal_id;
-        $today = date('Y-m-d');
-        $now = date('H:i:s');
+        $today = $request->attendance_date ?: date('Y-m-d');
+        $now = $request->attendance_time ? $request->attendance_time . ':00' : date('H:i:s');
 
         // Find santri
         $santri = DB::table('data_induk')

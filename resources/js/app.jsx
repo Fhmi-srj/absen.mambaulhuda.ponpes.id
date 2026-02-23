@@ -38,7 +38,7 @@ function App() {
             <Routes>
                 {/* Public Route */}
                 <Route path="/login" element={<Login />} />
-                <Route path="/kios" element={<Kiosk />} />
+
                 <Route path="/konfirmasi-kembali" element={<KonfirmasiKembali />} />
                 <Route path="/print-server" element={<PrintServer />} />
                 <Route path="/cetak-kartu" element={<CetakKartu />} />
@@ -58,6 +58,7 @@ function App() {
                                     <Route path="/pemindai" element={<Pemindai />} />
                                     <Route path="/riwayat" element={<Riwayat />} />
                                     <Route path="/menu" element={<Menu />} />
+                                    <Route path="/kios" element={<Kiosk />} />
 
                                     {/* User Routes */}
                                     <Route path="/absensi-langsung" element={<AbsensiLangsung />} />

@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
-import StandaloneLayout from '@/Layouts/StandaloneLayout';
 
 // Theme configurations
 const themes = {
@@ -108,6 +107,8 @@ export default function Kiosk() {
     const [loadingRoster, setLoadingRoster] = useState(false);
     const [confirmModal, setConfirmModal] = useState(null); // selected student for confirmation
     const [manualFeedback, setManualFeedback] = useState(null);
+    const [modalDate, setModalDate] = useState('');
+    const [modalTime, setModalTime] = useState('');
 
     const rfidInputRef = useRef(null);
 
@@ -199,13 +200,23 @@ export default function Kiosk() {
         }
     };
 
+    // Open confirm modal for a student and pre-fill current date/time
+    const openConfirmModal = (student) => {
+        const now = new Date();
+        setModalDate(now.toISOString().split('T')[0]);
+        setModalTime(now.toTimeString().substring(0, 5));
+        setConfirmModal(student);
+    };
+
     // Confirm attendance for a student from the roster
     const handleConfirmAttendance = async (student) => {
         setIsProcessing(true);
         try {
             const response = await axios.post('/api/public/attendance/manual', {
                 siswa_id: student.id,
-                jadwal_id: selectedJadwal.id
+                jadwal_id: selectedJadwal.id,
+                attendance_date: modalDate,
+                attendance_time: modalTime
             });
             if (response.data.success) {
                 setManualFeedback({
@@ -285,8 +296,8 @@ export default function Kiosk() {
     };
 
     return (
-        <StandaloneLayout>
-            <div className={`min-h-screen lg:h-screen lg:overflow-hidden overflow-y-auto grid grid-cols-1 lg:grid-cols-[1fr_1.5fr] gap-4 lg:gap-8 p-4 lg:p-8 transition-colors duration-500 ${t.bg} ${t.text}`}>
+        <div>
+            <div className={`min-h-[calc(100vh-120px)] overflow-y-auto grid grid-cols-1 lg:grid-cols-[1fr_1.5fr] gap-4 lg:gap-8 p-4 lg:p-6 transition-colors duration-500 rounded-2xl ${t.bg} ${t.text}`}>
                 {/* Theme Toggle - floating button */}
                 <button
                     onClick={toggleTheme}
@@ -467,7 +478,7 @@ export default function Kiosk() {
                                             .map(s => (
                                                 <button
                                                     key={s.id}
-                                                    onClick={() => s.status === 'alpha' && setConfirmModal(s)}
+                                                    onClick={() => s.status === 'alpha' && openConfirmModal(s)}
                                                     disabled={s.status !== 'alpha'}
                                                     className={`w-full flex items-center gap-3 p-4 rounded-xl border transition-all text-left ${getStatusStyle(s.status)} ${s.status === 'alpha' ? 'cursor-pointer active:scale-[0.99]' : 'cursor-default opacity-70'}`}
                                                 >
@@ -479,7 +490,9 @@ export default function Kiosk() {
                                                         <div className={`text-xs ${t.subtext}`}>{s.kelas} {s.nisn ? `• ${s.nisn}` : ''}</div>
                                                     </div>
                                                     <span className={`text-[9px] uppercase font-black px-2 py-0.5 rounded-full flex-shrink-0 ${getStatusBadge(s.status)}`}>
-                                                        {s.status}
+                                                        {s.status === 'terlambat' && s.days_late != null
+                                                            ? `Terlambat ${s.days_late} hari`
+                                                            : s.status}
                                                     </span>
                                                 </button>
                                             ))}
@@ -610,14 +623,10 @@ export default function Kiosk() {
                             </div>
                         </div>
 
-                        <div className={`rounded-xl p-4 mb-6 border ${t.cardInner}`}>
-                            <div className="flex justify-between items-center mb-2">
+                        <div className={`rounded-xl p-4 mb-4 border ${t.cardInner}`}>
+                            <div className="flex justify-between items-center mb-3">
                                 <span className={`text-sm ${t.subtext}`}>Jadwal</span>
                                 <span className="font-bold text-sm">{selectedJadwal?.name}</span>
-                            </div>
-                            <div className="flex justify-between items-center mb-2">
-                                <span className={`text-sm ${t.subtext}`}>Waktu</span>
-                                <span className="font-bold text-sm font-mono">{currentTime.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })}</span>
                             </div>
                             <div className="flex justify-between items-center">
                                 <span className={`text-sm ${t.subtext}`}>Status Saat Ini</span>
@@ -625,9 +634,25 @@ export default function Kiosk() {
                             </div>
                         </div>
 
-                        <p className={`text-center text-sm mb-6 ${t.subtext}`}>
-                            Konfirmasi kehadiran santri ini?
-                        </p>
+                        {/* Custom date + time */}
+                        <div className="mb-4">
+                            <label className={`block text-xs font-bold mb-1 ${t.subtext}`}>Tanggal Kehadiran</label>
+                            <input
+                                type="date"
+                                value={modalDate}
+                                onChange={(e) => setModalDate(e.target.value)}
+                                className={`w-full border-2 rounded-xl px-4 py-2 text-sm font-mono focus:outline-none focus:border-emerald-500 ${t.modalInput} ${t.text}`}
+                            />
+                        </div>
+                        <div className="mb-6">
+                            <label className={`block text-xs font-bold mb-1 ${t.subtext}`}>Waktu Kehadiran</label>
+                            <input
+                                type="time"
+                                value={modalTime}
+                                onChange={(e) => setModalTime(e.target.value)}
+                                className={`w-full border-2 rounded-xl px-4 py-2 text-sm font-mono focus:outline-none focus:border-emerald-500 ${t.modalInput} ${t.text}`}
+                            />
+                        </div>
 
                         <div className="flex gap-3">
                             <button
@@ -695,6 +720,6 @@ export default function Kiosk() {
                     </div>
                 </div>
             )}
-        </StandaloneLayout>
+        </div>
     );
 }

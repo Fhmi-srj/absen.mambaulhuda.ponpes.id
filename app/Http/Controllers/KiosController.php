@@ -110,13 +110,21 @@ class KiosController extends Controller
                 $attendanceMap[$att->user_id] = [
                     'status' => $att->status,
                     'time' => $att->attendance_time,
+                    'date' => $att->attendance_date,
                 ];
             }
         }
 
         // Merge attendance status into students
-        $roster = $students->map(function ($s) use ($attendedIds, $attendanceMap) {
+        $roster = $students->map(function ($s) use ($attendedIds, $attendanceMap, $jadwal) {
             $attended = in_array($s->id, $attendedIds);
+            $daysLate = null;
+            if ($attended && isset($attendanceMap[$s->id]['status']) && $attendanceMap[$s->id]['status'] === 'terlambat'
+                && $jadwal && $jadwal->disable_daily_reset && $jadwal->no_reset_start_date) {
+                $start = new \DateTime($jadwal->no_reset_start_date);
+                $attDate = new \DateTime($attendanceMap[$s->id]['date'] ?? date('Y-m-d'));
+                $daysLate = (int) $start->diff($attDate)->days;
+            }
             return [
                 'id' => $s->id,
                 'nama_lengkap' => $s->nama_lengkap,
@@ -125,6 +133,7 @@ class KiosController extends Controller
                 'jenis_kelamin' => $s->jenis_kelamin,
                 'status' => $attended ? $attendanceMap[$s->id]['status'] : 'alpha',
                 'attendance_time' => $attended ? $attendanceMap[$s->id]['time'] : null,
+                'days_late' => $daysLate,
             ];
         });
 

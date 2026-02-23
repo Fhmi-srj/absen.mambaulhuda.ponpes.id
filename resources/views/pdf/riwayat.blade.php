@@ -95,7 +95,7 @@
     <table class="data">
         <thead>
             <tr>
-                <td colspan="5" style="border: none; padding: 0;">
+                <td colspan="6" style="border: none; padding: 0;">
                     <div class="kop-container">
                         @if($kopBase64)
                         <img src="{{ $kopBase64 }}" alt="Kop Pondok">
@@ -126,6 +126,7 @@
                 <th style="width:60px">Kelas</th>
                 <th style="width:120px">Kedatangan</th>
                 <th style="width:80px">Keterangan</th>
+                <th style="width:130px">Tindakan</th>
             </tr>
         </thead>
         <tbody>
@@ -153,6 +154,7 @@
                     @endphp
                     <span class="badge {{ $badgeClass }}">{{ ucfirst($a->status) }}</span>
                 </td>
+                <td></td>
             </tr>
             @endforeach
         </tbody>
