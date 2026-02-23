@@ -249,311 +249,264 @@ export default function Kiosk() {
     };
 
     return (
-        <div className="overflow-x-auto">
-            <div className={`min-h-[calc(100vh-120px)] min-w-[560px] grid grid-cols-[260px_1fr] gap-4 p-3 rounded-2xl ${t.bg} ${t.text}`}>
+        <div className={`rounded-2xl p-3 md:p-5 ${t.bg} ${t.text}`}>
 
+            {/* ── TOP CONTROL BAR ── */}
+            <div className={`rounded-2xl border shadow-lg p-4 mb-4 ${t.card}`}>
+                <div className="flex flex-wrap gap-3 items-center">
 
-                {/* Left Panel */}
-                <div className="flex flex-col justify-center items-center text-center">
-                    <div className={`rounded-2xl p-5 md:p-8 w-full border shadow-xl ${t.card}`}>
-
-                        {/* Mode Tabs */}
-                        <div className={`flex rounded-2xl p-1.5 mb-8 border transition-colors duration-500 ${t.cardInner}`}>
-                            <button
-                                onClick={() => setMode('rfid')}
-                                className={`flex-1 py-3 rounded-xl font-bold text-sm transition-all duration-300 flex items-center justify-center gap-2 ${mode === 'rfid'
-                                    ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/30'
-                                    : `${t.subtext} hover:opacity-80`
-                                    }`}
-                            >
-                                <i className="fas fa-id-card"></i>
-                                RFID
-                            </button>
-                            <button
-                                onClick={() => setMode('manual')}
-                                className={`flex-1 py-3 rounded-xl font-bold text-sm transition-all duration-300 flex items-center justify-center gap-2 ${mode === 'manual'
-                                    ? 'bg-emerald-600 text-white shadow-lg shadow-emerald-600/30'
-                                    : `${t.subtext} hover:opacity-80`
-                                    }`}
-                            >
-                                <i className="fas fa-users"></i>
-                                Manual
-                            </button>
-                        </div>
-
-                        {/* RFID Mode */}
-                        {mode === 'rfid' && (
-                            <div>
-                                <div className="text-8xl mb-6 text-blue-400 animate-pulse">
-                                    <i className="fas fa-id-card"></i>
-                                </div>
-                                <h1 className="text-3xl font-bold mb-2">Tempelkan Kartu</h1>
-                                <p className={`${t.subtext} mb-8`}>Arahkan kartu RFID ke reader</p>
-
-                                <form onSubmit={handleRfidSubmit} autoComplete="off">
-                                    <input
-                                        ref={rfidInputRef}
-                                        type="text"
-                                        value={inputRfid}
-                                        onChange={(e) => setInputRfid(e.target.value)}
-                                        className={`w-full border-2 rounded-2xl p-5 text-3xl text-center font-mono font-bold tracking-[8px] focus:outline-none focus:ring-4 transition-all placeholder:tracking-normal placeholder:text-lg placeholder:font-sans ${t.input} ${t.inputFocus}`}
-                                        placeholder={isProcessing ? "Memproses..." : "Menunggu kartu..."}
-                                        autoFocus
-                                    />
-                                </form>
-                            </div>
-                        )}
-
-                        {/* Manual Mode - Simple instruction */}
-                        {mode === 'manual' && (
-                            <div>
-                                <div className="text-6xl mb-4 text-emerald-400">
-                                    <i className="fas fa-users"></i>
-                                </div>
-                                <h1 className="text-2xl font-bold mb-2">Absensi Manual</h1>
-                                <p className={`${t.subtext} mb-4 text-sm`}>Klik santri di panel sebelah kanan untuk konfirmasi kehadiran</p>
-
-                                {/* Feedback */}
-                                {manualFeedback && (
-                                    <div className={`p-3 rounded-2xl border-2 ${manualFeedback.success ? t.feedbackSuccess : t.feedbackError}`}>
-                                        <div className="text-2xl mb-1">
-                                            {manualFeedback.success ? (
-                                                <i className="fas fa-check-circle text-emerald-400"></i>
-                                            ) : (
-                                                <i className="fas fa-times-circle text-red-400"></i>
-                                            )}
-                                        </div>
-                                        <div className="font-bold">{manualFeedback.name}</div>
-                                        <div className={`text-sm ${manualFeedback.success ? t.feedbackSuccessText : t.feedbackErrorText}`}>
-                                            {manualFeedback.message}
-                                        </div>
-                                    </div>
-                                )}
-                            </div>
-                        )}
-
-                        {/* Jadwal Selector */}
-                        <div className="mt-8">
-                            <select
-                                value={selectedJadwal?.id || ''}
-                                onChange={handleJadwalChange}
-                                className={`w-full p-4 rounded-xl border-2 font-bold text-lg cursor-pointer focus:outline-none focus:border-emerald-500 transition-colors duration-500 ${t.select}`}
-                            >
-                                <option value="" className={t.selectOption}>-- Pilih Jenis Absen --</option>
-                                {jadwalList.map(j => (
-                                    <option key={j.id} value={j.id} className={t.selectOption}>
-                                        {j.name} {j.start_time ? `(${j.start_time.substring(0, 5)})` : ''}
-                                    </option>
-                                ))}
-                            </select>
-                        </div>
+                    {/* Mode Tabs */}
+                    <div className={`flex rounded-xl p-1 border ${t.cardInner} flex-shrink-0`}>
+                        <button
+                            onClick={() => setMode('rfid')}
+                            className={`px-4 py-2 rounded-lg font-bold text-sm transition-all flex items-center gap-2 ${mode === 'rfid'
+                                ? 'bg-blue-600 text-white shadow-md'
+                                : `${t.subtext} hover:opacity-80`}`}
+                        >
+                            <i className="fas fa-id-card"></i> RFID
+                        </button>
+                        <button
+                            onClick={() => setMode('manual')}
+                            className={`px-4 py-2 rounded-lg font-bold text-sm transition-all flex items-center gap-2 ${mode === 'manual'
+                                ? 'bg-emerald-600 text-white shadow-md'
+                                : `${t.subtext} hover:opacity-80`}`}
+                        >
+                            <i className="fas fa-users"></i> Manual
+                        </button>
                     </div>
-                </div>
 
-                {/* Right Panel */}
-                <div className="flex flex-col min-h-[400px] md:h-full overflow-hidden">
-                    {mode === 'manual' ? (
-                        /* Roster Panel for Manual Mode */
-                        <div className="flex flex-col h-full overflow-y-auto">
-                            <div className="flex justify-between items-center mb-4">
-                                <div className="text-2xl font-bold flex items-center">
-                                    <i className="fas fa-users mr-3 text-emerald-400"></i>
-                                    Daftar Santri
-                                </div>
-                                <div className="flex gap-4">
-                                    <div className="text-center">
-                                        <div className="text-3xl font-bold text-emerald-400">{rosterSummary.hadir}</div>
-                                        <div className={`text-[10px] uppercase tracking-wider font-bold ${t.subtext}`}>Hadir</div>
-                                    </div>
-                                    <div className="text-center">
-                                        <div className="text-3xl font-bold text-amber-400">{rosterSummary.terlambat}</div>
-                                        <div className={`text-[10px] uppercase tracking-wider font-bold ${t.subtext}`}>Terlambat</div>
-                                    </div>
-                                    <div className="text-center">
-                                        <div className="text-3xl font-bold text-red-400">{rosterSummary.alpha}</div>
-                                        <div className={`text-[10px] uppercase tracking-wider font-bold ${t.subtext}`}>Alpha</div>
-                                    </div>
-                                </div>
-                            </div>
+                    {/* Jadwal Selector */}
+                    <select
+                        value={selectedJadwal?.id || ''}
+                        onChange={handleJadwalChange}
+                        className={`flex-1 min-w-[180px] p-2.5 rounded-xl border-2 font-bold cursor-pointer focus:outline-none focus:border-emerald-500 ${t.select}`}
+                    >
+                        <option value="" className={t.selectOption}>-- Pilih Jenis Absen --</option>
+                        {jadwalList.map(j => (
+                            <option key={j.id} value={j.id} className={t.selectOption}>
+                                {j.name} {j.start_time ? `(${j.start_time.substring(0, 5)})` : ''}
+                            </option>
+                        ))}
+                    </select>
 
-                            {/* Class filter + search */}
-                            <div className={`rounded-2xl p-4 mb-4 backdrop-blur-sm border transition-colors duration-500 ${t.cardInner}`}>
-                                <div className="flex gap-3 flex-wrap">
-                                    <select
-                                        value={selectedKelas}
-                                        onChange={(e) => setSelectedKelas(e.target.value)}
-                                        className={`flex-1 min-w-[150px] border rounded-lg p-2 text-sm font-bold focus:outline-none focus:border-emerald-500 transition-colors duration-500 ${t.filterSelect}`}
-                                    >
-                                        <option value="" className={t.selectOption}>Semua Kelas</option>
-                                        {kelasList.map(k => (
-                                            <option key={k} value={k} className={t.selectOption}>{k}</option>
-                                        ))}
-                                    </select>
-                                    <input
-                                        type="text"
-                                        placeholder="Cari nama..."
-                                        value={filters.search}
-                                        onChange={(e) => setFilters({ ...filters, search: e.target.value })}
-                                        className={`flex-1 min-w-[150px] border rounded-lg p-2 text-sm focus:outline-none focus:border-emerald-500 transition-colors duration-500 ${t.filterInput}`}
-                                    />
-                                    <button
-                                        onClick={() => { setFilters({ search: '', gender: '', status: '' }); setSelectedKelas(''); }}
-                                        className={`border rounded-lg px-3 transition-colors ${t.resetBtn}`}
-                                    >
-                                        <i className="fas fa-times"></i>
-                                    </button>
-                                </div>
-                            </div>
+                    {/* RFID Input (only in RFID mode) */}
+                    {mode === 'rfid' && (
+                        <form onSubmit={handleRfidSubmit} autoComplete="off" className="flex-1 min-w-[200px]">
+                            <input
+                                ref={rfidInputRef}
+                                type="text"
+                                value={inputRfid}
+                                onChange={(e) => setInputRfid(e.target.value)}
+                                className={`w-full border-2 rounded-xl px-4 py-2.5 text-center font-mono font-bold tracking-widest focus:outline-none focus:ring-2 ${t.input} ${t.inputFocus}`}
+                                placeholder={isProcessing ? "Memproses..." : "Scan kartu RFID..."}
+                                autoFocus
+                            />
+                        </form>
+                    )}
 
-                            {/* Student Roster */}
-                            {!selectedJadwal ? (
-                                <div className={`flex flex-col items-center justify-center flex-1 opacity-50 ${t.emptyState}`}>
-                                    <i className="fas fa-hand-point-left text-6xl mb-4"></i>
-                                    <p className="text-xl font-bold">Pilih jadwal terlebih dahulu</p>
-                                    <p className="text-sm mt-2">Pilih jenis absen di panel sebelah kiri</p>
-                                </div>
-                            ) : loadingRoster ? (
-                                <div className="flex items-center justify-center flex-1">
-                                    <i className="fas fa-spinner fa-spin text-4xl text-emerald-400"></i>
-                                </div>
-                            ) : (
-                                <div className="flex-1 overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-white/20 scrollbar-track-transparent">
-                                    <div className="space-y-2">
-                                        {roster
-                                            .filter(s => filters.search === '' || s.nama_lengkap.toLowerCase().includes(filters.search.toLowerCase()))
-                                            .map(s => (
-                                                <button
-                                                    key={s.id}
-                                                    onClick={() => s.status === 'alpha' && openConfirmModal(s)}
-                                                    disabled={s.status !== 'alpha'}
-                                                    className={`w-full flex items-center gap-3 p-4 rounded-xl border transition-all text-left ${getStatusStyle(s.status)} ${s.status === 'alpha' ? 'cursor-pointer active:scale-[0.99]' : 'cursor-default opacity-70'}`}
-                                                >
-                                                    <div className={`w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold text-white flex-shrink-0 ${s.status === 'alpha' ? 'bg-red-500' : s.status === 'hadir' ? 'bg-emerald-500' : 'bg-amber-500'}`}>
-                                                        {s.status === 'alpha' ? <i className="fas fa-times"></i> : <i className="fas fa-check"></i>}
-                                                    </div>
-                                                    <div className="flex-1 min-w-0">
-                                                        <div className="font-bold text-sm truncate">{s.nama_lengkap}</div>
-                                                        <div className={`text-xs ${t.subtext}`}>{s.kelas} {s.nisn ? `• ${s.nisn}` : ''}</div>
-                                                    </div>
-                                                    <span className={`text-[9px] uppercase font-black px-2 py-0.5 rounded-full flex-shrink-0 ${getStatusBadge(s.status)}`}>
-                                                        {s.status === 'terlambat' && s.days_late != null
-                                                            ? `Terlambat ${s.days_late} hari`
-                                                            : s.status}
-                                                    </span>
-                                                </button>
-                                            ))}
-                                    </div>
-                                    {roster.filter(s => filters.search === '' || s.nama_lengkap.toLowerCase().includes(filters.search.toLowerCase())).length === 0 && (
-                                        <div className={`text-center py-12 ${t.emptyState}`}>
-                                            <i className="fas fa-search text-4xl mb-3"></i>
-                                            <p>Tidak ada santri ditemukan</p>
-                                        </div>
-                                    )}
-                                </div>
-                            )}
+                    {/* Manual mode: feedback badge */}
+                    {mode === 'manual' && manualFeedback && (
+                        <div className={`flex items-center gap-2 px-3 py-2 rounded-xl border text-sm font-bold ${manualFeedback.success ? t.feedbackSuccess : t.feedbackError}`}>
+                            <i className={`fas ${manualFeedback.success ? 'fa-check-circle text-emerald-500' : 'fa-times-circle text-red-500'}`}></i>
+                            <span className={manualFeedback.success ? t.feedbackSuccessText : t.feedbackErrorText}>
+                                {manualFeedback.name} — {manualFeedback.message}
+                            </span>
                         </div>
-                    ) : (
-                        /* Live Attendance Panel for RFID Mode */
-                        <div className="flex flex-col h-full overflow-y-auto">
-                            <div className="flex justify-between items-center mb-6">
-                                <div className="text-2xl font-bold flex items-center">
-                                    <i className="fas fa-broadcast-tower mr-3 text-blue-400"></i>
-                                    Live Attendance
-                                </div>
-                                <div className="flex gap-8">
-                                    <div className="text-center">
-                                        <div className="text-4xl font-bold text-emerald-400">{stats.todayTotal}</div>
-                                        <div className={`text-xs uppercase tracking-wider ${t.subtext}`}>Hadir Hari Ini</div>
-                                    </div>
-                                    <div className="text-center">
-                                        <div className="text-4xl font-bold text-blue-400">{stats.totalSiswa}</div>
-                                        <div className={`text-xs uppercase tracking-wider ${t.subtext}`}>Total Santri</div>
-                                    </div>
-                                </div>
-                            </div>
+                    )}
 
-                            <div className="text-center mb-8">
-                                <div className={`text-6xl font-bold font-mono tracking-tighter ${t.clockText}`}>
-                                    {currentTime.toLocaleTimeString('id-ID', { hour12: false })}
-                                </div>
-                                <div className={`text-lg mt-2 ${t.subtext}`}>
-                                    {currentTime.toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
-                                </div>
+                    {/* RFID stats */}
+                    {mode === 'rfid' && (
+                        <div className="flex gap-4 flex-shrink-0">
+                            <div className="text-center">
+                                <div className="text-2xl font-bold text-emerald-500">{stats.todayTotal}</div>
+                                <div className={`text-[10px] uppercase font-bold ${t.subtext}`}>Hadir</div>
                             </div>
-
-                            <div className={`rounded-2xl p-4 mb-4 backdrop-blur-sm border transition-colors duration-500 ${t.cardInner}`}>
-                                <div className="flex gap-3 flex-wrap">
-                                    <input
-                                        type="text"
-                                        placeholder="Cari nama..."
-                                        value={filters.search}
-                                        onChange={(e) => setFilters({ ...filters, search: e.target.value })}
-                                        className={`flex-1 min-w-[150px] border rounded-lg p-2 text-sm focus:outline-none focus:border-blue-500 transition-colors duration-500 ${t.filterInput}`}
-                                    />
-                                    <select
-                                        value={filters.gender}
-                                        onChange={(e) => setFilters({ ...filters, gender: e.target.value })}
-                                        className={`border rounded-lg p-2 text-sm focus:outline-none transition-colors duration-500 ${t.filterSelect}`}
-                                    >
-                                        <option value="" className={t.selectOption}>Semua JK</option>
-                                        <option value="L" className={t.selectOption}>Laki-laki</option>
-                                        <option value="P" className={t.selectOption}>Perempuan</option>
-                                    </select>
-                                    <select
-                                        value={filters.status}
-                                        onChange={(e) => setFilters({ ...filters, status: e.target.value })}
-                                        className={`border rounded-lg p-2 text-sm focus:outline-none transition-colors duration-500 ${t.filterSelect}`}
-                                    >
-                                        <option value="" className={t.selectOption}>Semua Status</option>
-                                        <option value="hadir" className={t.selectOption}>Hadir</option>
-                                        <option value="terlambat" className={t.selectOption}>Terlambat</option>
-                                        <option value="pulang" className={t.selectOption}>Pulang</option>
-                                    </select>
-                                    <button
-                                        onClick={() => setFilters({ search: '', gender: '', status: '' })}
-                                        className={`border rounded-lg px-3 transition-colors ${t.resetBtn}`}
-                                    >
-                                        <i className="fas fa-times"></i>
-                                    </button>
-                                </div>
+                            <div className="text-center">
+                                <div className="text-2xl font-bold text-blue-500">{stats.totalSiswa}</div>
+                                <div className={`text-[10px] uppercase font-bold ${t.subtext}`}>Total</div>
                             </div>
+                        </div>
+                    )}
 
-                            <div className="flex-1 overflow-y-auto space-y-3 pr-2 scrollbar-thin scrollbar-thumb-white/20 scrollbar-track-transparent">
-                                {filteredAttendances.length > 0 ? (
-                                    filteredAttendances.map((item) => (
-                                        <div key={item.id} className={`flex items-center p-4 rounded-xl border transition-colors duration-500 ${t.attendanceItem}`}>
-                                            <div className="w-14 h-14 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-xl font-bold mr-4 shadow-lg shadow-blue-500/20 text-white">
-                                                {(item.nama_lengkap || '?').substring(0, 1).toUpperCase()}
-                                            </div>
-                                            <div className="flex-1">
-                                                <div className="font-bold text-lg">{item.nama_lengkap}</div>
-                                                <div className={`text-sm ${t.subtext}`}>
-                                                    Kelas {item.kelas} | {item.nomor_induk || '-'}
-                                                </div>
-                                            </div>
-                                            <div className="text-right">
-                                                <div className="text-xl font-bold font-mono">
-                                                    {item.attendance_time ? item.attendance_time.substring(0, 5) : '-'}
-                                                </div>
-                                                <span className={`text-[10px] uppercase font-black px-2 py-0.5 rounded-full text-white ${item.status === 'hadir' ? 'bg-emerald-500' :
-                                                    item.status === 'terlambat' ? 'bg-amber-500' : 'bg-blue-500'
-                                                    }`}>
-                                                    {item.status}
-                                                </span>
-                                            </div>
-                                        </div>
-                                    ))
-                                ) : (
-                                    <div className={`flex flex-col items-center justify-center p-12 opacity-50 ${t.emptyState}`}>
-                                        <i className="fas fa-inbox text-6xl mb-4"></i>
-                                        <p className="text-xl">Belum ada absensi hari ini</p>
-                                    </div>
-                                )}
+                    {/* Manual mode: stats */}
+                    {mode === 'manual' && selectedJadwal && (
+                        <div className="flex gap-4 flex-shrink-0">
+                            <div className="text-center">
+                                <div className="text-2xl font-bold text-emerald-500">{rosterSummary.hadir}</div>
+                                <div className={`text-[10px] uppercase font-bold ${t.subtext}`}>Hadir</div>
+                            </div>
+                            <div className="text-center">
+                                <div className="text-2xl font-bold text-amber-500">{rosterSummary.terlambat}</div>
+                                <div className={`text-[10px] uppercase font-bold ${t.subtext}`}>Terlambat</div>
+                            </div>
+                            <div className="text-center">
+                                <div className="text-2xl font-bold text-red-500">{rosterSummary.alpha}</div>
+                                <div className={`text-[10px] uppercase font-bold ${t.subtext}`}>Alpha</div>
                             </div>
                         </div>
                     )}
                 </div>
             </div>
+
+            {/* ── BOTTOM CONTENT ── */}
+            {mode === 'manual' ? (
+                /* Manual Roster */
+                <div>
+                    {/* Filter bar */}
+                    <div className={`rounded-xl p-3 mb-3 border ${t.cardInner}`}>
+                        <div className="flex gap-2 flex-wrap">
+                            <select
+                                value={selectedKelas}
+                                onChange={(e) => setSelectedKelas(e.target.value)}
+                                className={`flex-1 min-w-[120px] border rounded-lg p-2 text-sm font-bold focus:outline-none ${t.filterSelect}`}
+                            >
+                                <option value="" className={t.selectOption}>Semua Kelas</option>
+                                {kelasList.map(k => (
+                                    <option key={k} value={k} className={t.selectOption}>{k}</option>
+                                ))}
+                            </select>
+                            <input
+                                type="text"
+                                placeholder="Cari nama..."
+                                value={filters.search}
+                                onChange={(e) => setFilters({ ...filters, search: e.target.value })}
+                                className={`flex-1 min-w-[150px] border rounded-lg p-2 text-sm focus:outline-none ${t.filterInput}`}
+                            />
+                            <button
+                                onClick={() => { setFilters({ search: '', gender: '', status: '' }); setSelectedKelas(''); }}
+                                className={`border rounded-lg px-3 transition-colors ${t.resetBtn}`}
+                            >
+                                <i className="fas fa-times"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    {/* Roster list */}
+                    {!selectedJadwal ? (
+                        <div className={`flex flex-col items-center justify-center py-20 opacity-50 ${t.emptyState}`}>
+                            <i className="fas fa-arrow-up text-5xl mb-4"></i>
+                            <p className="text-lg font-bold">Pilih jenis absen di atas</p>
+                        </div>
+                    ) : loadingRoster ? (
+                        <div className="flex items-center justify-center py-20">
+                            <i className="fas fa-spinner fa-spin text-4xl text-emerald-400"></i>
+                        </div>
+                    ) : (
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
+                            {roster
+                                .filter(s => filters.search === '' || s.nama_lengkap.toLowerCase().includes(filters.search.toLowerCase()))
+                                .map(s => (
+                                    <button
+                                        key={s.id}
+                                        onClick={() => s.status === 'alpha' && openConfirmModal(s)}
+                                        disabled={s.status !== 'alpha'}
+                                        className={`w-full flex items-center gap-3 p-3 rounded-xl border transition-all text-left ${getStatusStyle(s.status)} ${s.status === 'alpha' ? 'cursor-pointer active:scale-[0.99]' : 'cursor-default opacity-70'}`}
+                                    >
+                                        <div className={`w-9 h-9 rounded-full flex items-center justify-center text-sm font-bold text-white flex-shrink-0 ${s.status === 'alpha' ? 'bg-red-500' : s.status === 'hadir' ? 'bg-emerald-500' : 'bg-amber-500'}`}>
+                                            {s.status === 'alpha' ? <i className="fas fa-times"></i> : <i className="fas fa-check"></i>}
+                                        </div>
+                                        <div className="flex-1 min-w-0">
+                                            <div className="font-bold text-sm truncate">{s.nama_lengkap}</div>
+                                            <div className={`text-xs ${t.subtext}`}>{s.kelas}{s.nisn ? ` • ${s.nisn}` : ''}</div>
+                                        </div>
+                                        <span className={`text-[9px] uppercase font-black px-2 py-0.5 rounded-full flex-shrink-0 ${getStatusBadge(s.status)}`}>
+                                            {s.status === 'terlambat' && s.days_late != null
+                                                ? `+${s.days_late}hr`
+                                                : s.status}
+                                        </span>
+                                    </button>
+                                ))}
+                            {roster.filter(s => filters.search === '' || s.nama_lengkap.toLowerCase().includes(filters.search.toLowerCase())).length === 0 && (
+                                <div className={`col-span-full text-center py-12 ${t.emptyState}`}>
+                                    <i className="fas fa-search text-4xl mb-3"></i>
+                                    <p>Tidak ada santri ditemukan</p>
+                                </div>
+                            )}
+                        </div>
+                    )}
+                </div>
+            ) : (
+                /* RFID Live Attendance */
+                <div>
+                    {/* Clock */}
+                    <div className={`text-center py-4 mb-3 rounded-2xl border ${t.card}`}>
+                        <div className={`text-5xl font-bold font-mono ${t.clockText}`}>
+                            {currentTime.toLocaleTimeString('id-ID', { hour12: false })}
+                        </div>
+                        <div className={`text-sm mt-1 ${t.subtext}`}>
+                            {currentTime.toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
+                        </div>
+                    </div>
+
+                    {/* Filter */}
+                    <div className={`rounded-xl p-3 mb-3 border ${t.cardInner}`}>
+                        <div className="flex gap-2 flex-wrap">
+                            <input
+                                type="text"
+                                placeholder="Cari nama..."
+                                value={filters.search}
+                                onChange={(e) => setFilters({ ...filters, search: e.target.value })}
+                                className={`flex-1 min-w-[150px] border rounded-lg p-2 text-sm focus:outline-none ${t.filterInput}`}
+                            />
+                            <select
+                                value={filters.gender}
+                                onChange={(e) => setFilters({ ...filters, gender: e.target.value })}
+                                className={`border rounded-lg p-2 text-sm focus:outline-none ${t.filterSelect}`}
+                            >
+                                <option value="" className={t.selectOption}>Semua JK</option>
+                                <option value="L" className={t.selectOption}>Laki-laki</option>
+                                <option value="P" className={t.selectOption}>Perempuan</option>
+                            </select>
+                            <select
+                                value={filters.status}
+                                onChange={(e) => setFilters({ ...filters, status: e.target.value })}
+                                className={`border rounded-lg p-2 text-sm focus:outline-none ${t.filterSelect}`}
+                            >
+                                <option value="" className={t.selectOption}>Semua Status</option>
+                                <option value="hadir" className={t.selectOption}>Hadir</option>
+                                <option value="terlambat" className={t.selectOption}>Terlambat</option>
+                                <option value="pulang" className={t.selectOption}>Pulang</option>
+                            </select>
+                            <button
+                                onClick={() => setFilters({ search: '', gender: '', status: '' })}
+                                className={`border rounded-lg px-3 transition-colors ${t.resetBtn}`}
+                            >
+                                <i className="fas fa-times"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    {/* Attendance list */}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
+                        {filteredAttendances.length > 0 ? (
+                            filteredAttendances.map((item) => (
+                                <div key={item.id} className={`flex items-center p-3 rounded-xl border ${t.attendanceItem}`}>
+                                    <div className="w-11 h-11 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-lg font-bold mr-3 text-white flex-shrink-0">
+                                        {(item.nama_lengkap || '?').substring(0, 1).toUpperCase()}
+                                    </div>
+                                    <div className="flex-1 min-w-0">
+                                        <div className="font-bold text-sm truncate">{item.nama_lengkap}</div>
+                                        <div className={`text-xs ${t.subtext}`}>Kelas {item.kelas}</div>
+                                    </div>
+                                    <div className="text-right flex-shrink-0">
+                                        <div className="font-bold font-mono text-sm">
+                                            {item.attendance_time ? item.attendance_time.substring(0, 5) : '-'}
+                                        </div>
+                                        <span className={`text-[9px] uppercase font-black px-2 py-0.5 rounded-full text-white ${item.status === 'hadir' ? 'bg-emerald-500' : item.status === 'terlambat' ? 'bg-amber-500' : 'bg-blue-500'}`}>
+                                            {item.status}
+                                        </span>
+                                    </div>
+                                </div>
+                            ))
+                        ) : (
+                            <div className={`col-span-full flex flex-col items-center justify-center py-20 opacity-50 ${t.emptyState}`}>
+                                <i className="fas fa-inbox text-5xl mb-4"></i>
+                                <p className="text-lg">Belum ada absensi hari ini</p>
+                            </div>
+                        )}
+                    </div>
+                </div>
+            )}
 
             {/* Confirm Attendance Modal */}
             {confirmModal && (
@@ -568,7 +521,6 @@ export default function Kiosk() {
                                 {confirmModal.kelas} {confirmModal.nisn ? `• ${confirmModal.nisn}` : ''}
                             </div>
                         </div>
-
                         <div className={`rounded-xl p-4 mb-4 border ${t.cardInner}`}>
                             <div className="flex justify-between items-center mb-3">
                                 <span className={`text-sm ${t.subtext}`}>Jadwal</span>
@@ -579,44 +531,21 @@ export default function Kiosk() {
                                 <span className="text-xs uppercase font-black px-2 py-0.5 rounded-full bg-red-500 text-white">Alpha</span>
                             </div>
                         </div>
-
-                        {/* Custom date + time */}
                         <div className="mb-4">
                             <label className={`block text-xs font-bold mb-1 ${t.subtext}`}>Tanggal Kehadiran</label>
-                            <input
-                                type="date"
-                                value={modalDate}
-                                onChange={(e) => setModalDate(e.target.value)}
-                                className={`w-full border-2 rounded-xl px-4 py-2 text-sm font-mono focus:outline-none focus:border-emerald-500 ${t.modalInput} ${t.text}`}
-                            />
+                            <input type="date" value={modalDate} onChange={(e) => setModalDate(e.target.value)}
+                                className={`w-full border-2 rounded-xl px-4 py-2 text-sm font-mono focus:outline-none focus:border-emerald-500 ${t.modalInput} ${t.text}`} />
                         </div>
                         <div className="mb-6">
                             <label className={`block text-xs font-bold mb-1 ${t.subtext}`}>Waktu Kehadiran</label>
-                            <input
-                                type="time"
-                                value={modalTime}
-                                onChange={(e) => setModalTime(e.target.value)}
-                                className={`w-full border-2 rounded-xl px-4 py-2 text-sm font-mono focus:outline-none focus:border-emerald-500 ${t.modalInput} ${t.text}`}
-                            />
+                            <input type="time" value={modalTime} onChange={(e) => setModalTime(e.target.value)}
+                                className={`w-full border-2 rounded-xl px-4 py-2 text-sm font-mono focus:outline-none focus:border-emerald-500 ${t.modalInput} ${t.text}`} />
                         </div>
-
                         <div className="flex gap-3">
-                            <button
-                                onClick={() => setConfirmModal(null)}
-                                className="flex-1 p-3 rounded-xl font-bold transition-colors bg-slate-200 hover:bg-slate-300"
-                            >
-                                Batal
-                            </button>
-                            <button
-                                onClick={() => handleConfirmAttendance(confirmModal)}
-                                disabled={isProcessing}
-                                className="flex-1 p-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 font-bold transition-colors text-white disabled:opacity-50"
-                            >
-                                {isProcessing ? (
-                                    <i className="fas fa-spinner fa-spin"></i>
-                                ) : (
-                                    <><i className="fas fa-check mr-2"></i>Hadir</>
-                                )}
+                            <button onClick={() => setConfirmModal(null)} className="flex-1 p-3 rounded-xl font-bold transition-colors bg-slate-200 hover:bg-slate-300">Batal</button>
+                            <button onClick={() => handleConfirmAttendance(confirmModal)} disabled={isProcessing}
+                                className="flex-1 p-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 font-bold transition-colors text-white disabled:opacity-50">
+                                {isProcessing ? <i className="fas fa-spinner fa-spin"></i> : <><i className="fas fa-check mr-2"></i>Hadir</>}
                             </button>
                         </div>
                     </div>
@@ -631,37 +560,16 @@ export default function Kiosk() {
                             <i className="fas fa-lock mr-3 text-blue-400 text-xl"></i>
                             <h2 className="text-xl font-bold">Masukkan Sandi</h2>
                         </div>
-                        <p className={`text-sm mb-6 ${t.subtext}`}>
-                            Untuk mengubah jenis absensi, masukkan sandi kiosk:
-                        </p>
-                        <input
-                            type="password"
-                            value={passwordInput}
-                            onChange={(e) => setPasswordInput(e.target.value)}
-                            onKeyUp={(e) => e.key === 'Enter' && verifyPassword()}
-                            autoFocus
+                        <p className={`text-sm mb-6 ${t.subtext}`}>Untuk mengubah jenis absensi, masukkan sandi kiosk:</p>
+                        <input type="password" value={passwordInput} onChange={(e) => setPasswordInput(e.target.value)}
+                            onKeyUp={(e) => e.key === 'Enter' && verifyPassword()} autoFocus
                             className={`w-full border-2 rounded-xl p-4 text-center text-2xl tracking-widest focus:outline-none focus:border-blue-500 ${t.modalInput} ${t.text}`}
-                            placeholder="****"
-                        />
-                        {passwordError && (
-                            <div className="text-red-400 text-sm mt-3 text-center font-bold">Sandi salah!</div>
-                        )}
+                            placeholder="****" />
+                        {passwordError && <div className="text-red-400 text-sm mt-3 text-center font-bold">Sandi salah!</div>}
                         <div className="flex gap-3 mt-8">
-                            <button
-                                onClick={() => {
-                                    setShowPasswordModal(false);
-                                    setPendingJadwal(null);
-                                }}
-                                className="flex-1 p-3 rounded-xl font-bold transition-colors bg-slate-200 hover:bg-slate-300"
-                            >
-                                Batal
-                            </button>
-                            <button
-                                onClick={verifyPassword}
-                                className="flex-1 p-3 rounded-xl bg-blue-600 hover:bg-blue-500 font-bold transition-colors text-white"
-                            >
-                                Konfirmasi
-                            </button>
+                            <button onClick={() => { setShowPasswordModal(false); setPendingJadwal(null); }}
+                                className="flex-1 p-3 rounded-xl font-bold transition-colors bg-slate-200 hover:bg-slate-300">Batal</button>
+                            <button onClick={verifyPassword} className="flex-1 p-3 rounded-xl bg-blue-600 hover:bg-blue-500 font-bold transition-colors text-white">Konfirmasi</button>
                         </div>
                     </div>
                 </div>
