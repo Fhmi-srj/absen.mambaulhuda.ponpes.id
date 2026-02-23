@@ -1,72 +1,36 @@
 import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 
-// Theme configurations
-const themes = {
-    dark: {
-        bg: 'bg-slate-900',
-        text: 'text-white',
-        card: 'bg-white/10 backdrop-blur-md border-white/20',
-        cardInner: 'bg-white/5 border-white/10',
-        input: 'bg-white/20 border-white/30 text-white placeholder:text-slate-500',
-        inputFocus: 'focus:border-emerald-500 focus:ring-emerald-500/30',
-        select: 'bg-white/10 border-white/30 text-white',
-        selectOption: 'bg-slate-800',
-        filterInput: 'bg-white/10 border-white/20 text-white',
-        filterSelect: 'bg-white/10 border-white/20 text-white',
-        attendanceItem: 'bg-white/10 border-white/5',
-        dropdown: 'bg-slate-800 border-white/10',
-        dropdownHover: 'hover:bg-white/10',
-        dropdownBorder: 'border-white/5',
-        subtext: 'text-slate-400',
-        clockText: 'text-blue-100',
-        emptyState: 'text-slate-500',
-        feedbackSuccess: 'bg-emerald-500/20 border-emerald-500/50',
-        feedbackError: 'bg-red-500/20 border-red-500/50',
-        feedbackSuccessText: 'text-emerald-300',
-        feedbackErrorText: 'text-red-300',
-        modal: 'bg-slate-950/80',
-        modalCard: 'bg-slate-800 border-slate-700',
-        modalInput: 'bg-slate-900 border-slate-700',
-        resetBtn: 'bg-red-500/20 border-red-500/40 hover:bg-red-500/40',
-        toggleIcon: 'fas fa-sun text-yellow-300',
-        toggleBtn: 'bg-white/10 hover:bg-white/20 border-white/20',
-        rosterAlpha: 'bg-red-500/10 border-red-500/30 hover:bg-red-500/20',
-        rosterHadir: 'bg-emerald-500/10 border-emerald-500/30',
-        rosterTerlambat: 'bg-amber-500/10 border-amber-500/30',
-    },
-    light: {
-        bg: 'bg-gradient-to-br from-slate-100 via-blue-50 to-indigo-100',
-        text: 'text-slate-800',
-        card: 'bg-white/80 backdrop-blur-md border-slate-200 shadow-xl',
-        cardInner: 'bg-slate-100/80 border-slate-200',
-        input: 'bg-white border-slate-300 text-slate-800 placeholder:text-slate-400',
-        inputFocus: 'focus:border-blue-500 focus:ring-blue-500/30',
-        select: 'bg-white border-slate-300 text-slate-800',
-        selectOption: 'bg-white',
-        filterInput: 'bg-white border-slate-200 text-slate-800',
-        filterSelect: 'bg-white border-slate-200 text-slate-800',
-        attendanceItem: 'bg-white border-slate-100 shadow-sm',
-        dropdown: 'bg-white border-slate-200 shadow-xl',
-        dropdownHover: 'hover:bg-blue-50',
-        dropdownBorder: 'border-slate-100',
-        subtext: 'text-slate-500',
-        clockText: 'text-slate-700',
-        emptyState: 'text-slate-400',
-        feedbackSuccess: 'bg-emerald-50 border-emerald-300',
-        feedbackError: 'bg-red-50 border-red-300',
-        feedbackSuccessText: 'text-emerald-600',
-        feedbackErrorText: 'text-red-600',
-        modal: 'bg-black/40',
-        modalCard: 'bg-white border-slate-200 shadow-2xl',
-        modalInput: 'bg-slate-50 border-slate-300',
-        resetBtn: 'bg-red-100 border-red-200 hover:bg-red-200 text-red-600',
-        toggleIcon: 'fas fa-moon text-slate-600',
-        toggleBtn: 'bg-slate-200 hover:bg-slate-300 border-slate-300',
-        rosterAlpha: 'bg-red-50 border-red-200 hover:bg-red-100 shadow-sm',
-        rosterHadir: 'bg-emerald-50 border-emerald-200 shadow-sm',
-        rosterTerlambat: 'bg-amber-50 border-amber-200 shadow-sm',
-    }
+// Theme (fixed - light only)
+const t = {
+    bg: 'bg-gradient-to-br from-slate-100 via-blue-50 to-indigo-100',
+    text: 'text-slate-800',
+    card: 'bg-white/80 backdrop-blur-md border-slate-200 shadow-xl',
+    cardInner: 'bg-slate-100/80 border-slate-200',
+    input: 'bg-white border-slate-300 text-slate-800 placeholder:text-slate-400',
+    inputFocus: 'focus:border-blue-500 focus:ring-blue-500/30',
+    select: 'bg-white border-slate-300 text-slate-800',
+    selectOption: 'bg-white',
+    filterInput: 'bg-white border-slate-200 text-slate-800',
+    filterSelect: 'bg-white border-slate-200 text-slate-800',
+    attendanceItem: 'bg-white border-slate-100 shadow-sm',
+    dropdown: 'bg-white border-slate-200 shadow-xl',
+    dropdownHover: 'hover:bg-blue-50',
+    dropdownBorder: 'border-slate-100',
+    subtext: 'text-slate-500',
+    clockText: 'text-slate-700',
+    emptyState: 'text-slate-400',
+    feedbackSuccess: 'bg-emerald-50 border-emerald-300',
+    feedbackError: 'bg-red-50 border-red-300',
+    feedbackSuccessText: 'text-emerald-600',
+    feedbackErrorText: 'text-red-600',
+    modal: 'bg-black/40',
+    modalCard: 'bg-white border-slate-200 shadow-2xl',
+    modalInput: 'bg-slate-50 border-slate-300',
+    resetBtn: 'bg-red-100 border-red-200 hover:bg-red-200 text-red-600',
+    rosterAlpha: 'bg-red-50 border-red-200 hover:bg-red-100 shadow-sm',
+    rosterHadir: 'bg-emerald-50 border-emerald-200 shadow-sm',
+    rosterTerlambat: 'bg-amber-50 border-amber-200 shadow-sm',
 };
 
 export default function Kiosk() {
@@ -84,17 +48,6 @@ export default function Kiosk() {
     const [passwordInput, setPasswordInput] = useState('');
     const [passwordError, setPasswordError] = useState(false);
 
-    // Theme state
-    const [theme, setTheme] = useState(() => {
-        try { return localStorage.getItem('kiosk_theme') || 'dark'; } catch { return 'dark'; }
-    });
-    const t = themes[theme];
-
-    const toggleTheme = () => {
-        const next = theme === 'dark' ? 'light' : 'dark';
-        setTheme(next);
-        try { localStorage.setItem('kiosk_theme', next); } catch { }
-    };
 
     // Mode state
     const [mode, setMode] = useState('rfid');
