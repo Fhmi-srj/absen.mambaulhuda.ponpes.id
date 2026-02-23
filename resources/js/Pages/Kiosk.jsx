@@ -250,7 +250,7 @@ export default function Kiosk() {
 
     return (
         <div>
-            <div className={`min-h-[calc(100vh-120px)] overflow-y-auto grid grid-cols-1 lg:grid-cols-[1fr_1.5fr] gap-4 lg:gap-8 p-4 lg:p-6 transition-colors duration-500 rounded-2xl ${t.bg} ${t.text}`}>
+            <div className={`min-h-[calc(100vh-120px)] grid grid-cols-[360px_1fr] gap-6 p-4 lg:p-6 rounded-2xl ${t.bg} ${t.text}`}>
 
 
                 {/* Left Panel */}
