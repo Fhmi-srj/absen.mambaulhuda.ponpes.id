@@ -250,12 +250,12 @@ export default function Kiosk() {
 
     return (
         <div>
-            <div className={`min-h-[calc(100vh-120px)] grid grid-cols-[360px_1fr] gap-6 p-4 lg:p-6 rounded-2xl ${t.bg} ${t.text}`}>
+            <div className={`min-h-[calc(100vh-120px)] grid grid-cols-1 md:grid-cols-[330px_1fr] gap-4 md:gap-6 p-3 md:p-6 rounded-2xl ${t.bg} ${t.text}`}>
 
 
                 {/* Left Panel */}
                 <div className="flex flex-col justify-center items-center text-center">
-                    <div className={`rounded-3xl p-8 lg:p-12 w-full max-w-md border shadow-2xl transition-colors duration-500 ${t.card}`}>
+                    <div className={`rounded-2xl p-5 md:p-8 w-full border shadow-xl ${t.card}`}>
 
                         {/* Mode Tabs */}
                         <div className={`flex rounded-2xl p-1.5 mb-8 border transition-colors duration-500 ${t.cardInner}`}>
@@ -351,7 +351,7 @@ export default function Kiosk() {
                 </div>
 
                 {/* Right Panel */}
-                <div className="flex flex-col h-full overflow-hidden">
+                <div className="flex flex-col min-h-[400px] md:h-full overflow-hidden">
                     {mode === 'manual' ? (
                         /* Roster Panel for Manual Mode */
                         <div className="flex flex-col h-full overflow-y-auto">
