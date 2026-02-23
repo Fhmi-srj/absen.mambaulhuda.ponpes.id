@@ -250,11 +250,11 @@ export default function Kiosk() {
 
     return (
         <div>
-            <div className={`min-h-[calc(100vh-120px)] grid grid-cols-1 md:grid-cols-[330px_1fr] gap-4 md:gap-6 p-3 md:p-6 rounded-2xl ${t.bg} ${t.text}`}>
+            <div className={`min-h-[calc(100vh-120px)] grid grid-cols-1 sm:grid-cols-[300px_1fr] gap-4 sm:gap-6 p-3 sm:p-6 rounded-2xl ${t.bg} ${t.text}`}>
 
 
                 {/* Left Panel */}
-                <div className="flex flex-col justify-center items-center text-center">
+                <div className="flex flex-col justify-start sm:justify-center items-center text-center min-w-0">
                     <div className={`rounded-2xl p-5 md:p-8 w-full border shadow-xl ${t.card}`}>
 
                         {/* Mode Tabs */}
@@ -603,7 +603,7 @@ export default function Kiosk() {
                         <div className="flex gap-3">
                             <button
                                 onClick={() => setConfirmModal(null)}
-                                className={`flex-1 p-3 rounded-xl font-bold transition-colors ${theme === 'dark' ? 'bg-slate-700 hover:bg-slate-600' : 'bg-slate-200 hover:bg-slate-300'}`}
+                                className="flex-1 p-3 rounded-xl font-bold transition-colors bg-slate-200 hover:bg-slate-300"
                             >
                                 Batal
                             </button>
@@ -652,7 +652,7 @@ export default function Kiosk() {
                                     setShowPasswordModal(false);
                                     setPendingJadwal(null);
                                 }}
-                                className={`flex-1 p-3 rounded-xl font-bold transition-colors ${theme === 'dark' ? 'bg-slate-700 hover:bg-slate-600' : 'bg-slate-200 hover:bg-slate-300'}`}
+                                className="flex-1 p-3 rounded-xl font-bold transition-colors bg-slate-200 hover:bg-slate-300"
                             >
                                 Batal
                             </button>
