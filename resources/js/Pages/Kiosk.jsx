@@ -252,7 +252,7 @@ export default function Kiosk() {
         <div className={`rounded-2xl p-3 md:p-5 ${t.bg} ${t.text}`}>
 
             {/* ── TOP CONTROL BAR ── */}
-            <div className={`rounded-2xl border shadow-lg p-4 mb-4 ${t.card}`}>
+            <div className={`sticky top-0 z-10 rounded-2xl border shadow-lg p-4 mb-4 ${t.card}`}>
                 <div className="flex flex-wrap gap-3 items-center">
 
                     {/* Mode Tabs */}
