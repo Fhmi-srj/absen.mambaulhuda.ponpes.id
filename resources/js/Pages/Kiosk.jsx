@@ -249,10 +249,10 @@ export default function Kiosk() {
     };
 
     return (
-        <div className={`rounded-2xl p-3 md:p-5 ${t.bg} ${t.text}`}>
+        <div className={`rounded-2xl p-3 md:p-5 flex flex-col ${t.bg} ${t.text}`} style={{ height: 'calc(100vh - 120px)' }}>
 
             {/* ── TOP CONTROL BAR ── */}
-            <div className={`sticky top-0 z-10 rounded-2xl border shadow-lg p-4 mb-4 ${t.card}`}>
+            <div className={`flex-shrink-0 rounded-2xl border shadow-lg p-4 mb-4 ${t.card}`}>
                 <div className="flex flex-wrap gap-3 items-center">
 
                     {/* Mode Tabs */}
@@ -351,7 +351,7 @@ export default function Kiosk() {
             {/* ── BOTTOM CONTENT ── */}
             {mode === 'manual' ? (
                 /* Manual Roster */
-                <div>
+                <div className="flex flex-col flex-1 overflow-hidden">
                     {/* Filter bar */}
                     <div className={`rounded-xl p-3 mb-3 border ${t.cardInner}`}>
                         <div className="flex gap-2 flex-wrap">
@@ -392,42 +392,44 @@ export default function Kiosk() {
                             <i className="fas fa-spinner fa-spin text-4xl text-emerald-400"></i>
                         </div>
                     ) : (
-                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
-                            {roster
-                                .filter(s => filters.search === '' || s.nama_lengkap.toLowerCase().includes(filters.search.toLowerCase()))
-                                .map(s => (
-                                    <button
-                                        key={s.id}
-                                        onClick={() => s.status === 'alpha' && openConfirmModal(s)}
-                                        disabled={s.status !== 'alpha'}
-                                        className={`w-full flex items-center gap-3 p-3 rounded-xl border transition-all text-left ${getStatusStyle(s.status)} ${s.status === 'alpha' ? 'cursor-pointer active:scale-[0.99]' : 'cursor-default opacity-70'}`}
-                                    >
-                                        <div className={`w-9 h-9 rounded-full flex items-center justify-center text-sm font-bold text-white flex-shrink-0 ${s.status === 'alpha' ? 'bg-red-500' : s.status === 'hadir' ? 'bg-emerald-500' : 'bg-amber-500'}`}>
-                                            {s.status === 'alpha' ? <i className="fas fa-times"></i> : <i className="fas fa-check"></i>}
-                                        </div>
-                                        <div className="flex-1 min-w-0">
-                                            <div className="font-bold text-sm truncate">{s.nama_lengkap}</div>
-                                            <div className={`text-xs ${t.subtext}`}>{s.kelas}{s.nisn ? ` • ${s.nisn}` : ''}</div>
-                                        </div>
-                                        <span className={`text-[9px] uppercase font-black px-2 py-0.5 rounded-full flex-shrink-0 ${getStatusBadge(s.status)}`}>
-                                            {s.status === 'terlambat' && s.days_late != null
-                                                ? `+${s.days_late}hr`
-                                                : s.status}
-                                        </span>
-                                    </button>
-                                ))}
-                            {roster.filter(s => filters.search === '' || s.nama_lengkap.toLowerCase().includes(filters.search.toLowerCase())).length === 0 && (
-                                <div className={`col-span-full text-center py-12 ${t.emptyState}`}>
-                                    <i className="fas fa-search text-4xl mb-3"></i>
-                                    <p>Tidak ada santri ditemukan</p>
-                                </div>
-                            )}
+                        <div className="overflow-y-auto flex-1 pr-1">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
+                                {roster
+                                    .filter(s => filters.search === '' || s.nama_lengkap.toLowerCase().includes(filters.search.toLowerCase()))
+                                    .map(s => (
+                                        <button
+                                            key={s.id}
+                                            onClick={() => s.status === 'alpha' && openConfirmModal(s)}
+                                            disabled={s.status !== 'alpha'}
+                                            className={`w-full flex items-center gap-3 p-3 rounded-xl border transition-all text-left ${getStatusStyle(s.status)} ${s.status === 'alpha' ? 'cursor-pointer active:scale-[0.99]' : 'cursor-default opacity-70'}`}
+                                        >
+                                            <div className={`w-9 h-9 rounded-full flex items-center justify-center text-sm font-bold text-white flex-shrink-0 ${s.status === 'alpha' ? 'bg-red-500' : s.status === 'hadir' ? 'bg-emerald-500' : 'bg-amber-500'}`}>
+                                                {s.status === 'alpha' ? <i className="fas fa-times"></i> : <i className="fas fa-check"></i>}
+                                            </div>
+                                            <div className="flex-1 min-w-0">
+                                                <div className="font-bold text-sm truncate">{s.nama_lengkap}</div>
+                                                <div className={`text-xs ${t.subtext}`}>{s.kelas}{s.nisn ? ` • ${s.nisn}` : ''}</div>
+                                            </div>
+                                            <span className={`text-[9px] uppercase font-black px-2 py-0.5 rounded-full flex-shrink-0 ${getStatusBadge(s.status)}`}>
+                                                {s.status === 'terlambat' && s.days_late != null
+                                                    ? `+${s.days_late}hr`
+                                                    : s.status}
+                                            </span>
+                                        </button>
+                                    ))}
+                                {roster.filter(s => filters.search === '' || s.nama_lengkap.toLowerCase().includes(filters.search.toLowerCase())).length === 0 && (
+                                    <div className={`col-span-full text-center py-12 ${t.emptyState}`}>
+                                        <i className="fas fa-search text-4xl mb-3"></i>
+                                        <p>Tidak ada santri ditemukan</p>
+                                    </div>
+                                )}
+                            </div>
                         </div>
                     )}
                 </div>
             ) : (
                 /* RFID Live Attendance */
-                <div>
+                <div className="flex flex-col flex-1 overflow-hidden">
                     {/* Clock */}
                     <div className={`text-center py-4 mb-3 rounded-2xl border ${t.card}`}>
                         <div className={`text-5xl font-bold font-mono ${t.clockText}`}>
@@ -477,33 +479,35 @@ export default function Kiosk() {
                     </div>
 
                     {/* Attendance list */}
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
-                        {filteredAttendances.length > 0 ? (
-                            filteredAttendances.map((item) => (
-                                <div key={item.id} className={`flex items-center p-3 rounded-xl border ${t.attendanceItem}`}>
-                                    <div className="w-11 h-11 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-lg font-bold mr-3 text-white flex-shrink-0">
-                                        {(item.nama_lengkap || '?').substring(0, 1).toUpperCase()}
-                                    </div>
-                                    <div className="flex-1 min-w-0">
-                                        <div className="font-bold text-sm truncate">{item.nama_lengkap}</div>
-                                        <div className={`text-xs ${t.subtext}`}>Kelas {item.kelas}</div>
-                                    </div>
-                                    <div className="text-right flex-shrink-0">
-                                        <div className="font-bold font-mono text-sm">
-                                            {item.attendance_time ? item.attendance_time.substring(0, 5) : '-'}
+                    <div className="overflow-y-auto flex-1 pr-1">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
+                            {filteredAttendances.length > 0 ? (
+                                filteredAttendances.map((item) => (
+                                    <div key={item.id} className={`flex items-center p-3 rounded-xl border ${t.attendanceItem}`}>
+                                        <div className="w-11 h-11 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-lg font-bold mr-3 text-white flex-shrink-0">
+                                            {(item.nama_lengkap || '?').substring(0, 1).toUpperCase()}
                                         </div>
-                                        <span className={`text-[9px] uppercase font-black px-2 py-0.5 rounded-full text-white ${item.status === 'hadir' ? 'bg-emerald-500' : item.status === 'terlambat' ? 'bg-amber-500' : 'bg-blue-500'}`}>
-                                            {item.status}
-                                        </span>
+                                        <div className="flex-1 min-w-0">
+                                            <div className="font-bold text-sm truncate">{item.nama_lengkap}</div>
+                                            <div className={`text-xs ${t.subtext}`}>Kelas {item.kelas}</div>
+                                        </div>
+                                        <div className="text-right flex-shrink-0">
+                                            <div className="font-bold font-mono text-sm">
+                                                {item.attendance_time ? item.attendance_time.substring(0, 5) : '-'}
+                                            </div>
+                                            <span className={`text-[9px] uppercase font-black px-2 py-0.5 rounded-full text-white ${item.status === 'hadir' ? 'bg-emerald-500' : item.status === 'terlambat' ? 'bg-amber-500' : 'bg-blue-500'}`}>
+                                                {item.status}
+                                            </span>
+                                        </div>
                                     </div>
+                                ))
+                            ) : (
+                                <div className={`col-span-full flex flex-col items-center justify-center py-20 opacity-50 ${t.emptyState}`}>
+                                    <i className="fas fa-inbox text-5xl mb-4"></i>
+                                    <p className="text-lg">Belum ada absensi hari ini</p>
                                 </div>
-                            ))
-                        ) : (
-                            <div className={`col-span-full flex flex-col items-center justify-center py-20 opacity-50 ${t.emptyState}`}>
-                                <i className="fas fa-inbox text-5xl mb-4"></i>
-                                <p className="text-lg">Belum ada absensi hari ini</p>
-                            </div>
-                        )}
+                            )}
+                        </div>
                     </div>
                 </div>
             )}
