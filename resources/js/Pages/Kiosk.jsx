@@ -354,7 +354,7 @@ export default function Kiosk() {
                 <div className="flex flex-col h-full overflow-hidden">
                     {mode === 'manual' ? (
                         /* Roster Panel for Manual Mode */
-                        <>
+                        <div className="flex flex-col h-full overflow-y-auto">
                             <div className="flex justify-between items-center mb-4">
                                 <div className="text-2xl font-bold flex items-center">
                                     <i className="fas fa-users mr-3 text-emerald-400"></i>
@@ -451,10 +451,10 @@ export default function Kiosk() {
                                     )}
                                 </div>
                             )}
-                        </>
+                        </div>
                     ) : (
                         /* Live Attendance Panel for RFID Mode */
-                        <>
+                        <div className="flex flex-col h-full overflow-y-auto">
                             <div className="flex justify-between items-center mb-6">
                                 <div className="text-2xl font-bold flex items-center">
                                     <i className="fas fa-broadcast-tower mr-3 text-blue-400"></i>
@@ -550,7 +550,7 @@ export default function Kiosk() {
                                     </div>
                                 )}
                             </div>
-                        </>
+                        </div>
                     )}
                 </div>
             </div>
