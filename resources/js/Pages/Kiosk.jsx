@@ -251,14 +251,7 @@ export default function Kiosk() {
     return (
         <div>
             <div className={`min-h-[calc(100vh-120px)] overflow-y-auto grid grid-cols-1 lg:grid-cols-[1fr_1.5fr] gap-4 lg:gap-8 p-4 lg:p-6 transition-colors duration-500 rounded-2xl ${t.bg} ${t.text}`}>
-                {/* Theme Toggle - floating button */}
-                <button
-                    onClick={toggleTheme}
-                    className={`fixed top-4 left-4 z-40 w-12 h-12 rounded-full border flex items-center justify-center transition-all duration-300 shadow-lg ${t.toggleBtn}`}
-                    title={theme === 'dark' ? 'Ganti ke Tema Terang' : 'Ganti ke Tema Gelap'}
-                >
-                    <i className={t.toggleIcon}></i>
-                </button>
+
 
                 {/* Left Panel */}
                 <div className="flex flex-col justify-center items-center text-center">
