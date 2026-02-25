@@ -13,7 +13,6 @@ import Riwayat from './Pages/Riwayat';
 // User Pages
 import AbsensiLangsung from './Pages/AbsensiLangsung';
 import DaftarRfid from './Pages/DaftarRfid';
-import PrintIzin from './Pages/PrintIzin';
 import Menu from './Pages/Menu';
 
 // Admin Pages
@@ -63,7 +62,6 @@ function App() {
                                     {/* User Routes */}
                                     <Route path="/absensi-langsung" element={<AbsensiLangsung />} />
                                     <Route path="/daftar-rfid" element={<DaftarRfid />} />
-                                    <Route path="/print-izin" element={<PrintIzin />} />
 
                                     {/* Admin Routes */}
                                     <Route path="/admin/pengguna" element={<AdminPengguna />} />

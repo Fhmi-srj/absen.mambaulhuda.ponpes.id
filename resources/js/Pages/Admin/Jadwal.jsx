@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { PageSkeleton } from '../../Components/Skeleton';
 import Swal from 'sweetalert2';
+import Modal from '../../Components/Modal';
 
 export default function Jadwal() {
     const [loading, setLoading] = useState(true);
@@ -258,97 +259,94 @@ export default function Jadwal() {
             </div>
 
             {/* Modal */}
-            {modalOpen && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-                    <div className="absolute inset-0 bg-black/50" onClick={() => setModalOpen(false)}></div>
-                    <div className="relative bg-white rounded-2xl shadow-xl w-full max-w-md overflow-hidden">
-                        <form onSubmit={handleSubmit}>
-                            <div className="px-6 py-4 border-b flex justify-between items-center">
-                                <h5 className="font-bold text-gray-800">{isEditing ? 'Edit Jadwal' : 'Tambah Jadwal'}</h5>
-                                <button type="button" onClick={() => setModalOpen(false)} className="text-gray-400 hover:text-gray-600">
-                                    <i className="fas fa-times"></i>
-                                </button>
+            <Modal isOpen={modalOpen} onClose={() => setModalOpen(false)} className="max-w-md">
+                <div className="relative bg-white rounded-2xl shadow-xl w-full overflow-hidden">
+                    <form onSubmit={handleSubmit}>
+                        <div className="px-6 py-4 border-b flex justify-between items-center">
+                            <h5 className="font-bold text-gray-800">{isEditing ? 'Edit Jadwal' : 'Tambah Jadwal'}</h5>
+                            <button type="button" onClick={() => setModalOpen(false)} className="text-gray-400 hover:text-gray-600">
+                                <i className="fas fa-times"></i>
+                            </button>
+                        </div>
+                        <div className="p-6 space-y-4">
+                            <div>
+                                <label className="block text-sm font-medium text-gray-600 mb-1">Nama Jadwal <span className="text-red-500">*</span></label>
+                                <input type="text" value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                                    className="w-full px-4 py-2 border border-gray-200 rounded-lg" placeholder="e.g. Absen Masuk" required />
                             </div>
-                            <div className="p-6 space-y-4">
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-600 mb-1">Nama Jadwal <span className="text-red-500">*</span></label>
-                                    <input type="text" value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                                        className="w-full px-4 py-2 border border-gray-200 rounded-lg" placeholder="e.g. Absen Masuk" required />
-                                </div>
-                                {!formData.disable_daily_reset && (
-                                    <>
-                                        <div className="grid grid-cols-3 gap-3">
-                                            <div>
-                                                <label className="block text-sm font-medium text-gray-600 mb-1">Mulai <span className="text-red-500">*</span></label>
-                                                <input type="time" value={formData.start_time} onChange={(e) => setFormData({ ...formData, start_time: e.target.value })}
-                                                    className="w-full px-3 py-2 border border-gray-200 rounded-lg" required />
-                                            </div>
-                                            <div>
-                                                <label className="block text-sm font-medium text-gray-600 mb-1">Tepat <span className="text-red-500">*</span></label>
-                                                <input type="time" value={formData.scheduled_time} onChange={(e) => setFormData({ ...formData, scheduled_time: e.target.value })}
-                                                    className="w-full px-3 py-2 border border-gray-200 rounded-lg" required />
-                                            </div>
-                                            <div>
-                                                <label className="block text-sm font-medium text-gray-600 mb-1">Tutup <span className="text-red-500">*</span></label>
-                                                <input type="time" value={formData.end_time} onChange={(e) => setFormData({ ...formData, end_time: e.target.value })}
-                                                    className="w-full px-3 py-2 border border-gray-200 rounded-lg" required />
-                                            </div>
-                                        </div>
+                            {!formData.disable_daily_reset && (
+                                <>
+                                    <div className="grid grid-cols-3 gap-3">
                                         <div>
-                                            <label className="block text-sm font-medium text-gray-600 mb-1">Toleransi Terlambat (menit)</label>
-                                            <input type="number" value={formData.late_tolerance_minutes} onChange={(e) => setFormData({ ...formData, late_tolerance_minutes: e.target.value })}
-                                                className="w-full px-4 py-2 border border-gray-200 rounded-lg" min="0" />
-                                            <small className="text-gray-400">Berapa menit setelah waktu tepat masih tidak terlambat</small>
-                                        </div>
-                                    </>
-                                )}
-                                {formData.disable_daily_reset && (
-                                    <div className="grid grid-cols-2 gap-3">
-                                        <div>
-                                            <label className="block text-sm font-medium text-gray-600 mb-1">Tanggal Mulai <span className="text-red-500">*</span></label>
-                                            <input type="date" value={formData.no_reset_start_date} onChange={(e) => setFormData({ ...formData, no_reset_start_date: e.target.value })}
+                                            <label className="block text-sm font-medium text-gray-600 mb-1">Mulai <span className="text-red-500">*</span></label>
+                                            <input type="time" value={formData.start_time} onChange={(e) => setFormData({ ...formData, start_time: e.target.value })}
                                                 className="w-full px-3 py-2 border border-gray-200 rounded-lg" required />
-                                            <small className="text-gray-400">Absensi hadir penuh pada tanggal ini</small>
                                         </div>
                                         <div>
-                                            <label className="block text-sm font-medium text-gray-600 mb-1">Tanggal Selesai</label>
-                                            <input type="date" value={formData.no_reset_end_date} onChange={(e) => setFormData({ ...formData, no_reset_end_date: e.target.value })}
-                                                className="w-full px-3 py-2 border border-gray-200 rounded-lg" />
-                                            <small className="text-gray-400">Opsional. Jadwal otomatis nonaktif setelah tanggal ini</small>
+                                            <label className="block text-sm font-medium text-gray-600 mb-1">Tepat <span className="text-red-500">*</span></label>
+                                            <input type="time" value={formData.scheduled_time} onChange={(e) => setFormData({ ...formData, scheduled_time: e.target.value })}
+                                                className="w-full px-3 py-2 border border-gray-200 rounded-lg" required />
+                                        </div>
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-600 mb-1">Tutup <span className="text-red-500">*</span></label>
+                                            <input type="time" value={formData.end_time} onChange={(e) => setFormData({ ...formData, end_time: e.target.value })}
+                                                className="w-full px-3 py-2 border border-gray-200 rounded-lg" required />
                                         </div>
                                     </div>
-                                )}
-                                <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
                                     <div>
-                                        <label className="block text-sm font-medium text-gray-700">Status Jadwal</label>
-                                        <small className="text-gray-400">{formData.is_active ? 'Jadwal aktif dan muncul di kiosk' : 'Jadwal non-aktif, tidak muncul di kiosk'}</small>
+                                        <label className="block text-sm font-medium text-gray-600 mb-1">Toleransi Terlambat (menit)</label>
+                                        <input type="number" value={formData.late_tolerance_minutes} onChange={(e) => setFormData({ ...formData, late_tolerance_minutes: e.target.value })}
+                                            className="w-full px-4 py-2 border border-gray-200 rounded-lg" min="0" />
+                                        <small className="text-gray-400">Berapa menit setelah waktu tepat masih tidak terlambat</small>
                                     </div>
-                                    <button type="button" onClick={() => setFormData({ ...formData, is_active: !formData.is_active })}
-                                        className={`relative w-12 h-6 rounded-full transition-colors duration-200 ${formData.is_active ? 'bg-emerald-500' : 'bg-gray-300'}`}>
-                                        <span className={`absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform duration-200 ${formData.is_active ? 'translate-x-6' : ''}`}></span>
-                                    </button>
-                                </div>
-                                <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                                </>
+                            )}
+                            {formData.disable_daily_reset && (
+                                <div className="grid grid-cols-2 gap-3">
                                     <div>
-                                        <label className="block text-sm font-medium text-gray-700">Nonaktifkan Reset Harian</label>
-                                        <small className="text-gray-400">{formData.disable_daily_reset ? 'Absensi tidak reset per hari (sekali absen selamanya)' : 'Absensi reset setiap hari (default)'}</small>
+                                        <label className="block text-sm font-medium text-gray-600 mb-1">Tanggal Mulai <span className="text-red-500">*</span></label>
+                                        <input type="date" value={formData.no_reset_start_date} onChange={(e) => setFormData({ ...formData, no_reset_start_date: e.target.value })}
+                                            className="w-full px-3 py-2 border border-gray-200 rounded-lg" required />
+                                        <small className="text-gray-400">Absensi hadir penuh pada tanggal ini</small>
                                     </div>
-                                    <button type="button" onClick={() => setFormData({ ...formData, disable_daily_reset: !formData.disable_daily_reset })}
-                                        className={`relative w-12 h-6 rounded-full transition-colors duration-200 ${formData.disable_daily_reset ? 'bg-amber-500' : 'bg-gray-300'}`}>
-                                        <span className={`absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform duration-200 ${formData.disable_daily_reset ? 'translate-x-6' : ''}`}></span>
-                                    </button>
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-600 mb-1">Tanggal Selesai</label>
+                                        <input type="date" value={formData.no_reset_end_date} onChange={(e) => setFormData({ ...formData, no_reset_end_date: e.target.value })}
+                                            className="w-full px-3 py-2 border border-gray-200 rounded-lg" />
+                                        <small className="text-gray-400">Opsional. Jadwal otomatis nonaktif setelah tanggal ini</small>
+                                    </div>
                                 </div>
-                            </div>
-                            <div className="px-6 py-4 border-t flex gap-3">
-                                <button type="button" onClick={() => setModalOpen(false)} className="flex-1 py-2 bg-gray-100 text-gray-600 rounded-lg font-semibold hover:bg-gray-200">Batal</button>
-                                <button type="submit" disabled={saving} className="flex-1 py-2 bg-blue-500 text-white rounded-lg font-semibold hover:bg-blue-600 disabled:opacity-50">
-                                    {saving ? 'Menyimpan...' : 'Simpan'}
+                            )}
+                            <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700">Status Jadwal</label>
+                                    <small className="text-gray-400">{formData.is_active ? 'Jadwal aktif dan muncul di kiosk' : 'Jadwal non-aktif, tidak muncul di kiosk'}</small>
+                                </div>
+                                <button type="button" onClick={() => setFormData({ ...formData, is_active: !formData.is_active })}
+                                    className={`relative w-12 h-6 rounded-full transition-colors duration-200 ${formData.is_active ? 'bg-emerald-500' : 'bg-gray-300'}`}>
+                                    <span className={`absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform duration-200 ${formData.is_active ? 'translate-x-6' : ''}`}></span>
                                 </button>
                             </div>
-                        </form>
-                    </div>
+                            <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700">Nonaktifkan Reset Harian</label>
+                                    <small className="text-gray-400">{formData.disable_daily_reset ? 'Absensi tidak reset per hari (sekali absen selamanya)' : 'Absensi reset setiap hari (default)'}</small>
+                                </div>
+                                <button type="button" onClick={() => setFormData({ ...formData, disable_daily_reset: !formData.disable_daily_reset })}
+                                    className={`relative w-12 h-6 rounded-full transition-colors duration-200 ${formData.disable_daily_reset ? 'bg-amber-500' : 'bg-gray-300'}`}>
+                                    <span className={`absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform duration-200 ${formData.disable_daily_reset ? 'translate-x-6' : ''}`}></span>
+                                </button>
+                            </div>
+                        </div>
+                        <div className="px-6 py-4 border-t flex gap-3">
+                            <button type="button" onClick={() => setModalOpen(false)} className="flex-1 py-2 bg-gray-100 text-gray-600 rounded-lg font-semibold hover:bg-gray-200">Batal</button>
+                            <button type="submit" disabled={saving} className="flex-1 py-2 bg-blue-500 text-white rounded-lg font-semibold hover:bg-blue-600 disabled:opacity-50">
+                                {saving ? 'Menyimpan...' : 'Simpan'}
+                            </button>
+                        </div>
+                    </form>
                 </div>
-            )}
+            </Modal>
         </>
     );
 }

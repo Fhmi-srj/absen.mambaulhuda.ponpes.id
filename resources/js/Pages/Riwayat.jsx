@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { PageSkeleton } from '../Components/Skeleton';
 import LoadingSpinner from '../Components/LoadingSpinner';
+import Modal from '../Components/Modal';
 
 export default function Riwayat() {
     const [pageLoading, setPageLoading] = useState(true);
@@ -361,41 +362,38 @@ export default function Riwayat() {
             )}
 
             {/* Print Preview Modal */}
-            {showPrintModal && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-                    <div className="fixed inset-0 bg-black/50" onClick={() => setShowPrintModal(false)}></div>
-                    <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-4xl max-h-[90vh] flex flex-col overflow-hidden">
-                        <div className="px-6 py-4 bg-red-500 text-white flex items-center justify-between flex-shrink-0">
-                            <h6 className="font-bold"><i className="fas fa-print mr-2"></i>PREVIEW CETAK</h6>
-                            <button onClick={() => setShowPrintModal(false)} className="text-white/80 hover:text-white">
-                                <i className="fas fa-times text-xl"></i>
-                            </button>
-                        </div>
-                        <div className="flex-1 overflow-hidden bg-gray-100 p-4 relative">
-                            {iframeLoading && (
-                                <div className="absolute inset-0 flex items-center justify-center z-10 bg-gray-100">
-                                    <LoadingSpinner size="medium" text="Memuat preview cetak..." />
-                                </div>
-                            )}
-                            <iframe
-                                ref={printIframeRef}
-                                src={`/admin/riwayat/export-pdf?${buildExportParams()}&embed=1`}
-                                className="w-full h-full bg-white rounded-lg shadow-inner border border-gray-200"
-                                style={{ minHeight: '400px' }}
-                                onLoad={() => setIframeLoading(false)}
-                            />
-                        </div>
-                        <div className="px-6 py-4 bg-gray-50 flex justify-end gap-3 flex-shrink-0 border-t border-gray-100">
-                            <button onClick={() => setShowPrintModal(false)} className="px-4 py-2 bg-gray-100 border border-gray-200 rounded-lg font-medium text-sm">
-                                Tutup
-                            </button>
-                            <button onClick={handlePrint} className="px-4 py-2 bg-red-500 text-white rounded-lg font-bold shadow text-sm">
-                                <i className="fas fa-print mr-1"></i> CETAK
-                            </button>
-                        </div>
+            <Modal isOpen={showPrintModal} onClose={() => setShowPrintModal(false)} className="max-w-4xl max-h-[90vh]">
+                <div className="relative bg-white rounded-2xl shadow-2xl w-full max-h-[90vh] flex flex-col overflow-hidden">
+                    <div className="px-6 py-4 bg-red-500 text-white flex items-center justify-between flex-shrink-0">
+                        <h6 className="font-bold"><i className="fas fa-print mr-2"></i>PREVIEW CETAK</h6>
+                        <button onClick={() => setShowPrintModal(false)} className="text-white/80 hover:text-white">
+                            <i className="fas fa-times text-xl"></i>
+                        </button>
+                    </div>
+                    <div className="flex-1 overflow-hidden bg-gray-100 p-4 relative">
+                        {iframeLoading && (
+                            <div className="absolute inset-0 flex items-center justify-center z-10 bg-gray-100">
+                                <LoadingSpinner size="medium" text="Memuat preview cetak..." />
+                            </div>
+                        )}
+                        <iframe
+                            ref={printIframeRef}
+                            src={`/admin/riwayat/export-pdf?${buildExportParams()}&embed=1`}
+                            className="w-full h-full bg-white rounded-lg shadow-inner border border-gray-200"
+                            style={{ minHeight: '400px' }}
+                            onLoad={() => setIframeLoading(false)}
+                        />
+                    </div>
+                    <div className="px-6 py-4 bg-gray-50 flex justify-end gap-3 flex-shrink-0 border-t border-gray-100">
+                        <button onClick={() => setShowPrintModal(false)} className="px-4 py-2 bg-gray-100 border border-gray-200 rounded-lg font-medium text-sm">
+                            Tutup
+                        </button>
+                        <button onClick={handlePrint} className="px-4 py-2 bg-red-500 text-white rounded-lg font-bold shadow text-sm">
+                            <i className="fas fa-print mr-1"></i> CETAK
+                        </button>
                     </div>
                 </div>
-            )}
+            </Modal>
         </>
     );
 }

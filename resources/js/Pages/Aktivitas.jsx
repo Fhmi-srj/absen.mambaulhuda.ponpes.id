@@ -7,6 +7,7 @@ import { PageSkeleton } from '../Components/Skeleton'; // Added
 import LoadingSpinner from '../Components/LoadingSpinner';
 import Swal from 'sweetalert2'; // Added
 import { Html5Qrcode } from 'html5-qrcode'; // Added
+import Modal, { ModalLoading } from '../Components/Modal';
 
 // Category configurations
 const CATEGORIES = {
@@ -1357,434 +1358,418 @@ Wassalamu'alaikum Wr. Wb.`;
             </div>
 
             {/* INPUT MODAL */}
-            {
-                showInputModal && (
-                    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-                        <div className="fixed inset-0 bg-black/50" onClick={closeInputModal}></div>
-                        <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-hidden">
-                            <form onSubmit={handleFormSubmit}>
-                                <div className="px-6 py-4 bg-blue-500 text-white flex items-center justify-between">
-                                    <h6 className="font-bold">{editData ? 'EDIT DATA' : ''} {CATEGORIES[modalKategori]?.label.toUpperCase() || 'INPUT DATA'}</h6>
-                                    <button type="button" onClick={closeInputModal} className="text-white/80 hover:text-white">
-                                        <i className="fas fa-times text-xl"></i>
-                                    </button>
+            <Modal isOpen={showInputModal} onClose={closeInputModal} className="max-w-2xl max-h-[90vh]">
+                <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-hidden">
+                    {loading && <ModalLoading text="Menyimpan data..." />}
+                    <form onSubmit={handleFormSubmit}>
+                        <div className="px-6 py-4 bg-blue-500 text-white flex items-center justify-between">
+                            <h6 className="font-bold">{editData ? 'EDIT DATA' : ''} {CATEGORIES[modalKategori]?.label.toUpperCase() || 'INPUT DATA'}</h6>
+                            <button type="button" onClick={closeInputModal} className="text-white/80 hover:text-white">
+                                <i className="fas fa-times text-xl"></i>
+                            </button>
+                        </div>
+                        <div className="p-6 overflow-y-auto max-h-[60vh] space-y-4">
+                            <div className="grid md:grid-cols-2 gap-4">
+                                <div>
+                                    <label className="text-xs font-bold text-gray-400 uppercase block mb-1">
+                                        {modalKategori === 'sakit' ? 'TANGGAL SAKIT' : modalKategori === 'izin_keluar' || modalKategori === 'izin_pulang' ? 'TANGGAL PERGI' : 'TANGGAL'}
+                                    </label>
+                                    <input
+                                        type="datetime-local"
+                                        value={formData.tanggal}
+                                        onChange={(e) => setFormData({ ...formData, tanggal: e.target.value })}
+                                        className="w-full px-3 py-2 border border-gray-200 rounded-lg"
+                                        required
+                                    />
                                 </div>
-                                <div className="p-6 overflow-y-auto max-h-[60vh] space-y-4">
-                                    <div className="grid md:grid-cols-2 gap-4">
-                                        <div>
-                                            <label className="text-xs font-bold text-gray-400 uppercase block mb-1">
-                                                {modalKategori === 'sakit' ? 'TANGGAL SAKIT' : modalKategori === 'izin_keluar' || modalKategori === 'izin_pulang' ? 'TANGGAL PERGI' : 'TANGGAL'}
-                                            </label>
-                                            <input
-                                                type="datetime-local"
-                                                value={formData.tanggal}
-                                                onChange={(e) => setFormData({ ...formData, tanggal: e.target.value })}
-                                                className="w-full px-3 py-2 border border-gray-200 rounded-lg"
-                                                required
-                                            />
-                                        </div>
-                                        {(modalKategori === 'izin_keluar' || modalKategori === 'izin_pulang') && (
-                                            <div>
-                                                <label className="text-xs font-bold text-gray-400 uppercase block mb-1">BATAS WAKTU</label>
-                                                <input
-                                                    type="datetime-local"
-                                                    value={formData.batas_waktu}
-                                                    onChange={(e) => setFormData({ ...formData, batas_waktu: e.target.value })}
-                                                    className="w-full px-3 py-2 border border-gray-200 rounded-lg"
-                                                />
-                                            </div>
-                                        )}
-                                        {(modalKategori === 'sakit' || modalKategori === 'izin_keluar' || modalKategori === 'izin_pulang' || (modalKategori === 'paket' && editData)) && (
-                                            <div>
-                                                <label className="text-xs font-bold text-gray-400 uppercase block mb-1">
-                                                    {modalKategori === 'sakit' ? 'TANGGAL SEMBUH' : modalKategori === 'paket' ? 'TANGGAL DITERIMA' : 'TANGGAL KEMBALI'}
-                                                </label>
-                                                <input
-                                                    type="datetime-local"
-                                                    value={formData.tanggal_selesai}
-                                                    onChange={(e) => setFormData({ ...formData, tanggal_selesai: e.target.value })}
-                                                    className="w-full px-3 py-2 border border-gray-200 rounded-lg"
-                                                />
-                                                <small className="text-gray-400">Opsional</small>
-                                            </div>
-                                        )}
-                                    </div>
-
+                                {(modalKategori === 'izin_keluar' || modalKategori === 'izin_pulang') && (
                                     <div>
-                                        <label className="text-xs font-bold text-gray-400 uppercase block mb-1">
-                                            {CATEGORIES[modalKategori]?.judulLabel || 'JUDUL'}
-                                        </label>
+                                        <label className="text-xs font-bold text-gray-400 uppercase block mb-1">BATAS WAKTU</label>
                                         <input
-                                            type="text"
-                                            value={formData.judul}
-                                            onChange={(e) => setFormData({ ...formData, judul: e.target.value })}
+                                            type="datetime-local"
+                                            value={formData.batas_waktu}
+                                            onChange={(e) => setFormData({ ...formData, batas_waktu: e.target.value })}
                                             className="w-full px-3 py-2 border border-gray-200 rounded-lg"
-                                            placeholder="..."
                                         />
                                     </div>
-
-                                    {modalKategori === 'sambangan' && (
-                                        <div>
-                                            <label className="text-xs font-bold text-gray-400 uppercase block mb-1">STATUS PENJENGUK</label>
-                                            <select
-                                                value={formData.status_sambangan}
-                                                onChange={(e) => setFormData({ ...formData, status_sambangan: e.target.value })}
-                                                className="w-full px-3 py-2 border border-gray-200 rounded-lg"
-                                            >
-                                                <option value="">-- Pilih --</option>
-                                                <option value="Keluarga">Keluarga Inti</option>
-                                                <option value="Kerabat">Kerabat</option>
-                                                <option value="Teman">Teman</option>
-                                                <option value="Lainnya">Lainnya</option>
-                                            </select>
-                                        </div>
-                                    )}
-
-                                    {modalKategori === 'sakit' && (
-                                        <div>
-                                            <label className="text-xs font-bold text-gray-400 uppercase block mb-1">STATUS PERIKSA</label>
-                                            <select
-                                                value={formData.status_kegiatan}
-                                                onChange={(e) => setFormData({ ...formData, status_kegiatan: e.target.value })}
-                                                className="w-full px-3 py-2 border border-gray-200 rounded-lg"
-                                            >
-                                                <option value="Belum Diperiksa">Belum Diperiksa</option>
-                                                <option value="Sudah Diperiksa">Sudah Diperiksa</option>
-                                            </select>
-                                        </div>
-                                    )}
-
-                                    {modalKategori === 'paket' && editData && (
-                                        <div>
-                                            <label className="text-xs font-bold text-gray-400 uppercase block mb-1">STATUS PAKET</label>
-                                            <select
-                                                value={formData.status_paket}
-                                                onChange={(e) => setFormData({ ...formData, status_paket: e.target.value })}
-                                                className="w-full px-3 py-2 border border-gray-200 rounded-lg"
-                                            >
-                                                <option value="Belum Diterima">Belum Diterima</option>
-                                                <option value="Sudah Diterima">Sudah Diterima</option>
-                                            </select>
-                                        </div>
-                                    )}
-
-                                    {/* Second Santri for Izin Keluar */}
-                                    {modalKategori === 'izin_keluar' && !editData && (
-                                        <div className="bg-amber-50 border border-amber-200 rounded-xl p-4">
-                                            <p className="text-xs font-bold text-amber-600 uppercase mb-2">
-                                                <i className="fas fa-user-plus mr-1"></i>Santri Tambahan (Opsional, Max 2)
-                                            </p>
-                                            {!showSecondSiswa && !secondSiswa ? (
-                                                <button
-                                                    type="button"
-                                                    onClick={() => setShowSecondSiswa(true)}
-                                                    className="w-full py-2 border-2 border-dashed border-amber-300 rounded-lg text-amber-600 text-sm font-semibold hover:bg-amber-100 transition-colors"
-                                                >
-                                                    <i className="fas fa-plus mr-1"></i>Tambah 1 Santri Lagi
-                                                </button>
-                                            ) : secondSiswa ? (
-                                                <div className="flex items-center justify-between bg-white rounded-lg p-3 border border-amber-200">
-                                                    <div>
-                                                        <div className="font-bold text-sm text-gray-800">{secondSiswa.nama_lengkap}</div>
-                                                        <div className="text-xs text-gray-500">{secondSiswa.kelas} | {secondSiswa.nisn}</div>
-                                                    </div>
-                                                    <button
-                                                        type="button"
-                                                        onClick={() => { setSecondSiswa(null); setShowSecondSiswa(false); }}
-                                                        className="text-red-400 hover:text-red-600"
-                                                    >
-                                                        <i className="fas fa-times"></i>
-                                                    </button>
-                                                </div>
-                                            ) : (
-                                                <div className="relative">
-                                                    <input
-                                                        type="text"
-                                                        value={secondSiswaQuery}
-                                                        onChange={(e) => handleSearchSecondSiswa(e.target.value)}
-                                                        placeholder="Cari nama santri kedua..."
-                                                        className="w-full px-3 py-2 border border-amber-200 rounded-lg text-sm focus:border-amber-400 focus:outline-none"
-                                                    />
-                                                    {isSearchingSecond && (
-                                                        <div className="absolute right-3 top-1/2 -translate-y-1/2">
-                                                            <div className="animate-spin rounded-full h-4 w-4 border-2 border-amber-500 border-t-transparent"></div>
-                                                        </div>
-                                                    )}
-                                                    {secondSiswaResults.length > 0 && (
-                                                        <div className="absolute top-full left-0 right-0 z-10 mt-1 bg-white shadow-lg rounded-lg border border-gray-200 max-h-32 overflow-y-auto">
-                                                            {secondSiswaResults.map(s => (
-                                                                <button
-                                                                    type="button"
-                                                                    key={s.id}
-                                                                    onClick={() => selectSecondSiswa(s)}
-                                                                    className="w-full text-left px-3 py-2 hover:bg-amber-50 text-sm border-b border-gray-50 last:border-0"
-                                                                >
-                                                                    <div className="font-medium">{s.nama_lengkap}</div>
-                                                                    <div className="text-xs text-gray-500">{s.kelas} | {s.nisn}</div>
-                                                                </button>
-                                                            ))}
-                                                        </div>
-                                                    )}
-                                                    <button
-                                                        type="button"
-                                                        onClick={() => { setShowSecondSiswa(false); setSecondSiswaQuery(''); setSecondSiswaResults([]); }}
-                                                        className="absolute -right-0 -top-6 text-xs text-red-400 hover:text-red-600"
-                                                    >
-                                                        Batal
-                                                    </button>
-                                                </div>
-                                            )}
-                                        </div>
-                                    )}
-
-                                    <div>
-                                        <label className="text-xs font-bold text-gray-400 uppercase block mb-1">KETERANGAN</label>
-                                        <textarea
-                                            value={formData.keterangan}
-                                            onChange={(e) => setFormData({ ...formData, keterangan: e.target.value })}
-                                            className="w-full px-3 py-2 border border-gray-200 rounded-lg"
-                                            rows="3"
-                                            placeholder="Tambahkan detail..."
-                                        ></textarea>
-                                    </div>
-
+                                )}
+                                {(modalKategori === 'sakit' || modalKategori === 'izin_keluar' || modalKategori === 'izin_pulang' || (modalKategori === 'paket' && editData)) && (
                                     <div>
                                         <label className="text-xs font-bold text-gray-400 uppercase block mb-1">
-                                            FOTO BUKTI <span className="text-gray-400 font-normal">(Opsional)</span>
+                                            {modalKategori === 'sakit' ? 'TANGGAL SEMBUH' : modalKategori === 'paket' ? 'TANGGAL DITERIMA' : 'TANGGAL KEMBALI'}
                                         </label>
-                                        <div className={`border-2 border-dashed rounded-xl p-5 text-center ${fotoPreview ? 'border-green-400 bg-green-50' : 'border-gray-200 bg-gray-50'}`}>
-                                            <input
-                                                ref={fileInputRef}
-                                                type="file"
-                                                accept="image/*"
-                                                onChange={(e) => handlePhotoSelect(e.target.files[0])}
-                                                className="hidden"
-                                            />
-                                            <input
-                                                ref={cameraInputRef}
-                                                type="file"
-                                                accept="image/*"
-                                                capture="environment"
-                                                onChange={(e) => handlePhotoSelect(e.target.files[0])}
-                                                className="hidden"
-                                            />
-
-                                            {!fotoPreview ? (
-                                                <div className="flex flex-wrap justify-center gap-3">
-                                                    <button
-                                                        type="button"
-                                                        onClick={() => cameraInputRef.current?.click()}
-                                                        className="px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg font-semibold text-sm flex items-center gap-2"
-                                                    >
-                                                        <i className="fas fa-camera"></i> Ambil Foto
-                                                    </button>
-                                                    <button
-                                                        type="button"
-                                                        onClick={() => fileInputRef.current?.click()}
-                                                        className="px-4 py-2 bg-white border border-gray-200 text-gray-600 rounded-lg font-semibold text-sm flex items-center gap-2"
-                                                    >
-                                                        <i className="fas fa-folder-open"></i> Pilih File
-                                                    </button>
-                                                </div>
-                                            ) : (
-                                                <div className="relative inline-block">
-                                                    <img src={fotoPreview} alt="Preview" className="max-h-64 rounded-lg shadow" />
-                                                    <button
-                                                        type="button"
-                                                        onClick={() => { setFotoPreview(null); setFotoFile(null); }}
-                                                        className="absolute -top-2 -right-2 w-7 h-7 bg-red-500 text-white rounded-full flex items-center justify-center shadow"
-                                                    >
-                                                        <i className="fas fa-times text-xs"></i>
-                                                    </button>
-                                                </div>
-                                            )}
-                                        </div>
-                                    </div>
-                                </div>
-                                <div className="px-6 py-4 bg-gray-50 flex justify-end gap-3">
-                                    <button type="button" onClick={closeInputModal} className="px-4 py-2 bg-gray-100 border border-gray-200 rounded-lg font-medium">
-                                        Batal
-                                    </button>
-                                    <button type="submit" disabled={loading} className="px-4 py-2 bg-blue-500 text-white rounded-lg font-bold shadow disabled:opacity-50">
-                                        {loading ? 'Menyimpan...' : 'SIMPAN DATA'}
-                                    </button>
-                                </div>
-                            </form>
-                        </div>
-                    </div>
-                )
-            }
-
-            {/* BULK WA MODAL */}
-            {
-                showBulkWaModal && (
-                    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-                        <div className="fixed inset-0 bg-black/50" onClick={() => setShowBulkWaModal(false)}></div>
-                        <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden">
-                            <div className="px-6 py-4 bg-green-500 text-white flex items-center justify-between">
-                                <h6 className="font-bold"><i className="fab fa-whatsapp mr-2"></i>WA MASSAL</h6>
-                                <button onClick={() => setShowBulkWaModal(false)} className="text-white/80 hover:text-white">
-                                    <i className="fas fa-times text-xl"></i>
-                                </button>
-                            </div>
-                            <div className="p-4">
-                                <div className="bg-green-50 border border-green-200 rounded-lg p-3 mb-3 text-sm text-green-700">
-                                    <i className="fas fa-info-circle mr-1"></i>
-                                    Kirim ke <strong>{bulkWaList.length} wali</strong>
-                                </div>
-                                <div className="mb-3">
-                                    <label className="text-[10px] font-bold text-gray-400 uppercase block mb-1">DAFTAR PENERIMA</label>
-                                    <div className="border border-gray-200 rounded-lg max-h-32 overflow-y-auto bg-gray-50">
-                                        {bulkWaList.map((item) => (
-                                            <div key={item.id} className="flex justify-between items-center px-3 py-1.5 border-b border-gray-100 last:border-0 text-sm">
-                                                <div>
-                                                    <strong>{item.nama_lengkap}</strong>
-                                                    <span className="text-gray-400 mx-1">|</span>
-                                                    <small className="text-gray-500">{(item.kategori || '').replace('_', ' ')}</small>
-                                                </div>
-                                                <span className="text-green-600 font-semibold">{item.no_wa_wali}</span>
-                                            </div>
-                                        ))}
-                                    </div>
-                                </div>
-                                {bulkWaList.length > 0 && (
-                                    <div className="mb-1">
-                                        <label className="text-[10px] font-bold text-gray-400 uppercase block mb-1">PREVIEW PESAN</label>
-                                        <div className="border border-gray-200 rounded-lg p-3 bg-green-50 text-xs font-mono whitespace-pre-wrap max-h-40 overflow-y-auto">
-                                            {generatePersonalMessage(bulkWaList[0])}
-                                        </div>
+                                        <input
+                                            type="datetime-local"
+                                            value={formData.tanggal_selesai}
+                                            onChange={(e) => setFormData({ ...formData, tanggal_selesai: e.target.value })}
+                                            className="w-full px-3 py-2 border border-gray-200 rounded-lg"
+                                        />
+                                        <small className="text-gray-400">Opsional</small>
                                     </div>
                                 )}
                             </div>
-                            <div className="px-6 py-4 bg-gray-50 flex justify-end gap-3 border-t border-gray-100">
-                                <button onClick={() => setShowBulkWaModal(false)} className="px-4 py-2 bg-gray-100 border border-gray-200 rounded-lg font-medium text-sm">
-                                    Batal
-                                </button>
-                                <button onClick={sendBulkWa} className="px-4 py-2 bg-green-500 text-white rounded-lg font-bold shadow text-sm">
-                                    <i className="fab fa-whatsapp mr-1"></i> KIRIM SEKARANG
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                )
-            }
 
-            {/* REPORT MODAL */}
-            {
-                showReportModal && (
-                    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-                        <div className="fixed inset-0 bg-black/50" onClick={() => setShowReportModal(false)}></div>
-                        <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-2xl overflow-hidden">
-                            <div className="px-6 py-4 bg-blue-500 text-white flex items-center justify-between">
-                                <h6 className="font-bold"><i className="fas fa-file-alt mr-2"></i>PREVIEW LAPORAN</h6>
-                                <button onClick={() => setShowReportModal(false)} className="text-white/80 hover:text-white">
-                                    <i className="fas fa-times text-xl"></i>
-                                </button>
+                            <div>
+                                <label className="text-xs font-bold text-gray-400 uppercase block mb-1">
+                                    {CATEGORIES[modalKategori]?.judulLabel || 'JUDUL'}
+                                </label>
+                                <input
+                                    type="text"
+                                    value={formData.judul}
+                                    onChange={(e) => setFormData({ ...formData, judul: e.target.value })}
+                                    className="w-full px-3 py-2 border border-gray-200 rounded-lg"
+                                    placeholder="..."
+                                />
                             </div>
-                            <div className="p-6">
-                                <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-4 text-sm text-blue-700">
-                                    <i className="fas fa-info-circle mr-1"></i>
-                                    Laporan dari <strong>{selectedIds.length} data</strong>
-                                </div>
+
+                            {modalKategori === 'sambangan' && (
                                 <div>
-                                    <label className="text-xs font-bold text-gray-400 uppercase block mb-2">TEKS LAPORAN</label>
-                                    <textarea
-                                        value={reportText}
-                                        readOnly
-                                        className="w-full px-3 py-2 border border-gray-200 rounded-lg font-mono text-sm"
-                                        rows="12"
-                                    ></textarea>
+                                    <label className="text-xs font-bold text-gray-400 uppercase block mb-1">STATUS PENJENGUK</label>
+                                    <select
+                                        value={formData.status_sambangan}
+                                        onChange={(e) => setFormData({ ...formData, status_sambangan: e.target.value })}
+                                        className="w-full px-3 py-2 border border-gray-200 rounded-lg"
+                                    >
+                                        <option value="">-- Pilih --</option>
+                                        <option value="Keluarga">Keluarga Inti</option>
+                                        <option value="Kerabat">Kerabat</option>
+                                        <option value="Teman">Teman</option>
+                                        <option value="Lainnya">Lainnya</option>
+                                    </select>
                                 </div>
+                            )}
+
+                            {modalKategori === 'sakit' && (
+                                <div>
+                                    <label className="text-xs font-bold text-gray-400 uppercase block mb-1">STATUS PERIKSA</label>
+                                    <select
+                                        value={formData.status_kegiatan}
+                                        onChange={(e) => setFormData({ ...formData, status_kegiatan: e.target.value })}
+                                        className="w-full px-3 py-2 border border-gray-200 rounded-lg"
+                                    >
+                                        <option value="Belum Diperiksa">Belum Diperiksa</option>
+                                        <option value="Sudah Diperiksa">Sudah Diperiksa</option>
+                                    </select>
+                                </div>
+                            )}
+
+                            {modalKategori === 'paket' && editData && (
+                                <div>
+                                    <label className="text-xs font-bold text-gray-400 uppercase block mb-1">STATUS PAKET</label>
+                                    <select
+                                        value={formData.status_paket}
+                                        onChange={(e) => setFormData({ ...formData, status_paket: e.target.value })}
+                                        className="w-full px-3 py-2 border border-gray-200 rounded-lg"
+                                    >
+                                        <option value="Belum Diterima">Belum Diterima</option>
+                                        <option value="Sudah Diterima">Sudah Diterima</option>
+                                    </select>
+                                </div>
+                            )}
+
+                            {/* Second Santri for Izin Keluar */}
+                            {modalKategori === 'izin_keluar' && !editData && (
+                                <div className="bg-amber-50 border border-amber-200 rounded-xl p-4">
+                                    <p className="text-xs font-bold text-amber-600 uppercase mb-2">
+                                        <i className="fas fa-user-plus mr-1"></i>Santri Tambahan (Opsional, Max 2)
+                                    </p>
+                                    {!showSecondSiswa && !secondSiswa ? (
+                                        <button
+                                            type="button"
+                                            onClick={() => setShowSecondSiswa(true)}
+                                            className="w-full py-2 border-2 border-dashed border-amber-300 rounded-lg text-amber-600 text-sm font-semibold hover:bg-amber-100 transition-colors"
+                                        >
+                                            <i className="fas fa-plus mr-1"></i>Tambah 1 Santri Lagi
+                                        </button>
+                                    ) : secondSiswa ? (
+                                        <div className="flex items-center justify-between bg-white rounded-lg p-3 border border-amber-200">
+                                            <div>
+                                                <div className="font-bold text-sm text-gray-800">{secondSiswa.nama_lengkap}</div>
+                                                <div className="text-xs text-gray-500">{secondSiswa.kelas} | {secondSiswa.nisn}</div>
+                                            </div>
+                                            <button
+                                                type="button"
+                                                onClick={() => { setSecondSiswa(null); setShowSecondSiswa(false); }}
+                                                className="text-red-400 hover:text-red-600"
+                                            >
+                                                <i className="fas fa-times"></i>
+                                            </button>
+                                        </div>
+                                    ) : (
+                                        <div className="relative">
+                                            <input
+                                                type="text"
+                                                value={secondSiswaQuery}
+                                                onChange={(e) => handleSearchSecondSiswa(e.target.value)}
+                                                placeholder="Cari nama santri kedua..."
+                                                className="w-full px-3 py-2 border border-amber-200 rounded-lg text-sm focus:border-amber-400 focus:outline-none"
+                                            />
+                                            {isSearchingSecond && (
+                                                <div className="absolute right-3 top-1/2 -translate-y-1/2">
+                                                    <div className="animate-spin rounded-full h-4 w-4 border-2 border-amber-500 border-t-transparent"></div>
+                                                </div>
+                                            )}
+                                            {secondSiswaResults.length > 0 && (
+                                                <div className="absolute top-full left-0 right-0 z-10 mt-1 bg-white shadow-lg rounded-lg border border-gray-200 max-h-32 overflow-y-auto">
+                                                    {secondSiswaResults.map(s => (
+                                                        <button
+                                                            type="button"
+                                                            key={s.id}
+                                                            onClick={() => selectSecondSiswa(s)}
+                                                            className="w-full text-left px-3 py-2 hover:bg-amber-50 text-sm border-b border-gray-50 last:border-0"
+                                                        >
+                                                            <div className="font-medium">{s.nama_lengkap}</div>
+                                                            <div className="text-xs text-gray-500">{s.kelas} | {s.nisn}</div>
+                                                        </button>
+                                                    ))}
+                                                </div>
+                                            )}
+                                            <button
+                                                type="button"
+                                                onClick={() => { setShowSecondSiswa(false); setSecondSiswaQuery(''); setSecondSiswaResults([]); }}
+                                                className="absolute -right-0 -top-6 text-xs text-red-400 hover:text-red-600"
+                                            >
+                                                Batal
+                                            </button>
+                                        </div>
+                                    )}
+                                </div>
+                            )}
+
+                            <div>
+                                <label className="text-xs font-bold text-gray-400 uppercase block mb-1">KETERANGAN</label>
+                                <textarea
+                                    value={formData.keterangan}
+                                    onChange={(e) => setFormData({ ...formData, keterangan: e.target.value })}
+                                    className="w-full px-3 py-2 border border-gray-200 rounded-lg"
+                                    rows="3"
+                                    placeholder="Tambahkan detail..."
+                                ></textarea>
                             </div>
-                            <div className="px-6 py-4 bg-gray-50 flex justify-end gap-3">
-                                <button onClick={() => setShowReportModal(false)} className="px-4 py-2 bg-gray-100 border border-gray-200 rounded-lg font-medium">
-                                    Tutup
-                                </button>
-                                <button onClick={copyReport} className="px-4 py-2 bg-blue-500 text-white rounded-lg font-bold shadow">
-                                    <i className="fas fa-copy mr-1"></i> COPY TEKS
-                                </button>
+
+                            <div>
+                                <label className="text-xs font-bold text-gray-400 uppercase block mb-1">
+                                    FOTO BUKTI <span className="text-gray-400 font-normal">(Opsional)</span>
+                                </label>
+                                <div className={`border-2 border-dashed rounded-xl p-5 text-center ${fotoPreview ? 'border-green-400 bg-green-50' : 'border-gray-200 bg-gray-50'}`}>
+                                    <input
+                                        ref={fileInputRef}
+                                        type="file"
+                                        accept="image/*"
+                                        onChange={(e) => handlePhotoSelect(e.target.files[0])}
+                                        className="hidden"
+                                    />
+                                    <input
+                                        ref={cameraInputRef}
+                                        type="file"
+                                        accept="image/*"
+                                        capture="environment"
+                                        onChange={(e) => handlePhotoSelect(e.target.files[0])}
+                                        className="hidden"
+                                    />
+
+                                    {!fotoPreview ? (
+                                        <div className="flex flex-wrap justify-center gap-3">
+                                            <button
+                                                type="button"
+                                                onClick={() => cameraInputRef.current?.click()}
+                                                className="px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg font-semibold text-sm flex items-center gap-2"
+                                            >
+                                                <i className="fas fa-camera"></i> Ambil Foto
+                                            </button>
+                                            <button
+                                                type="button"
+                                                onClick={() => fileInputRef.current?.click()}
+                                                className="px-4 py-2 bg-white border border-gray-200 text-gray-600 rounded-lg font-semibold text-sm flex items-center gap-2"
+                                            >
+                                                <i className="fas fa-folder-open"></i> Pilih File
+                                            </button>
+                                        </div>
+                                    ) : (
+                                        <div className="relative inline-block">
+                                            <img src={fotoPreview} alt="Preview" className="max-h-64 rounded-lg shadow" />
+                                            <button
+                                                type="button"
+                                                onClick={() => { setFotoPreview(null); setFotoFile(null); }}
+                                                className="absolute -top-2 -right-2 w-7 h-7 bg-red-500 text-white rounded-full flex items-center justify-center shadow"
+                                            >
+                                                <i className="fas fa-times text-xs"></i>
+                                            </button>
+                                        </div>
+                                    )}
+                                </div>
                             </div>
                         </div>
+                        <div className="px-6 py-4 bg-gray-50 flex justify-end gap-3">
+                            <button type="button" onClick={closeInputModal} className="px-4 py-2 bg-gray-100 border border-gray-200 rounded-lg font-medium">
+                                Batal
+                            </button>
+                            <button type="submit" disabled={loading} className="px-4 py-2 bg-blue-500 text-white rounded-lg font-bold shadow disabled:opacity-50">
+                                {loading ? 'Menyimpan...' : 'SIMPAN DATA'}
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </Modal>
+
+            {/* BULK WA MODAL */}
+            <Modal isOpen={showBulkWaModal} onClose={() => setShowBulkWaModal(false)} className="max-w-md">
+                <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden">
+                    <div className="px-6 py-4 bg-green-500 text-white flex items-center justify-between">
+                        <h6 className="font-bold"><i className="fab fa-whatsapp mr-2"></i>WA MASSAL</h6>
+                        <button onClick={() => setShowBulkWaModal(false)} className="text-white/80 hover:text-white">
+                            <i className="fas fa-times text-xl"></i>
+                        </button>
                     </div>
-                )
-            }
-
-            {/* PRINT SLIP MODAL */}
-            {
-                showPrintSlipModal && printSlipData && (
-                    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-                        <div className="fixed inset-0 bg-black/50" onClick={() => setShowPrintSlipModal(false)}></div>
-                        <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-md max-h-[90vh] flex flex-col overflow-hidden print-slip">
-                            <div className="px-6 py-4 bg-gradient-to-r from-emerald-500 to-emerald-400 text-white flex items-center justify-between no-print flex-shrink-0">
-                                <h6 className="font-bold"><i className="fas fa-print mr-2"></i>SLIP IZIN KELUAR</h6>
-                                <button onClick={() => setShowPrintSlipModal(false)} className="text-white/80 hover:text-white">
-                                    <i className="fas fa-times text-xl"></i>
-                                </button>
-                            </div>
-                            <div className="p-6 overflow-y-auto flex-1 custom-scrollbar">
-                                <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-4 text-sm text-blue-700 no-print">
-                                    <i className="fas fa-info-circle mr-1"></i>
-                                    {printSlipData.data_2 ? 'Cetak kedua slip ini dan berikan kepada masing-masing santri.' : 'Cetak slip ini dan berikan kepada santri.'}
-                                </div>
-
-                                {/* Render Slip untuk Santri 1 dan 2 */}
-                                {[printSlipData.data, printSlipData.data_2].filter(Boolean).map((slip, idx) => (
-                                    <div key={idx} className={`border border-gray-200 rounded-lg p-4 bg-white text-center ${idx > 0 ? 'mt-6 pt-6 border-t-2 border-dashed' : ''}`}>
-                                        {idx > 0 && <div className="mb-4 text-xs font-bold text-emerald-600 no-print">--- SLIP SANTRI KE-2 ---</div>}
-                                        <h5 className="font-bold text-gray-800 mb-1 uppercase">{slip.nama_santri}</h5>
-                                        <small className="text-gray-500">Kelas {slip.kelas}</small>
-                                        <div className="flex justify-between mt-4 px-2 text-left">
-                                            <div>
-                                                <small className="text-gray-400 font-medium">Keperluan</small>
-                                                <div className="font-semibold text-gray-800">{slip.judul || '-'}</div>
-                                            </div>
-                                            <div className="text-right">
-                                                <small className="text-gray-400 font-medium">Batas Waktu</small>
-                                                <div className="font-semibold text-red-500">
-                                                    {slip.batas_waktu ? new Date(slip.batas_waktu).toLocaleString('id-ID', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' }) : '-'}
-                                                </div>
-                                            </div>
+                    <div className="p-4">
+                        <div className="bg-green-50 border border-green-200 rounded-lg p-3 mb-3 text-sm text-green-700">
+                            <i className="fas fa-info-circle mr-1"></i>
+                            Kirim ke <strong>{bulkWaList.length} wali</strong>
+                        </div>
+                        <div className="mb-3">
+                            <label className="text-[10px] font-bold text-gray-400 uppercase block mb-1">DAFTAR PENERIMA</label>
+                            <div className="border border-gray-200 rounded-lg max-h-32 overflow-y-auto bg-gray-50">
+                                {bulkWaList.map((item) => (
+                                    <div key={item.id} className="flex justify-between items-center px-3 py-1.5 border-b border-gray-100 last:border-0 text-sm">
+                                        <div>
+                                            <strong>{item.nama_lengkap}</strong>
+                                            <span className="text-gray-400 mx-1">|</span>
+                                            <small className="text-gray-500">{(item.kategori || '').replace('_', ' ')}</small>
                                         </div>
-                                        <div className="mt-3 px-2 text-left">
-                                            <small className="text-gray-400 font-medium">Dizinkan oleh</small>
-                                            <div className="text-xs font-semibold text-gray-700 italic border-l-2 border-emerald-500 pl-2 mt-0.5">
-                                                {slip.petugas || 'Administrator'}
-                                            </div>
-                                        </div>
-                                        <hr className="my-4" />
-                                        <div className="text-3xl font-bold tracking-widest font-mono bg-gray-100 rounded py-2 mb-2">
-                                            {slip.kode_konfirmasi}
-                                        </div>
-                                        <small className="text-gray-400">Kode Konfirmasi</small>
-
-                                        <div className="mt-6 flex flex-col items-center">
-                                            <div className="bg-white p-3 rounded-xl border border-gray-100 shadow-sm">
-                                                <QRCodeSVG
-                                                    value={slip.kode_konfirmasi}
-                                                    size={160}
-                                                    level="H"
-                                                    includeMargin={true}
-                                                />
-                                            </div>
-                                            <small className="text-gray-400 mt-2">Scan untuk verifikasi</small>
-                                        </div>
+                                        <span className="text-green-600 font-semibold">{item.no_wa_wali}</span>
                                     </div>
                                 ))}
                             </div>
-                            <div className="px-6 py-4 bg-gray-50 flex justify-end gap-3 no-print flex-shrink-0 border-t border-gray-100">
-                                <button onClick={() => setShowPrintSlipModal(false)} className="px-4 py-2 bg-gray-100 border border-gray-200 rounded-lg font-medium">
-                                    Tutup
-                                </button>
-                                <button
-                                    onClick={doPrintSlip}
-                                    className="px-4 py-2 bg-emerald-500 text-white rounded-lg font-bold shadow hover:bg-emerald-600 transition-colors"
-                                >
-                                    <i className="fas fa-print mr-1"></i> CETAK SLIP
-                                </button>
+                        </div>
+                        {bulkWaList.length > 0 && (
+                            <div className="mb-1">
+                                <label className="text-[10px] font-bold text-gray-400 uppercase block mb-1">PREVIEW PESAN</label>
+                                <div className="border border-gray-200 rounded-lg p-3 bg-green-50 text-xs font-mono whitespace-pre-wrap max-h-40 overflow-y-auto">
+                                    {generatePersonalMessage(bulkWaList[0])}
+                                </div>
                             </div>
+                        )}
+                    </div>
+                    <div className="px-6 py-4 bg-gray-50 flex justify-end gap-3 border-t border-gray-100">
+                        <button onClick={() => setShowBulkWaModal(false)} className="px-4 py-2 bg-gray-100 border border-gray-200 rounded-lg font-medium text-sm">
+                            Batal
+                        </button>
+                        <button onClick={sendBulkWa} className="px-4 py-2 bg-green-500 text-white rounded-lg font-bold shadow text-sm">
+                            <i className="fab fa-whatsapp mr-1"></i> KIRIM SEKARANG
+                        </button>
+                    </div>
+                </div>
+            </Modal>
+
+            {/* REPORT MODAL */}
+            <Modal isOpen={showReportModal} onClose={() => setShowReportModal(false)} className="max-w-2xl">
+                <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-2xl overflow-hidden">
+                    <div className="px-6 py-4 bg-blue-500 text-white flex items-center justify-between">
+                        <h6 className="font-bold"><i className="fas fa-file-alt mr-2"></i>PREVIEW LAPORAN</h6>
+                        <button onClick={() => setShowReportModal(false)} className="text-white/80 hover:text-white">
+                            <i className="fas fa-times text-xl"></i>
+                        </button>
+                    </div>
+                    <div className="p-6">
+                        <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-4 text-sm text-blue-700">
+                            <i className="fas fa-info-circle mr-1"></i>
+                            Laporan dari <strong>{selectedIds.length} data</strong>
+                        </div>
+                        <div>
+                            <label className="text-xs font-bold text-gray-400 uppercase block mb-2">TEKS LAPORAN</label>
+                            <textarea
+                                value={reportText}
+                                readOnly
+                                className="w-full px-3 py-2 border border-gray-200 rounded-lg font-mono text-sm"
+                                rows="12"
+                            ></textarea>
                         </div>
                     </div>
-                )}
+                    <div className="px-6 py-4 bg-gray-50 flex justify-end gap-3">
+                        <button onClick={() => setShowReportModal(false)} className="px-4 py-2 bg-gray-100 border border-gray-200 rounded-lg font-medium">
+                            Tutup
+                        </button>
+                        <button onClick={copyReport} className="px-4 py-2 bg-blue-500 text-white rounded-lg font-bold shadow">
+                            <i className="fas fa-copy mr-1"></i> COPY TEKS
+                        </button>
+                    </div>
+                </div>
+            </Modal>
+
+            {/* PRINT SLIP MODAL */}
+            {printSlipData && (
+                <Modal isOpen={showPrintSlipModal} onClose={() => setShowPrintSlipModal(false)} className="max-w-md max-h-[90vh]">
+                    <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-md max-h-[90vh] flex flex-col overflow-hidden print-slip">
+                        <div className="px-6 py-4 bg-gradient-to-r from-emerald-500 to-emerald-400 text-white flex items-center justify-between no-print flex-shrink-0">
+                            <h6 className="font-bold"><i className="fas fa-print mr-2"></i>SLIP IZIN KELUAR</h6>
+                            <button onClick={() => setShowPrintSlipModal(false)} className="text-white/80 hover:text-white">
+                                <i className="fas fa-times text-xl"></i>
+                            </button>
+                        </div>
+                        <div className="p-6 overflow-y-auto flex-1 custom-scrollbar">
+                            <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-4 text-sm text-blue-700 no-print">
+                                <i className="fas fa-info-circle mr-1"></i>
+                                {printSlipData.data_2 ? 'Cetak kedua slip ini dan berikan kepada masing-masing santri.' : 'Cetak slip ini dan berikan kepada santri.'}
+                            </div>
+
+                            {/* Render Slip untuk Santri 1 dan 2 */}
+                            {[printSlipData.data, printSlipData.data_2].filter(Boolean).map((slip, idx) => (
+                                <div key={idx} className={`border border-gray-200 rounded-lg p-4 bg-white text-center ${idx > 0 ? 'mt-6 pt-6 border-t-2 border-dashed' : ''}`}>
+                                    {idx > 0 && <div className="mb-4 text-xs font-bold text-emerald-600 no-print">--- SLIP SANTRI KE-2 ---</div>}
+                                    <h5 className="font-bold text-gray-800 mb-1 uppercase">{slip.nama_santri}</h5>
+                                    <small className="text-gray-500">Kelas {slip.kelas}</small>
+                                    <div className="flex justify-between mt-4 px-2 text-left">
+                                        <div>
+                                            <small className="text-gray-400 font-medium">Keperluan</small>
+                                            <div className="font-semibold text-gray-800">{slip.judul || '-'}</div>
+                                        </div>
+                                        <div className="text-right">
+                                            <small className="text-gray-400 font-medium">Batas Waktu</small>
+                                            <div className="font-semibold text-red-500">
+                                                {slip.batas_waktu ? new Date(slip.batas_waktu).toLocaleString('id-ID', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' }) : '-'}
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div className="mt-3 px-2 text-left">
+                                        <small className="text-gray-400 font-medium">Dizinkan oleh</small>
+                                        <div className="text-xs font-semibold text-gray-700 italic border-l-2 border-emerald-500 pl-2 mt-0.5">
+                                            {slip.petugas || 'Administrator'}
+                                        </div>
+                                    </div>
+                                    <hr className="my-4" />
+                                    <div className="text-3xl font-bold tracking-widest font-mono bg-gray-100 rounded py-2 mb-2">
+                                        {slip.kode_konfirmasi}
+                                    </div>
+                                    <small className="text-gray-400">Kode Konfirmasi</small>
+
+                                    <div className="mt-6 flex flex-col items-center">
+                                        <div className="bg-white p-3 rounded-xl border border-gray-100 shadow-sm">
+                                            <QRCodeSVG
+                                                value={slip.kode_konfirmasi}
+                                                size={160}
+                                                level="H"
+                                                includeMargin={true}
+                                            />
+                                        </div>
+                                        <small className="text-gray-400 mt-2">Scan untuk verifikasi</small>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                        <div className="px-6 py-4 bg-gray-50 flex justify-end gap-3 no-print flex-shrink-0 border-t border-gray-100">
+                            <button onClick={() => setShowPrintSlipModal(false)} className="px-4 py-2 bg-gray-100 border border-gray-200 rounded-lg font-medium">
+                                Tutup
+                            </button>
+                            <button
+                                onClick={doPrintSlip}
+                                className="px-4 py-2 bg-emerald-500 text-white rounded-lg font-bold shadow hover:bg-emerald-600 transition-colors"
+                            >
+                                <i className="fas fa-print mr-1"></i> CETAK SLIP
+                            </button>
+                        </div>
+                    </div>
+                </Modal>
+            )}
         </>
     );
 }

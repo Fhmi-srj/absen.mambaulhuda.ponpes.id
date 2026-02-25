@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { PageSkeleton } from '../../Components/Skeleton';
 import Swal from 'sweetalert2';
+import Modal from '../../Components/Modal';
 
 export default function Santri() {
     const [loading, setLoading] = useState(true);
@@ -555,354 +556,351 @@ export default function Santri() {
             </div>
 
             {/* Modal */}
-            {modalOpen && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-                    <div className="absolute inset-0 bg-black/50" onClick={() => setModalOpen(false)}></div>
-                    <div className="relative bg-white rounded-2xl shadow-xl w-full max-w-4xl max-h-[90vh] overflow-hidden flex flex-col">
-                        <form onSubmit={handleSubmit}>
-                            {/* Header */}
-                            <div className="px-6 py-4 bg-blue-600 text-white flex items-center justify-between flex-shrink-0">
-                                <h5 className="font-bold">
-                                    <i className={`fas ${isEditing ? 'fa-user-edit' : 'fa-user-plus'} mr-2`}></i>
-                                    {isEditing ? 'Edit Data Santri' : 'Tambah Santri'}
-                                </h5>
-                                <button type="button" onClick={() => setModalOpen(false)} className="text-white/80 hover:text-white">
-                                    <i className="fas fa-times"></i>
+            <Modal isOpen={modalOpen} onClose={() => setModalOpen(false)} className="max-w-4xl max-h-[90vh]">
+                <div className="relative bg-white rounded-2xl shadow-xl w-full max-h-[90vh] overflow-hidden flex flex-col">
+                    <form onSubmit={handleSubmit}>
+                        {/* Header */}
+                        <div className="px-6 py-4 bg-blue-600 text-white flex items-center justify-between flex-shrink-0">
+                            <h5 className="font-bold">
+                                <i className={`fas ${isEditing ? 'fa-user-edit' : 'fa-user-plus'} mr-2`}></i>
+                                {isEditing ? 'Edit Data Santri' : 'Tambah Santri'}
+                            </h5>
+                            <button type="button" onClick={() => setModalOpen(false)} className="text-white/80 hover:text-white">
+                                <i className="fas fa-times"></i>
+                            </button>
+                        </div>
+
+                        {/* Tabs */}
+                        <div className="border-b flex-shrink-0">
+                            <div className="flex">
+                                <button type="button" onClick={() => setActiveTab('santri')}
+                                    className={`px-4 py-3 text-sm font-medium border-b-2 ${activeTab === 'santri' ? 'border-blue-500 text-blue-600' : 'border-transparent text-gray-500'}`}>
+                                    <i className="fas fa-user mr-1"></i> Data Santri
+                                </button>
+                                <button type="button" onClick={() => setActiveTab('ortu')}
+                                    className={`px-4 py-3 text-sm font-medium border-b-2 ${activeTab === 'ortu' ? 'border-blue-500 text-blue-600' : 'border-transparent text-gray-500'}`}>
+                                    <i className="fas fa-users mr-1"></i> Data Orang Tua
+                                </button>
+                                <button type="button" onClick={() => setActiveTab('dokumen')}
+                                    className={`px-4 py-3 text-sm font-medium border-b-2 ${activeTab === 'dokumen' ? 'border-blue-500 text-blue-600' : 'border-transparent text-gray-500'}`}>
+                                    <i className="fas fa-file mr-1"></i> Dokumen
                                 </button>
                             </div>
+                        </div>
 
-                            {/* Tabs */}
-                            <div className="border-b flex-shrink-0">
-                                <div className="flex">
-                                    <button type="button" onClick={() => setActiveTab('santri')}
-                                        className={`px-4 py-3 text-sm font-medium border-b-2 ${activeTab === 'santri' ? 'border-blue-500 text-blue-600' : 'border-transparent text-gray-500'}`}>
-                                        <i className="fas fa-user mr-1"></i> Data Santri
-                                    </button>
-                                    <button type="button" onClick={() => setActiveTab('ortu')}
-                                        className={`px-4 py-3 text-sm font-medium border-b-2 ${activeTab === 'ortu' ? 'border-blue-500 text-blue-600' : 'border-transparent text-gray-500'}`}>
-                                        <i className="fas fa-users mr-1"></i> Data Orang Tua
-                                    </button>
-                                    <button type="button" onClick={() => setActiveTab('dokumen')}
-                                        className={`px-4 py-3 text-sm font-medium border-b-2 ${activeTab === 'dokumen' ? 'border-blue-500 text-blue-600' : 'border-transparent text-gray-500'}`}>
-                                        <i className="fas fa-file mr-1"></i> Dokumen
-                                    </button>
+                        {/* Body */}
+                        <div className="p-6 overflow-y-auto flex-1">
+                            {/* Tab Santri */}
+                            {activeTab === 'santri' && (
+                                <div className="space-y-6">
+                                    {/* Identitas */}
+                                    <div className="bg-gray-50 rounded-lg p-4">
+                                        <h6 className="text-blue-600 font-semibold mb-3"><i className="fas fa-id-card mr-2"></i>Identitas</h6>
+                                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                            <div className="md:col-span-2">
+                                                <label className="block text-sm font-medium text-gray-600 mb-1">Nama Lengkap <span className="text-red-500">*</span></label>
+                                                <input type="text" value={formData.nama_lengkap} onChange={(e) => updateField('nama_lengkap', e.target.value)}
+                                                    className="w-full px-3 py-2 border border-gray-200 rounded-lg" required />
+                                            </div>
+                                            <div>
+                                                <label className="block text-sm font-medium text-gray-600 mb-1">NISN</label>
+                                                <input type="text" value={formData.nisn} onChange={(e) => updateField('nisn', e.target.value)}
+                                                    className="w-full px-3 py-2 border border-gray-200 rounded-lg" />
+                                            </div>
+                                            <div>
+                                                <label className="block text-sm font-medium text-gray-600 mb-1">NIK</label>
+                                                <input type="text" value={formData.nik} onChange={(e) => updateField('nik', e.target.value)}
+                                                    className="w-full px-3 py-2 border border-gray-200 rounded-lg" />
+                                            </div>
+                                            <div>
+                                                <label className="block text-sm font-medium text-gray-600 mb-1">Nomor KK</label>
+                                                <input type="text" value={formData.nomor_kk} onChange={(e) => updateField('nomor_kk', e.target.value)}
+                                                    className="w-full px-3 py-2 border border-gray-200 rounded-lg" />
+                                            </div>
+                                            <div>
+                                                <label className="block text-sm font-medium text-gray-600 mb-1">Tempat Lahir</label>
+                                                <input type="text" value={formData.tempat_lahir} onChange={(e) => updateField('tempat_lahir', e.target.value)}
+                                                    className="w-full px-3 py-2 border border-gray-200 rounded-lg" />
+                                            </div>
+                                            <div>
+                                                <label className="block text-sm font-medium text-gray-600 mb-1">Tanggal Lahir</label>
+                                                <input type="date" value={formData.tanggal_lahir} onChange={(e) => updateField('tanggal_lahir', e.target.value)}
+                                                    className="w-full px-3 py-2 border border-gray-200 rounded-lg" />
+                                            </div>
+                                            <div>
+                                                <label className="block text-sm font-medium text-gray-600 mb-1">Jenis Kelamin</label>
+                                                <select value={formData.jenis_kelamin} onChange={(e) => updateField('jenis_kelamin', e.target.value)}
+                                                    className="w-full px-3 py-2 border border-gray-200 rounded-lg">
+                                                    <option value="">- Pilih -</option>
+                                                    <option value="L">L (Laki-laki)</option>
+                                                    <option value="P">P (Perempuan)</option>
+                                                </select>
+                                            </div>
+                                            <div>
+                                                <label className="block text-sm font-medium text-gray-600 mb-1">Jumlah Saudara</label>
+                                                <input type="number" value={formData.jumlah_saudara} onChange={(e) => updateField('jumlah_saudara', e.target.value)}
+                                                    className="w-full px-3 py-2 border border-gray-200 rounded-lg" min="0" />
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    {/* Pendidikan */}
+                                    <div className="bg-gray-50 rounded-lg p-4">
+                                        <h6 className="text-blue-600 font-semibold mb-3"><i className="fas fa-school mr-2"></i>Pendidikan</h6>
+                                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                            <div>
+                                                <label className="block text-sm font-medium text-gray-600 mb-1">Lembaga Sekolah</label>
+                                                <select value={formData.lembaga_sekolah} onChange={(e) => updateField('lembaga_sekolah', e.target.value)}
+                                                    className="w-full px-3 py-2 border border-gray-200 rounded-lg">
+                                                    <option value="">- Pilih -</option>
+                                                    <option value="SMP NU BP">SMP NU BP</option>
+                                                    <option value="MA ALHIKAM">MA ALHIKAM</option>
+                                                    <option value="ITS">ITS</option>
+                                                </select>
+                                            </div>
+                                            <div>
+                                                <label className="block text-sm font-medium text-gray-600 mb-1">Kelas</label>
+                                                <input type="text" value={formData.kelas} onChange={(e) => updateField('kelas', e.target.value)}
+                                                    className="w-full px-3 py-2 border border-gray-200 rounded-lg" />
+                                            </div>
+                                            <div>
+                                                <label className="block text-sm font-medium text-gray-600 mb-1">Quran</label>
+                                                <input type="text" value={formData.quran} onChange={(e) => updateField('quran', e.target.value)}
+                                                    className="w-full px-3 py-2 border border-gray-200 rounded-lg" />
+                                            </div>
+                                            <div>
+                                                <label className="block text-sm font-medium text-gray-600 mb-1">Kategori</label>
+                                                <input type="text" value={formData.kategori} onChange={(e) => updateField('kategori', e.target.value)}
+                                                    className="w-full px-3 py-2 border border-gray-200 rounded-lg" />
+                                            </div>
+                                            <div>
+                                                <label className="block text-sm font-medium text-gray-600 mb-1">Status</label>
+                                                <select value={formData.status} onChange={(e) => updateField('status', e.target.value)}
+                                                    className="w-full px-3 py-2 border border-gray-200 rounded-lg">
+                                                    <option value="AKTIF">AKTIF</option>
+                                                    <option value="NON-AKTIF">NON-AKTIF</option>
+                                                    <option value="LULUS">LULUS</option>
+                                                </select>
+                                            </div>
+                                            <div>
+                                                <label className="block text-sm font-medium text-gray-600 mb-1">Asal Sekolah</label>
+                                                <input type="text" value={formData.asal_sekolah} onChange={(e) => updateField('asal_sekolah', e.target.value)}
+                                                    className="w-full px-3 py-2 border border-gray-200 rounded-lg" />
+                                            </div>
+                                            <div>
+                                                <label className="block text-sm font-medium text-gray-600 mb-1">Status Mukim</label>
+                                                <select value={formData.status_mukim} onChange={(e) => updateField('status_mukim', e.target.value)}
+                                                    className="w-full px-3 py-2 border border-gray-200 rounded-lg">
+                                                    <option value="">- Pilih -</option>
+                                                    <option value="PONDOK PP MAMBAUL HUDA">PONDOK PP MAMBAUL HUDA</option>
+                                                    <option value="PONDOK SELAIN PP MAMBAUL HUDA">PONDOK SELAIN</option>
+                                                    <option value="TIDAK PONDOK">TIDAK PONDOK</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    {/* Kontak */}
+                                    <div className="bg-gray-50 rounded-lg p-4">
+                                        <h6 className="text-blue-600 font-semibold mb-3"><i className="fas fa-map-marker-alt mr-2"></i>Alamat & Kontak</h6>
+                                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                            <div className="md:col-span-3">
+                                                <label className="block text-sm font-medium text-gray-600 mb-1">Alamat</label>
+                                                <textarea value={formData.alamat} onChange={(e) => updateField('alamat', e.target.value)}
+                                                    className="w-full px-3 py-2 border border-gray-200 rounded-lg" rows="2"></textarea>
+                                            </div>
+                                            <div>
+                                                <label className="block text-sm font-medium text-gray-600 mb-1">Kecamatan</label>
+                                                <input type="text" value={formData.kecamatan} onChange={(e) => updateField('kecamatan', e.target.value)}
+                                                    className="w-full px-3 py-2 border border-gray-200 rounded-lg" />
+                                            </div>
+                                            <div>
+                                                <label className="block text-sm font-medium text-gray-600 mb-1">Kabupaten</label>
+                                                <input type="text" value={formData.kabupaten} onChange={(e) => updateField('kabupaten', e.target.value)}
+                                                    className="w-full px-3 py-2 border border-gray-200 rounded-lg" />
+                                            </div>
+                                            <div>
+                                                <label className="block text-sm font-medium text-gray-600 mb-1">No WA Wali</label>
+                                                <input type="text" value={formData.no_wa_wali} onChange={(e) => updateField('no_wa_wali', e.target.value)}
+                                                    className="w-full px-3 py-2 border border-gray-200 rounded-lg" />
+                                            </div>
+                                            <div>
+                                                <label className="block text-sm font-medium text-gray-600 mb-1">Nomor RFID</label>
+                                                <input type="text" value={formData.nomor_rfid} onChange={(e) => updateField('nomor_rfid', e.target.value)}
+                                                    className="w-full px-3 py-2 border border-gray-200 rounded-lg" />
+                                            </div>
+                                            <div>
+                                                <label className="block text-sm font-medium text-gray-600 mb-1">No. PIP/PKH</label>
+                                                <input type="text" value={formData.nomor_pip} onChange={(e) => updateField('nomor_pip', e.target.value)}
+                                                    className="w-full px-3 py-2 border border-gray-200 rounded-lg" />
+                                            </div>
+                                            <div className="md:col-span-3">
+                                                <label className="block text-sm font-medium text-gray-600 mb-1">Sumber Info</label>
+                                                <input type="text" value={formData.sumber_info} onChange={(e) => updateField('sumber_info', e.target.value)}
+                                                    className="w-full px-3 py-2 border border-gray-200 rounded-lg" />
+                                            </div>
+                                            <div>
+                                                <label className="block text-sm font-medium text-gray-600 mb-1">Prestasi</label>
+                                                <input type="text" value={formData.prestasi} onChange={(e) => updateField('prestasi', e.target.value)}
+                                                    className="w-full px-3 py-2 border border-gray-200 rounded-lg" />
+                                            </div>
+                                            <div>
+                                                <label className="block text-sm font-medium text-gray-600 mb-1">Tingkat</label>
+                                                <input type="text" value={formData.tingkat_prestasi} onChange={(e) => updateField('tingkat_prestasi', e.target.value)}
+                                                    className="w-full px-3 py-2 border border-gray-200 rounded-lg" />
+                                            </div>
+                                            <div>
+                                                <label className="block text-sm font-medium text-gray-600 mb-1">Juara</label>
+                                                <input type="text" value={formData.juara_prestasi} onChange={(e) => updateField('juara_prestasi', e.target.value)}
+                                                    className="w-full px-3 py-2 border border-gray-200 rounded-lg" />
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
-                            </div>
+                            )}
 
-                            {/* Body */}
-                            <div className="p-6 overflow-y-auto flex-1">
-                                {/* Tab Santri */}
-                                {activeTab === 'santri' && (
-                                    <div className="space-y-6">
-                                        {/* Identitas */}
-                                        <div className="bg-gray-50 rounded-lg p-4">
-                                            <h6 className="text-blue-600 font-semibold mb-3"><i className="fas fa-id-card mr-2"></i>Identitas</h6>
-                                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                                <div className="md:col-span-2">
-                                                    <label className="block text-sm font-medium text-gray-600 mb-1">Nama Lengkap <span className="text-red-500">*</span></label>
-                                                    <input type="text" value={formData.nama_lengkap} onChange={(e) => updateField('nama_lengkap', e.target.value)}
-                                                        className="w-full px-3 py-2 border border-gray-200 rounded-lg" required />
-                                                </div>
-                                                <div>
-                                                    <label className="block text-sm font-medium text-gray-600 mb-1">NISN</label>
-                                                    <input type="text" value={formData.nisn} onChange={(e) => updateField('nisn', e.target.value)}
-                                                        className="w-full px-3 py-2 border border-gray-200 rounded-lg" />
-                                                </div>
-                                                <div>
-                                                    <label className="block text-sm font-medium text-gray-600 mb-1">NIK</label>
-                                                    <input type="text" value={formData.nik} onChange={(e) => updateField('nik', e.target.value)}
-                                                        className="w-full px-3 py-2 border border-gray-200 rounded-lg" />
-                                                </div>
-                                                <div>
-                                                    <label className="block text-sm font-medium text-gray-600 mb-1">Nomor KK</label>
-                                                    <input type="text" value={formData.nomor_kk} onChange={(e) => updateField('nomor_kk', e.target.value)}
-                                                        className="w-full px-3 py-2 border border-gray-200 rounded-lg" />
-                                                </div>
-                                                <div>
-                                                    <label className="block text-sm font-medium text-gray-600 mb-1">Tempat Lahir</label>
-                                                    <input type="text" value={formData.tempat_lahir} onChange={(e) => updateField('tempat_lahir', e.target.value)}
-                                                        className="w-full px-3 py-2 border border-gray-200 rounded-lg" />
-                                                </div>
-                                                <div>
-                                                    <label className="block text-sm font-medium text-gray-600 mb-1">Tanggal Lahir</label>
-                                                    <input type="date" value={formData.tanggal_lahir} onChange={(e) => updateField('tanggal_lahir', e.target.value)}
-                                                        className="w-full px-3 py-2 border border-gray-200 rounded-lg" />
-                                                </div>
-                                                <div>
-                                                    <label className="block text-sm font-medium text-gray-600 mb-1">Jenis Kelamin</label>
-                                                    <select value={formData.jenis_kelamin} onChange={(e) => updateField('jenis_kelamin', e.target.value)}
-                                                        className="w-full px-3 py-2 border border-gray-200 rounded-lg">
-                                                        <option value="">- Pilih -</option>
-                                                        <option value="L">L (Laki-laki)</option>
-                                                        <option value="P">P (Perempuan)</option>
-                                                    </select>
-                                                </div>
-                                                <div>
-                                                    <label className="block text-sm font-medium text-gray-600 mb-1">Jumlah Saudara</label>
-                                                    <input type="number" value={formData.jumlah_saudara} onChange={(e) => updateField('jumlah_saudara', e.target.value)}
-                                                        className="w-full px-3 py-2 border border-gray-200 rounded-lg" min="0" />
-                                                </div>
+                            {/* Tab Orang Tua */}
+                            {activeTab === 'ortu' && (
+                                <div className="space-y-6">
+                                    {/* Data Ayah */}
+                                    <div className="bg-gray-50 rounded-lg p-4">
+                                        <h6 className="text-blue-600 font-semibold mb-3"><i className="fas fa-male mr-2"></i>Data Ayah</h6>
+                                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                            <div className="md:col-span-2">
+                                                <label className="block text-sm font-medium text-gray-600 mb-1">Nama Ayah</label>
+                                                <input type="text" value={formData.nama_ayah} onChange={(e) => updateField('nama_ayah', e.target.value)}
+                                                    className="w-full px-3 py-2 border border-gray-200 rounded-lg" />
                                             </div>
-                                        </div>
-
-                                        {/* Pendidikan */}
-                                        <div className="bg-gray-50 rounded-lg p-4">
-                                            <h6 className="text-blue-600 font-semibold mb-3"><i className="fas fa-school mr-2"></i>Pendidikan</h6>
-                                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                                <div>
-                                                    <label className="block text-sm font-medium text-gray-600 mb-1">Lembaga Sekolah</label>
-                                                    <select value={formData.lembaga_sekolah} onChange={(e) => updateField('lembaga_sekolah', e.target.value)}
-                                                        className="w-full px-3 py-2 border border-gray-200 rounded-lg">
-                                                        <option value="">- Pilih -</option>
-                                                        <option value="SMP NU BP">SMP NU BP</option>
-                                                        <option value="MA ALHIKAM">MA ALHIKAM</option>
-                                                        <option value="ITS">ITS</option>
-                                                    </select>
-                                                </div>
-                                                <div>
-                                                    <label className="block text-sm font-medium text-gray-600 mb-1">Kelas</label>
-                                                    <input type="text" value={formData.kelas} onChange={(e) => updateField('kelas', e.target.value)}
-                                                        className="w-full px-3 py-2 border border-gray-200 rounded-lg" />
-                                                </div>
-                                                <div>
-                                                    <label className="block text-sm font-medium text-gray-600 mb-1">Quran</label>
-                                                    <input type="text" value={formData.quran} onChange={(e) => updateField('quran', e.target.value)}
-                                                        className="w-full px-3 py-2 border border-gray-200 rounded-lg" />
-                                                </div>
-                                                <div>
-                                                    <label className="block text-sm font-medium text-gray-600 mb-1">Kategori</label>
-                                                    <input type="text" value={formData.kategori} onChange={(e) => updateField('kategori', e.target.value)}
-                                                        className="w-full px-3 py-2 border border-gray-200 rounded-lg" />
-                                                </div>
-                                                <div>
-                                                    <label className="block text-sm font-medium text-gray-600 mb-1">Status</label>
-                                                    <select value={formData.status} onChange={(e) => updateField('status', e.target.value)}
-                                                        className="w-full px-3 py-2 border border-gray-200 rounded-lg">
-                                                        <option value="AKTIF">AKTIF</option>
-                                                        <option value="NON-AKTIF">NON-AKTIF</option>
-                                                        <option value="LULUS">LULUS</option>
-                                                    </select>
-                                                </div>
-                                                <div>
-                                                    <label className="block text-sm font-medium text-gray-600 mb-1">Asal Sekolah</label>
-                                                    <input type="text" value={formData.asal_sekolah} onChange={(e) => updateField('asal_sekolah', e.target.value)}
-                                                        className="w-full px-3 py-2 border border-gray-200 rounded-lg" />
-                                                </div>
-                                                <div>
-                                                    <label className="block text-sm font-medium text-gray-600 mb-1">Status Mukim</label>
-                                                    <select value={formData.status_mukim} onChange={(e) => updateField('status_mukim', e.target.value)}
-                                                        className="w-full px-3 py-2 border border-gray-200 rounded-lg">
-                                                        <option value="">- Pilih -</option>
-                                                        <option value="PONDOK PP MAMBAUL HUDA">PONDOK PP MAMBAUL HUDA</option>
-                                                        <option value="PONDOK SELAIN PP MAMBAUL HUDA">PONDOK SELAIN</option>
-                                                        <option value="TIDAK PONDOK">TIDAK PONDOK</option>
-                                                    </select>
-                                                </div>
+                                            <div>
+                                                <label className="block text-sm font-medium text-gray-600 mb-1">NIK Ayah</label>
+                                                <input type="text" value={formData.nik_ayah} onChange={(e) => updateField('nik_ayah', e.target.value)}
+                                                    className="w-full px-3 py-2 border border-gray-200 rounded-lg" />
                                             </div>
-                                        </div>
-
-                                        {/* Kontak */}
-                                        <div className="bg-gray-50 rounded-lg p-4">
-                                            <h6 className="text-blue-600 font-semibold mb-3"><i className="fas fa-map-marker-alt mr-2"></i>Alamat & Kontak</h6>
-                                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                                <div className="md:col-span-3">
-                                                    <label className="block text-sm font-medium text-gray-600 mb-1">Alamat</label>
-                                                    <textarea value={formData.alamat} onChange={(e) => updateField('alamat', e.target.value)}
-                                                        className="w-full px-3 py-2 border border-gray-200 rounded-lg" rows="2"></textarea>
-                                                </div>
-                                                <div>
-                                                    <label className="block text-sm font-medium text-gray-600 mb-1">Kecamatan</label>
-                                                    <input type="text" value={formData.kecamatan} onChange={(e) => updateField('kecamatan', e.target.value)}
-                                                        className="w-full px-3 py-2 border border-gray-200 rounded-lg" />
-                                                </div>
-                                                <div>
-                                                    <label className="block text-sm font-medium text-gray-600 mb-1">Kabupaten</label>
-                                                    <input type="text" value={formData.kabupaten} onChange={(e) => updateField('kabupaten', e.target.value)}
-                                                        className="w-full px-3 py-2 border border-gray-200 rounded-lg" />
-                                                </div>
-                                                <div>
-                                                    <label className="block text-sm font-medium text-gray-600 mb-1">No WA Wali</label>
-                                                    <input type="text" value={formData.no_wa_wali} onChange={(e) => updateField('no_wa_wali', e.target.value)}
-                                                        className="w-full px-3 py-2 border border-gray-200 rounded-lg" />
-                                                </div>
-                                                <div>
-                                                    <label className="block text-sm font-medium text-gray-600 mb-1">Nomor RFID</label>
-                                                    <input type="text" value={formData.nomor_rfid} onChange={(e) => updateField('nomor_rfid', e.target.value)}
-                                                        className="w-full px-3 py-2 border border-gray-200 rounded-lg" />
-                                                </div>
-                                                <div>
-                                                    <label className="block text-sm font-medium text-gray-600 mb-1">No. PIP/PKH</label>
-                                                    <input type="text" value={formData.nomor_pip} onChange={(e) => updateField('nomor_pip', e.target.value)}
-                                                        className="w-full px-3 py-2 border border-gray-200 rounded-lg" />
-                                                </div>
-                                                <div className="md:col-span-3">
-                                                    <label className="block text-sm font-medium text-gray-600 mb-1">Sumber Info</label>
-                                                    <input type="text" value={formData.sumber_info} onChange={(e) => updateField('sumber_info', e.target.value)}
-                                                        className="w-full px-3 py-2 border border-gray-200 rounded-lg" />
-                                                </div>
-                                                <div>
-                                                    <label className="block text-sm font-medium text-gray-600 mb-1">Prestasi</label>
-                                                    <input type="text" value={formData.prestasi} onChange={(e) => updateField('prestasi', e.target.value)}
-                                                        className="w-full px-3 py-2 border border-gray-200 rounded-lg" />
-                                                </div>
-                                                <div>
-                                                    <label className="block text-sm font-medium text-gray-600 mb-1">Tingkat</label>
-                                                    <input type="text" value={formData.tingkat_prestasi} onChange={(e) => updateField('tingkat_prestasi', e.target.value)}
-                                                        className="w-full px-3 py-2 border border-gray-200 rounded-lg" />
-                                                </div>
-                                                <div>
-                                                    <label className="block text-sm font-medium text-gray-600 mb-1">Juara</label>
-                                                    <input type="text" value={formData.juara_prestasi} onChange={(e) => updateField('juara_prestasi', e.target.value)}
-                                                        className="w-full px-3 py-2 border border-gray-200 rounded-lg" />
-                                                </div>
+                                            <div>
+                                                <label className="block text-sm font-medium text-gray-600 mb-1">Tempat Lahir Ayah</label>
+                                                <input type="text" value={formData.tempat_lahir_ayah} onChange={(e) => updateField('tempat_lahir_ayah', e.target.value)}
+                                                    className="w-full px-3 py-2 border border-gray-200 rounded-lg" />
+                                            </div>
+                                            <div>
+                                                <label className="block text-sm font-medium text-gray-600 mb-1">Tanggal Lahir Ayah</label>
+                                                <input type="date" value={formData.tanggal_lahir_ayah} onChange={(e) => updateField('tanggal_lahir_ayah', e.target.value)}
+                                                    className="w-full px-3 py-2 border border-gray-200 rounded-lg" />
+                                            </div>
+                                            <div>
+                                                <label className="block text-sm font-medium text-gray-600 mb-1">Pekerjaan Ayah</label>
+                                                <input type="text" value={formData.pekerjaan_ayah} onChange={(e) => updateField('pekerjaan_ayah', e.target.value)}
+                                                    className="w-full px-3 py-2 border border-gray-200 rounded-lg" />
+                                            </div>
+                                            <div>
+                                                <label className="block text-sm font-medium text-gray-600 mb-1">Penghasilan Ayah</label>
+                                                <select value={formData.penghasilan_ayah} onChange={(e) => updateField('penghasilan_ayah', e.target.value)}
+                                                    className="w-full px-3 py-2 border border-gray-200 rounded-lg">
+                                                    <option value="">- Pilih -</option>
+                                                    <option value="Di bawah Rp. 1.000.000">Di bawah Rp. 1.000.000</option>
+                                                    <option value="Di bawah Rp. 2.500.000">Di bawah Rp. 2.500.000</option>
+                                                    <option value="Di bawah Rp. 4.000.000">Di bawah Rp. 4.000.000</option>
+                                                    <option value="Di atas Rp. 4.000.000">Di atas Rp. 4.000.000</option>
+                                                </select>
                                             </div>
                                         </div>
                                     </div>
-                                )}
 
-                                {/* Tab Orang Tua */}
-                                {activeTab === 'ortu' && (
-                                    <div className="space-y-6">
-                                        {/* Data Ayah */}
-                                        <div className="bg-gray-50 rounded-lg p-4">
-                                            <h6 className="text-blue-600 font-semibold mb-3"><i className="fas fa-male mr-2"></i>Data Ayah</h6>
-                                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                                <div className="md:col-span-2">
-                                                    <label className="block text-sm font-medium text-gray-600 mb-1">Nama Ayah</label>
-                                                    <input type="text" value={formData.nama_ayah} onChange={(e) => updateField('nama_ayah', e.target.value)}
-                                                        className="w-full px-3 py-2 border border-gray-200 rounded-lg" />
-                                                </div>
-                                                <div>
-                                                    <label className="block text-sm font-medium text-gray-600 mb-1">NIK Ayah</label>
-                                                    <input type="text" value={formData.nik_ayah} onChange={(e) => updateField('nik_ayah', e.target.value)}
-                                                        className="w-full px-3 py-2 border border-gray-200 rounded-lg" />
-                                                </div>
-                                                <div>
-                                                    <label className="block text-sm font-medium text-gray-600 mb-1">Tempat Lahir Ayah</label>
-                                                    <input type="text" value={formData.tempat_lahir_ayah} onChange={(e) => updateField('tempat_lahir_ayah', e.target.value)}
-                                                        className="w-full px-3 py-2 border border-gray-200 rounded-lg" />
-                                                </div>
-                                                <div>
-                                                    <label className="block text-sm font-medium text-gray-600 mb-1">Tanggal Lahir Ayah</label>
-                                                    <input type="date" value={formData.tanggal_lahir_ayah} onChange={(e) => updateField('tanggal_lahir_ayah', e.target.value)}
-                                                        className="w-full px-3 py-2 border border-gray-200 rounded-lg" />
-                                                </div>
-                                                <div>
-                                                    <label className="block text-sm font-medium text-gray-600 mb-1">Pekerjaan Ayah</label>
-                                                    <input type="text" value={formData.pekerjaan_ayah} onChange={(e) => updateField('pekerjaan_ayah', e.target.value)}
-                                                        className="w-full px-3 py-2 border border-gray-200 rounded-lg" />
-                                                </div>
-                                                <div>
-                                                    <label className="block text-sm font-medium text-gray-600 mb-1">Penghasilan Ayah</label>
-                                                    <select value={formData.penghasilan_ayah} onChange={(e) => updateField('penghasilan_ayah', e.target.value)}
-                                                        className="w-full px-3 py-2 border border-gray-200 rounded-lg">
-                                                        <option value="">- Pilih -</option>
-                                                        <option value="Di bawah Rp. 1.000.000">Di bawah Rp. 1.000.000</option>
-                                                        <option value="Di bawah Rp. 2.500.000">Di bawah Rp. 2.500.000</option>
-                                                        <option value="Di bawah Rp. 4.000.000">Di bawah Rp. 4.000.000</option>
-                                                        <option value="Di atas Rp. 4.000.000">Di atas Rp. 4.000.000</option>
-                                                    </select>
-                                                </div>
+                                    {/* Data Ibu */}
+                                    <div className="bg-gray-50 rounded-lg p-4">
+                                        <h6 className="text-blue-600 font-semibold mb-3"><i className="fas fa-female mr-2"></i>Data Ibu</h6>
+                                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                            <div className="md:col-span-2">
+                                                <label className="block text-sm font-medium text-gray-600 mb-1">Nama Ibu</label>
+                                                <input type="text" value={formData.nama_ibu} onChange={(e) => updateField('nama_ibu', e.target.value)}
+                                                    className="w-full px-3 py-2 border border-gray-200 rounded-lg" />
                                             </div>
-                                        </div>
-
-                                        {/* Data Ibu */}
-                                        <div className="bg-gray-50 rounded-lg p-4">
-                                            <h6 className="text-blue-600 font-semibold mb-3"><i className="fas fa-female mr-2"></i>Data Ibu</h6>
-                                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                                <div className="md:col-span-2">
-                                                    <label className="block text-sm font-medium text-gray-600 mb-1">Nama Ibu</label>
-                                                    <input type="text" value={formData.nama_ibu} onChange={(e) => updateField('nama_ibu', e.target.value)}
-                                                        className="w-full px-3 py-2 border border-gray-200 rounded-lg" />
-                                                </div>
-                                                <div>
-                                                    <label className="block text-sm font-medium text-gray-600 mb-1">NIK Ibu</label>
-                                                    <input type="text" value={formData.nik_ibu} onChange={(e) => updateField('nik_ibu', e.target.value)}
-                                                        className="w-full px-3 py-2 border border-gray-200 rounded-lg" />
-                                                </div>
-                                                <div>
-                                                    <label className="block text-sm font-medium text-gray-600 mb-1">Tempat Lahir Ibu</label>
-                                                    <input type="text" value={formData.tempat_lahir_ibu} onChange={(e) => updateField('tempat_lahir_ibu', e.target.value)}
-                                                        className="w-full px-3 py-2 border border-gray-200 rounded-lg" />
-                                                </div>
-                                                <div>
-                                                    <label className="block text-sm font-medium text-gray-600 mb-1">Tanggal Lahir Ibu</label>
-                                                    <input type="date" value={formData.tanggal_lahir_ibu} onChange={(e) => updateField('tanggal_lahir_ibu', e.target.value)}
-                                                        className="w-full px-3 py-2 border border-gray-200 rounded-lg" />
-                                                </div>
-                                                <div>
-                                                    <label className="block text-sm font-medium text-gray-600 mb-1">Pekerjaan Ibu</label>
-                                                    <input type="text" value={formData.pekerjaan_ibu} onChange={(e) => updateField('pekerjaan_ibu', e.target.value)}
-                                                        className="w-full px-3 py-2 border border-gray-200 rounded-lg" />
-                                                </div>
-                                                <div>
-                                                    <label className="block text-sm font-medium text-gray-600 mb-1">Penghasilan Ibu</label>
-                                                    <select value={formData.penghasilan_ibu} onChange={(e) => updateField('penghasilan_ibu', e.target.value)}
-                                                        className="w-full px-3 py-2 border border-gray-200 rounded-lg">
-                                                        <option value="">- Pilih -</option>
-                                                        <option value="Di bawah Rp. 1.000.000">Di bawah Rp. 1.000.000</option>
-                                                        <option value="Di bawah Rp. 2.500.000">Di bawah Rp. 2.500.000</option>
-                                                        <option value="Di bawah Rp. 4.000.000">Di bawah Rp. 4.000.000</option>
-                                                        <option value="Di atas Rp. 4.000.000">Di atas Rp. 4.000.000</option>
-                                                    </select>
-                                                </div>
+                                            <div>
+                                                <label className="block text-sm font-medium text-gray-600 mb-1">NIK Ibu</label>
+                                                <input type="text" value={formData.nik_ibu} onChange={(e) => updateField('nik_ibu', e.target.value)}
+                                                    className="w-full px-3 py-2 border border-gray-200 rounded-lg" />
+                                            </div>
+                                            <div>
+                                                <label className="block text-sm font-medium text-gray-600 mb-1">Tempat Lahir Ibu</label>
+                                                <input type="text" value={formData.tempat_lahir_ibu} onChange={(e) => updateField('tempat_lahir_ibu', e.target.value)}
+                                                    className="w-full px-3 py-2 border border-gray-200 rounded-lg" />
+                                            </div>
+                                            <div>
+                                                <label className="block text-sm font-medium text-gray-600 mb-1">Tanggal Lahir Ibu</label>
+                                                <input type="date" value={formData.tanggal_lahir_ibu} onChange={(e) => updateField('tanggal_lahir_ibu', e.target.value)}
+                                                    className="w-full px-3 py-2 border border-gray-200 rounded-lg" />
+                                            </div>
+                                            <div>
+                                                <label className="block text-sm font-medium text-gray-600 mb-1">Pekerjaan Ibu</label>
+                                                <input type="text" value={formData.pekerjaan_ibu} onChange={(e) => updateField('pekerjaan_ibu', e.target.value)}
+                                                    className="w-full px-3 py-2 border border-gray-200 rounded-lg" />
+                                            </div>
+                                            <div>
+                                                <label className="block text-sm font-medium text-gray-600 mb-1">Penghasilan Ibu</label>
+                                                <select value={formData.penghasilan_ibu} onChange={(e) => updateField('penghasilan_ibu', e.target.value)}
+                                                    className="w-full px-3 py-2 border border-gray-200 rounded-lg">
+                                                    <option value="">- Pilih -</option>
+                                                    <option value="Di bawah Rp. 1.000.000">Di bawah Rp. 1.000.000</option>
+                                                    <option value="Di bawah Rp. 2.500.000">Di bawah Rp. 2.500.000</option>
+                                                    <option value="Di bawah Rp. 4.000.000">Di bawah Rp. 4.000.000</option>
+                                                    <option value="Di atas Rp. 4.000.000">Di atas Rp. 4.000.000</option>
+                                                </select>
                                             </div>
                                         </div>
                                     </div>
-                                )}
+                                </div>
+                            )}
 
-                                {/* Tab Dokumen */}
-                                {activeTab === 'dokumen' && (
-                                    <div className="space-y-6">
-                                        <div className="bg-gray-50 rounded-lg p-4">
-                                            <h6 className="text-blue-600 font-semibold mb-3"><i className="fas fa-file-upload mr-2"></i>Upload Dokumen</h6>
-                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                                <div>
-                                                    <label className="block text-sm font-medium text-gray-600 mb-1">Foto Santri</label>
-                                                    <input type="file" name="foto_santri" className="w-full px-3 py-2 border border-gray-200 rounded-lg bg-white" accept="image/*" />
-                                                </div>
-                                                <div>
-                                                    <label className="block text-sm font-medium text-gray-600 mb-1">Kartu Keluarga (KK)</label>
-                                                    <input type="file" name="dokumen_kk" className="w-full px-3 py-2 border border-gray-200 rounded-lg bg-white" accept="image/*,.pdf" />
-                                                </div>
-                                                <div>
-                                                    <label className="block text-sm font-medium text-gray-600 mb-1">Akte Kelahiran</label>
-                                                    <input type="file" name="dokumen_akte" className="w-full px-3 py-2 border border-gray-200 rounded-lg bg-white" accept="image/*,.pdf" />
-                                                </div>
-                                                <div>
-                                                    <label className="block text-sm font-medium text-gray-600 mb-1">KTP Wali</label>
-                                                    <input type="file" name="dokumen_ktp" className="w-full px-3 py-2 border border-gray-200 rounded-lg bg-white" accept="image/*,.pdf" />
-                                                </div>
-                                                <div>
-                                                    <label className="block text-sm font-medium text-gray-600 mb-1">Ijazah</label>
-                                                    <input type="file" name="dokumen_ijazah" className="w-full px-3 py-2 border border-gray-200 rounded-lg bg-white" accept="image/*,.pdf" />
-                                                </div>
-                                                <div>
-                                                    <label className="block text-sm font-medium text-gray-600 mb-1">Sertifikat</label>
-                                                    <input type="file" name="dokumen_sertifikat" className="w-full px-3 py-2 border border-gray-200 rounded-lg bg-white" accept="image/*,.pdf" />
-                                                </div>
+                            {/* Tab Dokumen */}
+                            {activeTab === 'dokumen' && (
+                                <div className="space-y-6">
+                                    <div className="bg-gray-50 rounded-lg p-4">
+                                        <h6 className="text-blue-600 font-semibold mb-3"><i className="fas fa-file-upload mr-2"></i>Upload Dokumen</h6>
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                            <div>
+                                                <label className="block text-sm font-medium text-gray-600 mb-1">Foto Santri</label>
+                                                <input type="file" name="foto_santri" className="w-full px-3 py-2 border border-gray-200 rounded-lg bg-white" accept="image/*" />
                                             </div>
-                                            <p className="text-[10px] text-gray-500 mt-2 italic">Format: JPG, PNG, GIF, PDF. Max 2MB per file.</p>
+                                            <div>
+                                                <label className="block text-sm font-medium text-gray-600 mb-1">Kartu Keluarga (KK)</label>
+                                                <input type="file" name="dokumen_kk" className="w-full px-3 py-2 border border-gray-200 rounded-lg bg-white" accept="image/*,.pdf" />
+                                            </div>
+                                            <div>
+                                                <label className="block text-sm font-medium text-gray-600 mb-1">Akte Kelahiran</label>
+                                                <input type="file" name="dokumen_akte" className="w-full px-3 py-2 border border-gray-200 rounded-lg bg-white" accept="image/*,.pdf" />
+                                            </div>
+                                            <div>
+                                                <label className="block text-sm font-medium text-gray-600 mb-1">KTP Wali</label>
+                                                <input type="file" name="dokumen_ktp" className="w-full px-3 py-2 border border-gray-200 rounded-lg bg-white" accept="image/*,.pdf" />
+                                            </div>
+                                            <div>
+                                                <label className="block text-sm font-medium text-gray-600 mb-1">Ijazah</label>
+                                                <input type="file" name="dokumen_ijazah" className="w-full px-3 py-2 border border-gray-200 rounded-lg bg-white" accept="image/*,.pdf" />
+                                            </div>
+                                            <div>
+                                                <label className="block text-sm font-medium text-gray-600 mb-1">Sertifikat</label>
+                                                <input type="file" name="dokumen_sertifikat" className="w-full px-3 py-2 border border-gray-200 rounded-lg bg-white" accept="image/*,.pdf" />
+                                            </div>
                                         </div>
+                                        <p className="text-[10px] text-gray-500 mt-2 italic">Format: JPG, PNG, GIF, PDF. Max 2MB per file.</p>
                                     </div>
-                                )}
-                            </div>
+                                </div>
+                            )}
+                        </div>
 
-                            {/* Footer */}
-                            <div className="px-6 py-4 border-t bg-gray-50 flex gap-3 flex-shrink-0">
-                                <button type="button" onClick={() => setModalOpen(false)}
-                                    className="flex-1 py-2 bg-gray-200 text-gray-600 rounded-lg font-semibold hover:bg-gray-300">
-                                    Batal
-                                </button>
-                                <button type="submit" disabled={saving}
-                                    className="flex-1 py-2 bg-blue-500 text-white rounded-lg font-semibold hover:bg-blue-600 disabled:opacity-50">
-                                    {saving ? 'Menyimpan...' : 'Simpan'}
-                                </button>
-                            </div>
-                        </form>
-                    </div>
+                        {/* Footer */}
+                        <div className="px-6 py-4 border-t bg-gray-50 flex gap-3 flex-shrink-0">
+                            <button type="button" onClick={() => setModalOpen(false)}
+                                className="flex-1 py-2 bg-gray-200 text-gray-600 rounded-lg font-semibold hover:bg-gray-300">
+                                Batal
+                            </button>
+                            <button type="submit" disabled={saving}
+                                className="flex-1 py-2 bg-blue-500 text-white rounded-lg font-semibold hover:bg-blue-600 disabled:opacity-50">
+                                {saving ? 'Menyimpan...' : 'Simpan'}
+                            </button>
+                        </div>
+                    </form>
                 </div>
-            )}
+            </Modal>
         </>
     );
 }

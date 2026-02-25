@@ -10,13 +10,11 @@ use App\Http\Controllers\ProfilController;
 use App\Http\Controllers\CetakKartuController;
 use App\Http\Controllers\KartuQrController;
 use App\Http\Controllers\KiosController;
-use App\Http\Controllers\PrintIzinController;
 use App\Http\Controllers\PrintServerController;
 use App\Http\Controllers\Api\AttendanceApiController;
 use App\Http\Controllers\Api\RfidApiController;
 use App\Http\Controllers\Api\AktivitasApiController;
 use App\Http\Controllers\Api\SantriApiController;
-use App\Http\Controllers\Api\PrintIzinApiController;
 use App\Http\Controllers\Api\PrintQueueApiController;
 use App\Http\Controllers\KonfirmasiKembaliController;
 use Illuminate\Support\Facades\Route;
@@ -70,7 +68,6 @@ Route::middleware('auth')->group(function () {
     Route::get('/riwayat', fn() => view('spa'))->name('riwayat');
     Route::get('/absensi-langsung', fn() => view('spa'))->name('absensi-langsung');
     Route::get('/daftar-rfid', fn() => view('spa'))->name('daftar-rfid');
-    Route::get('/print-izin', fn() => view('spa'))->name('print-izin');
     Route::get('/cetak-kartu', [CetakKartuController::class, 'index'])->name('cetak-kartu');
     Route::get('/kartu-qr/{id}', [KartuQrController::class, 'show'])->name('kartu-qr');
 
@@ -111,9 +108,6 @@ Route::middleware('auth')->group(function () {
         // Live Attendance API
         Route::get('/live-attendance', [\App\Http\Controllers\Api\LiveAttendanceApiController::class, 'index'])->name('api.live-attendance');
 
-        // Print Izin API
-        Route::get('/print-izin', [PrintIzinApiController::class, 'getSantri'])->name('api.print-izin');
-        Route::post('/print-izin', [PrintIzinApiController::class, 'store'])->name('api.print-izin.store');
 
         // Print Queue API
         Route::post('/print-queue', [PrintQueueApiController::class, 'store'])->name('api.print-queue.store');

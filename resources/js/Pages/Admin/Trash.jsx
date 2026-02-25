@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import Swal from 'sweetalert2';
+import Modal from '../../Components/Modal';
 
 export default function AdminTrash() {
     const [isLoading, setIsLoading] = useState(true);
@@ -350,48 +351,46 @@ export default function AdminTrash() {
             </div>
 
             {/* Settings Modal */}
-            {isSettingsModalOpen && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 overflow-y-auto">
-                    <div className="bg-white rounded-3xl shadow-xl w-full max-w-sm overflow-hidden animate-in zoom-in-95 duration-200">
-                        <div className="bg-gradient-to-r from-blue-600 to-blue-500 px-6 py-4 flex items-center justify-between text-white">
-                            <h6 className="font-bold mb-0 flex items-center gap-2">
-                                <i className="fas fa-cog"></i> Pengaturan Trash
-                            </h6>
-                            <button onClick={() => setIsSettingsModalOpen(false)} className="text-white/80 hover:text-white"><i className="fas fa-times"></i></button>
-                        </div>
-                        <form onSubmit={handleSaveSettings} className="p-6 space-y-5">
-                            <div className="flex items-center justify-between p-4 bg-gray-50 rounded-2xl border border-gray-100">
-                                <div>
-                                    <div className="text-sm font-bold text-gray-700">Auto-Hapus Permanen</div>
-                                    <div className="text-[10px] text-gray-500">Hapus otomatis data lama</div>
-                                </div>
-                                <label className="relative inline-flex items-center cursor-pointer">
-                                    <input type="checkbox" name="auto_purge_enabled" className="sr-only peer" defaultChecked={autoPurgeEnabled} />
-                                    <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
-                                </label>
-                            </div>
-
-                            <div>
-                                <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2 ml-1">Hapus setelah (hari)</label>
-                                <input
-                                    type="number"
-                                    name="auto_purge_days"
-                                    defaultValue={autoPurgeDays}
-                                    min="1"
-                                    max="365"
-                                    className="w-full bg-gray-50 border border-gray-100 rounded-xl px-4 py-3 text-sm focus:border-blue-500 focus:ring-0 transition-colors"
-                                />
-                                <p className="text-[10px] text-gray-500 mt-2 px-1">Data yang sudah di trash lebih dari jumlah hari ini akan dihapus permanen secara otomatis oleh sistem.</p>
-                            </div>
-
-                            <div className="flex gap-3">
-                                <button type="button" onClick={() => setIsSettingsModalOpen(false)} className="flex-1 py-3 bg-gray-100 text-gray-600 rounded-xl font-bold text-sm">Batal</button>
-                                <button type="submit" className="flex-1 py-3 bg-blue-500 text-white rounded-xl font-bold text-sm shadow-md shadow-blue-100">Simpan</button>
-                            </div>
-                        </form>
+            <Modal isOpen={isSettingsModalOpen} onClose={() => setIsSettingsModalOpen(false)} className="max-w-sm">
+                <div className="relative bg-white rounded-3xl shadow-xl w-full overflow-hidden">
+                    <div className="bg-gradient-to-r from-blue-600 to-blue-500 px-6 py-4 flex items-center justify-between text-white">
+                        <h6 className="font-bold mb-0 flex items-center gap-2">
+                            <i className="fas fa-cog"></i> Pengaturan Trash
+                        </h6>
+                        <button onClick={() => setIsSettingsModalOpen(false)} className="text-white/80 hover:text-white"><i className="fas fa-times"></i></button>
                     </div>
+                    <form onSubmit={handleSaveSettings} className="p-6 space-y-5">
+                        <div className="flex items-center justify-between p-4 bg-gray-50 rounded-2xl border border-gray-100">
+                            <div>
+                                <div className="text-sm font-bold text-gray-700">Auto-Hapus Permanen</div>
+                                <div className="text-[10px] text-gray-500">Hapus otomatis data lama</div>
+                            </div>
+                            <label className="relative inline-flex items-center cursor-pointer">
+                                <input type="checkbox" name="auto_purge_enabled" className="sr-only peer" defaultChecked={autoPurgeEnabled} />
+                                <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                            </label>
+                        </div>
+
+                        <div>
+                            <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2 ml-1">Hapus setelah (hari)</label>
+                            <input
+                                type="number"
+                                name="auto_purge_days"
+                                defaultValue={autoPurgeDays}
+                                min="1"
+                                max="365"
+                                className="w-full bg-gray-50 border border-gray-100 rounded-xl px-4 py-3 text-sm focus:border-blue-500 focus:ring-0 transition-colors"
+                            />
+                            <p className="text-[10px] text-gray-500 mt-2 px-1">Data yang sudah di trash lebih dari jumlah hari ini akan dihapus permanen secara otomatis oleh sistem.</p>
+                        </div>
+
+                        <div className="flex gap-3">
+                            <button type="button" onClick={() => setIsSettingsModalOpen(false)} className="flex-1 py-3 bg-gray-100 text-gray-600 rounded-xl font-bold text-sm">Batal</button>
+                            <button type="submit" className="flex-1 py-3 bg-blue-500 text-white rounded-xl font-bold text-sm shadow-md shadow-blue-100">Simpan</button>
+                        </div>
+                    </form>
                 </div>
-            )}
+            </Modal>
         </div>
     );
 }

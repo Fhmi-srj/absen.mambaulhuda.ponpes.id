@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 import { PageSkeleton } from '../../Components/Skeleton';
 import Swal from 'sweetalert2';
+import Modal from '../../Components/Modal';
 
 export default function Pengguna() {
     const { user: authUser } = useAuth();
@@ -315,109 +316,106 @@ export default function Pengguna() {
             </div>
 
             {/* Modal */}
-            {modalOpen && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-                    <div className="absolute inset-0 bg-black/50" onClick={() => setModalOpen(false)}></div>
-                    <div className="relative bg-white rounded-2xl shadow-xl w-full max-w-md overflow-hidden">
-                        <form onSubmit={handleSubmit}>
-                            {/* Header */}
-                            <div className="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
-                                <h5 className="font-bold text-gray-800">
-                                    {isEditing ? 'Edit User' : 'Tambah User'}
-                                </h5>
-                                <button type="button" onClick={() => setModalOpen(false)} className="text-gray-400 hover:text-gray-600">
-                                    <i className="fas fa-times"></i>
-                                </button>
-                            </div>
+            <Modal isOpen={modalOpen} onClose={() => setModalOpen(false)} className="max-w-md">
+                <div className="relative bg-white rounded-2xl shadow-xl w-full overflow-hidden">
+                    <form onSubmit={handleSubmit}>
+                        {/* Header */}
+                        <div className="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
+                            <h5 className="font-bold text-gray-800">
+                                {isEditing ? 'Edit User' : 'Tambah User'}
+                            </h5>
+                            <button type="button" onClick={() => setModalOpen(false)} className="text-gray-400 hover:text-gray-600">
+                                <i className="fas fa-times"></i>
+                            </button>
+                        </div>
 
-                            {/* Body */}
-                            <div className="p-6 space-y-4 max-h-[60vh] overflow-y-auto">
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-600 mb-1">Nama</label>
-                                    <input
-                                        type="text"
-                                        value={formData.name}
-                                        onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                                        className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:border-blue-500 outline-none"
-                                        required
-                                    />
-                                </div>
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-600 mb-1">Email</label>
-                                    <input
-                                        type="email"
-                                        value={formData.email}
-                                        onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                                        className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:border-blue-500 outline-none"
-                                        required
-                                    />
-                                </div>
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-600 mb-1">
-                                        Password <small className="text-gray-400">{isEditing && '(kosongkan jika tidak ubah)'}</small>
-                                    </label>
-                                    <input
-                                        type="password"
-                                        value={formData.password}
-                                        onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                                        className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:border-blue-500 outline-none"
-                                        required={!isEditing}
-                                    />
-                                </div>
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-600 mb-1">No. HP</label>
-                                    <input
-                                        type="text"
-                                        value={formData.phone}
-                                        onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                                        className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:border-blue-500 outline-none"
-                                    />
-                                </div>
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-600 mb-1">Alamat</label>
-                                    <textarea
-                                        value={formData.address}
-                                        onChange={(e) => setFormData({ ...formData, address: e.target.value })}
-                                        className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:border-blue-500 outline-none"
-                                        rows="2"
-                                    ></textarea>
-                                </div>
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-600 mb-1">Role</label>
-                                    <select
-                                        value={formData.role}
-                                        onChange={(e) => setFormData({ ...formData, role: e.target.value })}
-                                        className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:border-blue-500 outline-none"
-                                        required
-                                    >
-                                        {roles.map((r) => (
-                                            <option key={r} value={r}>{roleLabels[r] || r}</option>
-                                        ))}
-                                    </select>
-                                </div>
+                        {/* Body */}
+                        <div className="p-6 space-y-4 max-h-[60vh] overflow-y-auto">
+                            <div>
+                                <label className="block text-sm font-medium text-gray-600 mb-1">Nama</label>
+                                <input
+                                    type="text"
+                                    value={formData.name}
+                                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                                    className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:border-blue-500 outline-none"
+                                    required
+                                />
                             </div>
+                            <div>
+                                <label className="block text-sm font-medium text-gray-600 mb-1">Email</label>
+                                <input
+                                    type="email"
+                                    value={formData.email}
+                                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                                    className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:border-blue-500 outline-none"
+                                    required
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-sm font-medium text-gray-600 mb-1">
+                                    Password <small className="text-gray-400">{isEditing && '(kosongkan jika tidak ubah)'}</small>
+                                </label>
+                                <input
+                                    type="password"
+                                    value={formData.password}
+                                    onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                                    className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:border-blue-500 outline-none"
+                                    required={!isEditing}
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-sm font-medium text-gray-600 mb-1">No. HP</label>
+                                <input
+                                    type="text"
+                                    value={formData.phone}
+                                    onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                                    className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:border-blue-500 outline-none"
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-sm font-medium text-gray-600 mb-1">Alamat</label>
+                                <textarea
+                                    value={formData.address}
+                                    onChange={(e) => setFormData({ ...formData, address: e.target.value })}
+                                    className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:border-blue-500 outline-none"
+                                    rows="2"
+                                ></textarea>
+                            </div>
+                            <div>
+                                <label className="block text-sm font-medium text-gray-600 mb-1">Role</label>
+                                <select
+                                    value={formData.role}
+                                    onChange={(e) => setFormData({ ...formData, role: e.target.value })}
+                                    className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:border-blue-500 outline-none"
+                                    required
+                                >
+                                    {roles.map((r) => (
+                                        <option key={r} value={r}>{roleLabels[r] || r}</option>
+                                    ))}
+                                </select>
+                            </div>
+                        </div>
 
-                            {/* Footer */}
-                            <div className="px-6 py-4 border-t border-gray-100 flex gap-3">
-                                <button
-                                    type="button"
-                                    onClick={() => setModalOpen(false)}
-                                    className="flex-1 py-2 bg-gray-100 text-gray-600 rounded-lg font-semibold hover:bg-gray-200 transition-colors"
-                                >
-                                    Batal
-                                </button>
-                                <button
-                                    type="submit"
-                                    disabled={saving}
-                                    className="flex-1 py-2 bg-blue-500 text-white rounded-lg font-semibold hover:bg-blue-600 transition-colors disabled:opacity-50"
-                                >
-                                    {saving ? 'Menyimpan...' : 'Simpan'}
-                                </button>
-                            </div>
-                        </form>
-                    </div>
+                        {/* Footer */}
+                        <div className="px-6 py-4 border-t border-gray-100 flex gap-3">
+                            <button
+                                type="button"
+                                onClick={() => setModalOpen(false)}
+                                className="flex-1 py-2 bg-gray-100 text-gray-600 rounded-lg font-semibold hover:bg-gray-200 transition-colors"
+                            >
+                                Batal
+                            </button>
+                            <button
+                                type="submit"
+                                disabled={saving}
+                                className="flex-1 py-2 bg-blue-500 text-white rounded-lg font-semibold hover:bg-blue-600 transition-colors disabled:opacity-50"
+                            >
+                                {saving ? 'Menyimpan...' : 'Simpan'}
+                            </button>
+                        </div>
+                    </form>
                 </div>
-            )}
+            </Modal>
         </>
     );
 }
