@@ -284,76 +284,78 @@ export default function Pemindai() {
 
                     {/* Detail Modal */}
                     <Modal isOpen={!!detailModal} onClose={() => setDetailModal(null)} className="max-w-sm">
-                        <div className="relative bg-white rounded-2xl shadow-xl w-full overflow-hidden">
-                            {/* Header */}
-                            <div className="bg-gradient-to-r from-blue-500 to-blue-400 text-white px-6 py-4 flex items-center justify-between">
-                                <h5 className="font-bold flex items-center gap-2">
-                                    <i className="fas fa-clipboard-check"></i>Detail Izin
-                                </h5>
-                                <button onClick={() => setDetailModal(null)} className="text-white/80 hover:text-white">
-                                    <i className="fas fa-times"></i>
-                                </button>
-                            </div>
-
-                            {/* Body */}
-                            <div className="p-6">
-                                {/* Avatar & Name */}
-                                <div className="text-center mb-6">
-                                    <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-blue-400 rounded-full flex items-center justify-center mx-auto text-white text-2xl font-bold">
-                                        {(detailModal.nama_lengkap || 'S').charAt(0).toUpperCase()}
-                                    </div>
-                                    <h5 className="font-bold mt-2 mb-1 text-gray-800">{detailModal.nama_lengkap}</h5>
-                                    <p className="text-gray-500 text-sm">Kelas {detailModal.kelas}</p>
+                        {detailModal && (
+                            <div className="relative bg-white rounded-2xl shadow-xl w-full overflow-hidden">
+                                {/* Header */}
+                                <div className="bg-gradient-to-r from-blue-500 to-blue-400 text-white px-6 py-4 flex items-center justify-between">
+                                    <h5 className="font-bold flex items-center gap-2">
+                                        <i className="fas fa-clipboard-check"></i>Detail Izin
+                                    </h5>
+                                    <button onClick={() => setDetailModal(null)} className="text-white/80 hover:text-white">
+                                        <i className="fas fa-times"></i>
+                                    </button>
                                 </div>
 
-                                {/* Details */}
-                                <div className="space-y-3">
-                                    <div className="flex justify-between py-2 border-b border-gray-100">
-                                        <span className="text-gray-500 text-sm">Jenis Izin</span>
-                                        <span className={`px-3 py-1 rounded-full text-xs font-semibold ${getKategoriBadge(detailModal.kategori)}`}>
-                                            {detailModal.kategori_label}
-                                        </span>
+                                {/* Body */}
+                                <div className="p-6">
+                                    {/* Avatar & Name */}
+                                    <div className="text-center mb-6">
+                                        <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-blue-400 rounded-full flex items-center justify-center mx-auto text-white text-2xl font-bold">
+                                            {(detailModal.nama_lengkap || 'S').charAt(0).toUpperCase()}
+                                        </div>
+                                        <h5 className="font-bold mt-2 mb-1 text-gray-800">{detailModal.nama_lengkap}</h5>
+                                        <p className="text-gray-500 text-sm">Kelas {detailModal.kelas}</p>
                                     </div>
-                                    <div className="flex justify-between py-2 border-b border-gray-100">
-                                        <span className="text-gray-500 text-sm">Keperluan</span>
-                                        <span className="font-semibold text-gray-800 text-right">{detailModal.judul || '-'}</span>
+
+                                    {/* Details */}
+                                    <div className="space-y-3">
+                                        <div className="flex justify-between py-2 border-b border-gray-100">
+                                            <span className="text-gray-500 text-sm">Jenis Izin</span>
+                                            <span className={`px-3 py-1 rounded-full text-xs font-semibold ${getKategoriBadge(detailModal.kategori)}`}>
+                                                {detailModal.kategori_label}
+                                            </span>
+                                        </div>
+                                        <div className="flex justify-between py-2 border-b border-gray-100">
+                                            <span className="text-gray-500 text-sm">Keperluan</span>
+                                            <span className="font-semibold text-gray-800 text-right">{detailModal.judul || '-'}</span>
+                                        </div>
+                                        <div className="flex justify-between py-2 border-b border-gray-100">
+                                            <span className="text-gray-500 text-sm">Keterangan</span>
+                                            <span className="font-semibold text-gray-800 text-right max-w-[180px] break-words">{detailModal.keterangan || '-'}</span>
+                                        </div>
+                                        <div className="flex justify-between py-2 border-b border-gray-100">
+                                            <span className="text-gray-500 text-sm">Tanggal Izin</span>
+                                            <span className="font-semibold text-gray-800">{detailModal.tanggal || '-'}</span>
+                                        </div>
+                                        <div className="flex justify-between py-2">
+                                            <span className="text-gray-500 text-sm">Batas Waktu</span>
+                                            <span className="font-semibold text-gray-800">{detailModal.batas_waktu || '-'}</span>
+                                        </div>
                                     </div>
-                                    <div className="flex justify-between py-2 border-b border-gray-100">
-                                        <span className="text-gray-500 text-sm">Keterangan</span>
-                                        <span className="font-semibold text-gray-800 text-right max-w-[180px] break-words">{detailModal.keterangan || '-'}</span>
-                                    </div>
-                                    <div className="flex justify-between py-2 border-b border-gray-100">
-                                        <span className="text-gray-500 text-sm">Tanggal Izin</span>
-                                        <span className="font-semibold text-gray-800">{detailModal.tanggal || '-'}</span>
-                                    </div>
-                                    <div className="flex justify-between py-2">
-                                        <span className="text-gray-500 text-sm">Batas Waktu</span>
-                                        <span className="font-semibold text-gray-800">{detailModal.batas_waktu || '-'}</span>
+
+                                    {/* Footer */}
+                                    <div className="pt-6 flex gap-3">
+                                        <button
+                                            onClick={() => setDetailModal(null)}
+                                            className="flex-1 py-3 bg-gray-100 text-gray-600 rounded-xl font-semibold hover:bg-gray-200 transition-colors"
+                                        >
+                                            Batal
+                                        </button>
+                                        <button
+                                            onClick={handleKonfirmasi}
+                                            disabled={isLoading}
+                                            className="flex-1 py-3 bg-green-500 text-white rounded-xl font-semibold hover:bg-green-600 transition-colors disabled:opacity-50"
+                                        >
+                                            {isLoading ? (
+                                                <><i className="fas fa-spinner fa-spin mr-1"></i>Memproses...</>
+                                            ) : (
+                                                <><i className="fas fa-check mr-1"></i>Konfirmasi Kembali</>
+                                            )}
+                                        </button>
                                     </div>
                                 </div>
                             </div>
-
-                            {/* Footer */}
-                            <div className="px-6 pb-6 flex gap-3">
-                                <button
-                                    onClick={() => setDetailModal(null)}
-                                    className="flex-1 py-3 bg-gray-100 text-gray-600 rounded-xl font-semibold hover:bg-gray-200 transition-colors"
-                                >
-                                    Batal
-                                </button>
-                                <button
-                                    onClick={handleKonfirmasi}
-                                    disabled={isLoading}
-                                    className="flex-1 py-3 bg-green-500 text-white rounded-xl font-semibold hover:bg-green-600 transition-colors disabled:opacity-50"
-                                >
-                                    {isLoading ? (
-                                        <><i className="fas fa-spinner fa-spin mr-1"></i>Memproses...</>
-                                    ) : (
-                                        <><i className="fas fa-check mr-1"></i>Konfirmasi Kembali</>
-                                    )}
-                                </button>
-                            </div>
-                        </div>
+                        )}
                     </Modal>
 
                     {/* Error Modal */}
