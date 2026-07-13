@@ -122,6 +122,12 @@ Route::middleware('auth')->group(function () {
 
         // Admin APIs
         Route::prefix('admin')->group(function () {
+            // Tahun Ajaran API
+            Route::get('/tahun-ajaran', [\App\Http\Controllers\Api\Admin\TahunAjaranApiController::class, 'index'])->name('api.admin.tahun-ajaran.index');
+            Route::post('/tahun-ajaran', [\App\Http\Controllers\Api\Admin\TahunAjaranApiController::class, 'store'])->name('api.admin.tahun-ajaran.store');
+            Route::post('/tahun-ajaran/{id}/activate', [\App\Http\Controllers\Api\Admin\TahunAjaranApiController::class, 'activate'])->name('api.admin.tahun-ajaran.activate');
+            Route::delete('/tahun-ajaran/{id}', [\App\Http\Controllers\Api\Admin\TahunAjaranApiController::class, 'destroy'])->name('api.admin.tahun-ajaran.destroy');
+
             // Pengguna API
             Route::post('/pengguna', [\App\Http\Controllers\Api\Admin\PenggunaApiController::class, 'store'])->name('api.admin.pengguna.store');
             Route::post('/pengguna/{id}', [\App\Http\Controllers\Api\Admin\PenggunaApiController::class, 'update'])->name('api.admin.pengguna.update');

@@ -14,7 +14,7 @@ class SantriController extends Controller
         // Sorting
         $sortCol = $request->get('sort', 'nama_lengkap');
         $sortDir = strtoupper($request->get('dir', 'ASC')) === 'DESC' ? 'DESC' : 'ASC';
-        $allowedCols = ['nama_lengkap', 'jenis_kelamin', 'kelas', 'quran', 'kategori', 'nisn', 'nik', 'nomor_kk', 'tempat_lahir', 'tanggal_lahir', 'lembaga_sekolah', 'asal_sekolah', 'status_mukim', 'nama_ayah', 'nama_ibu', 'no_wa_wali', 'nomor_rfid', 'status', 'alamat', 'kecamatan', 'kabupaten'];
+        $allowedCols = ['nama_lengkap', 'jenis_kelamin', 'kelas', 'quran', 'nisn', 'nik', 'nomor_kk', 'tempat_lahir', 'tanggal_lahir', 'lembaga_sekolah', 'asal_sekolah', 'status_mukim', 'nama_ayah', 'nama_ibu', 'no_wa_wali', 'nomor_rfid', 'status', 'alamat', 'kecamatan', 'kabupaten'];
         if (!in_array($sortCol, $allowedCols))
             $sortCol = 'nama_lengkap';
 
@@ -22,11 +22,24 @@ class SantriController extends Controller
         $search = $request->get('search', '');
         $filterStatus = $request->get('status', '');
         $filterKelas = $request->get('kelas', '');
+        $filterTahunAjaran = $request->get('tahun_ajaran_id', '');
 
         // Pagination
         $perPage = 20;
 
-        $query = DataInduk::whereNull('deleted_at');
+        $query = DataInduk::withoutGlobalScope('activeTahunAjaran')->whereNull('deleted_at');
+
+        if ($filterTahunAjaran) {
+            $query->where('tahun_ajaran_id', $filterTahunAjaran);
+        } else {
+            // Default to active tahun ajaran if none selected
+            $tahunAktif = \Illuminate\Support\Facades\Cache::remember('active_tahun_ajaran_id', 3600, function () {
+                return \App\Models\TahunAjaran::where('is_active', true)->value('id');
+            });
+            if ($tahunAktif) {
+                $query->where('tahun_ajaran_id', $tahunAktif);
+            }
+        }
 
         if ($search) {
             $query->where(function ($q) use ($search) {
@@ -48,12 +61,16 @@ class SantriController extends Controller
         $total = $query->count();
         $santriList = $query->orderBy($sortCol, $sortDir)->paginate($perPage);
 
-        // Get kelas list for filter
-        $kelasList = DataInduk::whereNull('deleted_at')
-            ->whereNotNull('kelas')
-            ->distinct()
-            ->orderBy('kelas')
-            ->pluck('kelas');
+        // Get kelas list for filter (based on currently queried data)
+        $qKelas = DataInduk::withoutGlobalScope('activeTahunAjaran')->whereNull('deleted_at')->whereNotNull('kelas');
+        if ($filterTahunAjaran) {
+            $qKelas->where('tahun_ajaran_id', $filterTahunAjaran);
+        } else if (isset($tahunAktif) && $tahunAktif) {
+            $qKelas->where('tahun_ajaran_id', $tahunAktif);
+        }
+        $kelasList = $qKelas->distinct()->orderBy('kelas')->pluck('kelas');
+
+        $tahunAjarans = \App\Models\TahunAjaran::orderBy('created_at', 'desc')->get();
 
         // Return JSON for AJAX requests
         if ($request->expectsJson() || $request->ajax()) {
@@ -61,11 +78,13 @@ class SantriController extends Controller
                 'santriList' => $santriList,
                 'total' => $total,
                 'kelasList' => $kelasList,
+                'tahunAjarans' => $tahunAjarans,
                 'sortCol' => $sortCol,
                 'sortDir' => $sortDir,
                 'search' => $search,
                 'filterStatus' => $filterStatus,
                 'filterKelas' => $filterKelas,
+                'filterTahunAjaran' => $filterTahunAjaran,
             ]);
         }
 

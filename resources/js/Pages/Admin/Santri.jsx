@@ -14,6 +14,8 @@ export default function Santri() {
     const [search, setSearch] = useState('');
     const [filterStatus, setFilterStatus] = useState('');
     const [filterKelas, setFilterKelas] = useState('');
+    const [filterTahunAjaran, setFilterTahunAjaran] = useState('');
+    const [tahunAjarans, setTahunAjarans] = useState([]);
     const [sortCol, setSortCol] = useState('nama_lengkap');
     const [sortDir, setSortDir] = useState('ASC');
     const [currentPage, setCurrentPage] = useState(1);
@@ -33,7 +35,7 @@ export default function Santri() {
         id: '',
         nama_lengkap: '', nisn: '', nik: '', nomor_kk: '',
         tempat_lahir: '', tanggal_lahir: '', jenis_kelamin: '', jumlah_saudara: '',
-        lembaga_sekolah: '', kelas: '', quran: '', kategori: '',
+        lembaga_sekolah: '', kelas: '', quran: '',
         status: 'AKTIF', asal_sekolah: '', status_mukim: '',
         alamat: '', kecamatan: '', kabupaten: '', no_wa_wali: '', nomor_rfid: '', nomor_pip: '',
         nama_ayah: '', nik_ayah: '', tempat_lahir_ayah: '', tanggal_lahir_ayah: '', pekerjaan_ayah: '', penghasilan_ayah: '',
@@ -43,8 +45,15 @@ export default function Santri() {
 
     useEffect(() => {
         document.title = 'Data Induk Santri - Aktivitas Santri';
-        fetchSantri();
-    }, [currentPage, sortCol, sortDir]);
+        // Tidak perlu langsung fetch karena akan dipicu oleh debounced effect di bawah
+    }, []);
+
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            fetchSantri();
+        }, 500); // 500ms debounce
+        return () => clearTimeout(timer);
+    }, [search, filterStatus, filterKelas, filterTahunAjaran, currentPage, sortCol, sortDir]);
 
     const fetchSantri = async () => {
         try {
@@ -55,6 +64,7 @@ export default function Santri() {
                 search,
                 status: filterStatus,
                 kelas: filterKelas,
+                tahun_ajaran_id: filterTahunAjaran,
             });
 
             const response = await fetch(`/admin/santri?${params}`, {
@@ -70,6 +80,7 @@ export default function Santri() {
                 setSantriList(data.santriList?.data || []);
                 setTotal(data.total || 0);
                 setKelasList(data.kelasList || []);
+                if (data.tahunAjarans) setTahunAjarans(data.tahunAjarans);
                 setPagination({
                     current_page: data.santriList?.current_page || 1,
                     last_page: data.santriList?.last_page || 1,
@@ -310,22 +321,35 @@ export default function Santri() {
 
             {/* Filter */}
             <div className="bg-white rounded-xl shadow-sm p-4 mb-4">
-                <form onSubmit={handleFilter} className="flex flex-wrap gap-3 items-end">
+                <form onSubmit={(e) => e.preventDefault()} className="flex flex-wrap gap-3 items-end">
                     <div className="flex-1 min-w-[200px]">
-                        <label className="block text-xs text-gray-500 mb-1">Cari</label>
+                        <label className="block text-xs text-gray-500 mb-1">Cari (Live)</label>
                         <input
                             type="text"
                             value={search}
-                            onChange={(e) => setSearch(e.target.value)}
+                            onChange={(e) => { setSearch(e.target.value); setCurrentPage(1); }}
                             placeholder="Nama/NISN/NIK/WA..."
                             className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm"
                         />
                     </div>
                     <div className="w-32">
+                        <label className="block text-xs text-gray-500 mb-1">Tahun Ajaran</label>
+                        <select
+                            value={filterTahunAjaran}
+                            onChange={(e) => { setFilterTahunAjaran(e.target.value); setCurrentPage(1); setFilterKelas(''); }}
+                            className="w-full px-3 py-2 border border-blue-200 bg-blue-50 text-blue-700 rounded-lg text-sm font-semibold"
+                        >
+                            <option value="">Tahun Aktif</option>
+                            {tahunAjarans.map((t) => (
+                                <option key={t.id} value={t.id}>{t.nama} {t.is_active ? '(Aktif)' : ''}</option>
+                            ))}
+                        </select>
+                    </div>
+                    <div className="w-32">
                         <label className="block text-xs text-gray-500 mb-1">Status</label>
                         <select
                             value={filterStatus}
-                            onChange={(e) => setFilterStatus(e.target.value)}
+                            onChange={(e) => { setFilterStatus(e.target.value); setCurrentPage(1); }}
                             className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm"
                         >
                             <option value="">Semua</option>
@@ -338,7 +362,7 @@ export default function Santri() {
                         <label className="block text-xs text-gray-500 mb-1">Kelas</label>
                         <select
                             value={filterKelas}
-                            onChange={(e) => setFilterKelas(e.target.value)}
+                            onChange={(e) => { setFilterKelas(e.target.value); setCurrentPage(1); }}
                             className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm"
                         >
                             <option value="">Semua</option>
@@ -348,9 +372,6 @@ export default function Santri() {
                         </select>
                     </div>
                     <div className="flex gap-2">
-                        <button type="submit" className="px-4 py-2 bg-blue-500 text-white rounded-lg text-sm font-semibold">
-                            <i className="fas fa-filter mr-1"></i>Filter
-                        </button>
                         {selectedIds.length > 0 && (
                             <button
                                 type="button"
@@ -386,7 +407,7 @@ export default function Santri() {
                                     KELAS {sortCol === 'kelas' && (sortDir === 'ASC' ? '↑' : '↓')}
                                 </th>
                                 <th className="px-3 py-3 text-left border border-[#2d4373]">QURAN</th>
-                                <th className="px-3 py-3 text-left border border-[#2d4373]">KATEGORI</th>
+
                                 <th className="px-3 py-3 text-left border border-[#2d4373]">NISN</th>
                                 <th className="px-3 py-3 text-left border border-[#2d4373]">NIK</th>
                                 <th className="px-3 py-3 text-left border border-[#2d4373]">NO KK</th>
@@ -444,11 +465,7 @@ export default function Santri() {
                                         <td className="px-3 py-2 font-bold border-r border-gray-100">{s.nama_lengkap}</td>
                                         <td className="px-3 py-2 border-r border-gray-100">{s.kelas || '-'}</td>
                                         <td className="px-3 py-2 border-r border-gray-100">{s.quran || '-'}</td>
-                                        <td className="px-3 py-2 border-r border-gray-100">
-                                            <span className="px-2 py-0.5 bg-slate-100 text-slate-600 rounded text-[10px] font-bold uppercase">
-                                                {s.kategori || '-'}
-                                            </span>
-                                        </td>
+
                                         <td className="px-3 py-2 border-r border-gray-100"><code className="text-red-500 font-mono">{s.nisn || '-'}</code></td>
                                         <td className="px-3 py-2 border-r border-gray-100">{s.nik || '-'}</td>
                                         <td className="px-3 py-2 border-r border-gray-100">{s.nomor_kk || '-'}</td>
@@ -668,11 +685,7 @@ export default function Santri() {
                                                 <input type="text" value={formData.quran} onChange={(e) => updateField('quran', e.target.value)}
                                                     className="w-full px-3 py-2 border border-gray-200 rounded-lg" />
                                             </div>
-                                            <div>
-                                                <label className="block text-sm font-medium text-gray-600 mb-1">Kategori</label>
-                                                <input type="text" value={formData.kategori} onChange={(e) => updateField('kategori', e.target.value)}
-                                                    className="w-full px-3 py-2 border border-gray-200 rounded-lg" />
-                                            </div>
+
                                             <div>
                                                 <label className="block text-sm font-medium text-gray-600 mb-1">Status</label>
                                                 <select value={formData.status} onChange={(e) => updateField('status', e.target.value)}

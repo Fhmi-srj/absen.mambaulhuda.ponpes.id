@@ -13,7 +13,6 @@ class SantriImportController extends Controller
         ['name' => 'nama_lengkap', 'label' => 'Nama Lengkap', 'required' => true],
         ['name' => 'kelas', 'label' => 'Kelas', 'required' => true],
         ['name' => 'quran', 'label' => 'Quran', 'required' => false],
-        ['name' => 'kategori', 'label' => 'Kategori', 'required' => false],
         ['name' => 'nisn', 'label' => 'NISN', 'required' => false],
         ['name' => 'lembaga_sekolah', 'label' => 'Lembaga Sekolah', 'required' => false],
         ['name' => 'status', 'label' => 'Status', 'required' => false, 'default' => 'AKTIF'],

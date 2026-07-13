@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import Swal from 'sweetalert2';
+import TahunAjaranManager from './TahunAjaranManager';
 
 export default function AdminPengaturan() {
     const [isLoading, setIsLoading] = useState(true);
@@ -101,6 +102,8 @@ export default function AdminPengaturan() {
                     <p className="text-sm text-gray-500 font-medium">Konfigurasi parameter aplikasi dan gateway</p>
                 </div>
             </div>
+
+            <TahunAjaranManager />
 
             <form onSubmit={handleSubmit} className="space-y-6">
                 {/* General Info */}

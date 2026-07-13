@@ -17,7 +17,6 @@ class DataInduk extends Model
         'nama_lengkap',
         'kelas',
         'quran',
-        'kategori',
         'nisn',
         'lembaga_sekolah',
         'status',
@@ -57,6 +56,7 @@ class DataInduk extends Model
         'prestasi',
         'tingkat_prestasi',
         'juara_prestasi',
+        'tahun_ajaran_id',
     ];
 
     protected $casts = [
@@ -66,7 +66,27 @@ class DataInduk extends Model
         'deleted_at' => 'datetime',
     ];
 
+    protected static function booted()
+    {
+        static::addGlobalScope('activeTahunAjaran', function ($builder) {
+            $tahunAktif = \Illuminate\Support\Facades\Cache::remember('active_tahun_ajaran_id', 3600, function () {
+                return \App\Models\TahunAjaran::where('is_active', true)->value('id');
+            });
+
+            if ($tahunAktif) {
+                // Jangan terapkan scope ini jika dipanggil explicitly via API/Admin yang meminta tanpa scope,
+                // tapi secara global selalu terapkan.
+                $builder->where('tahun_ajaran_id', $tahunAktif);
+            }
+        });
+    }
+
     // Relationships
+    public function tahunAjaran()
+    {
+        return $this->belongsTo(TahunAjaran::class, 'tahun_ajaran_id');
+    }
+
     public function catatanAktivitas()
     {
         return $this->hasMany(CatatanAktivitas::class, 'siswa_id');
